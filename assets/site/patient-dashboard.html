@@ -1,0 +1,713 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+<title>Patient Login</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Glacial+Indifference&family=Hanken+Grotesk:wght@300;400&display=swap" rel="stylesheet"/>
+
+<style>
+:root {
+  --deep-green: #29423B;
+  --brick-red: #823A38;
+  --coral: #DB6A6A;
+  --mustard: #D7A346;
+  --sky: #D6E3ED;
+  --rose: #F8CED4;
+  --font-primary: 'Glacial Indifference', sans-serif;
+  --font-secondary: 'Hanken Grotesk', sans-serif;
+}
+
+body {
+  font-family: var(--font-secondary);
+  background: var(--sky);
+  color: #222;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header */
+header {
+  background-color: var(--deep-green);
+  color: white;
+  padding: 16px 10%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+header h1 {
+  font-family: var(--font-primary);
+  font-size: 1.6rem;
+  margin: 0;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  margin-left: 18px;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+nav a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+/* Login Box */
+.container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.box {
+  background: #fff;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  width: 340px;
+  text-align: center;
+}
+
+.box h3 {
+  font-family: var(--font-primary);
+  color: var(--brick-red);
+  margin-bottom: 20px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-family: var(--font-secondary);
+}
+
+button {
+  margin-top: 20px;
+  padding: 12px;
+  width: 100%;
+  background: var(--deep-green);
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: var(--font-secondary);
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: var(--brick-red);
+}
+
+#msg {
+  color: var(--brick-red);
+  margin-top: 12px;
+  font-size: 0.9rem;
+}
+
+footer {
+  text-align: center;
+  padding: 16px;
+  background: var(--rose);
+  color: #333;
+  font-size: 0.9rem;
+}
+
+    .wrap{max-width:1200px;margin:0 auto}
+    /* UPDATED: Changed card background to white, border to light gray */
+    .card{background:#ffffff;padding:16px;border-radius:10px;margin-bottom:12px;border:1px solid #e0e0e0}
+    /* Kept buttons similar, but adjusted text color for better contrast on light theme */
+    button{padding:8px 10px;border-radius:8px;border:0;background:#06b6d4;color:#ffffff;cursor:pointer}
+    /* UPDATED: Ghost button colors for light theme */
+    .ghost{background:transparent;border:1px solid #ccc;color:#666}
+    table{width:100%;border-collapse:collapse;margin-top:8px}
+    /* UPDATED: Table border and text color for light theme */
+    th,td{padding:8px;text-align:left;border-bottom:1px dashed #eee;color:#333}
+    /* UPDATED: Input field colors for light theme */
+    input,select,textarea{padding:8px;border-radius:6px;border:1px solid #ccc;background:#ffffff;color:#333}
+    /* UPDATED: Muted color for light theme */
+    .muted{color:#888;font-size:13px}
+    .med-form{display:flex;gap:8px;flex-wrap:wrap}
+    .med-form > * { flex:1 1 220px; }
+    .row{display:flex;gap:12px;align-items:center}
+    .flex-1{flex:1}
+    #chartWrap{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+    /* UPDATED: Chart background for light theme */
+    canvas{background:#fafafa; border-radius: 4px; padding: 6px;} 
+    /* UPDATED: Panel background for light theme */
+    .panel{background:#f0f3f5;padding:12px;border-radius:8px;margin-top:8px;border:1px solid #ddd}
+    .small{font-size:13px}
+    .hidden{display:none}
+
+    /* Patient Details Resizable Grid */
+    .pd-grid {
+      display: grid;
+      grid-template-columns: var(--pd-col-1-width) var(--pd-col-2-width);
+      gap: 12px;
+      position: relative;
+      user-select: none;
+      --pd-col-1-width: 50%; /* Default split */
+      --pd-col-2-width: 50%;
+    }
+
+    /* Splitter style */
+    .pd-splitter {
+      width: 12px;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: var(--pd-col-1-width);
+      transform: translateX(-50%);
+      cursor: col-resize;
+      z-index: 10;
+      /* UPDATED: Splitter colors for light theme */
+      background: rgba(0, 0, 0, 0.05);
+      border-left: 1px solid #ccc;
+      border-right: 1px solid #ccc;
+    }
+    
+    /* Chart Container Styling */
+    .patient-chart-container {
+        margin-top: 12px;
+        margin-bottom: 12px;
+    }
+
+    /* Responsive stacking for patient details */
+    @media (max-width: 768px) {
+      .pd-grid {
+        grid-template-columns: 1fr;
+      }
+      .pd-splitter {
+        display: none;
+      }
+    }
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:998;display:flex;align-items:center;justify-content:center}
+.symptom-modal{width:360px;background:#fff;padding:16px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.12);z-index:999}
+.symptom-row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.symptom-btn{
+  padding:6px 10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  background:#fff;
+  cursor:pointer;
+  color:#333;                /* ensure text is visible */
+  font-weight:600;
+}
+.symptom-btn:hover{
+  background:#e6f7fb;        /* subtle hover */
+  color:#000;
+}
+.symptom-btn.active{
+  background:#06b6d4;
+  color:#fff;
+  border-color:#06b6d4;
+}
+.symptom-text{width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;resize:vertical}
+.hidden{display:none}
+</style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <header>
+    <h1>Take Your Medicine Innovations: Patient Dashboard</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="doctor-login.html">Doctor Portal</a>
+      <a href="patient-login.html">Patient Portal</a>
+      <a href="change-password.html">Change Password</a>
+      <a href="create-account.html">Create Account</a>
+    </nav>
+  </header>
+  <div class="card">
+    <h2 id="heading">Patient Dashboard</h2>
+    <div id="info" class="muted"></div>
+
+    <div style="margin-top:16px">
+      <button id="refreshBtn" class="smallbtn">Refresh</button>
+      <button id="markAmBtn" style="margin-left:8px">Mark All AM</button>
+      <button id="markPmBtn" style="margin-left:8px">Mark All PM</button>
+      <button id="markAllBtn" style="margin-left:8px">Mark All Assigned as Taken</button>
+      <button id="logout" class="danger" style="margin-left:8px">Logout</button>
+    </div>
+
+    <div style="margin-top:24px" class="grid">
+      <div>
+        <h3>Medications</h3>
+        <div id="medsWrap" class="med-list"></div>
+/*Integrate Cade's Bottle Reader */
+        <h4 style="margin-top:16px">Add a medication</h4>
+        <div style="margin-top:8px">
+          <label>Medication name
+            <input id="medName" placeholder="e.g., Metformin" />
+          </label>
+          <label>Type
+            <select id="medType">
+              <option value="pill">Pill</option><option value="liquid">Liquid</option><option value="injection">Injection</option><option value="other">Other</option>
+            </select>
+          </label>
+          <label>Dosage
+            <input id="medDose" placeholder="e.g., 500 mg" />
+          </label>
+          <label>Schedule
+            <select id="medSchedule">
+              <option value="am">AM</option><option value="pm">PM</option><option value="both">Both</option><option value="custom">Custom</option>
+            </select>
+          </label>
+          <label>Instructions
+            <textarea id="medInstr" placeholder="Take with meal / empty stomach / etc." rows="2"></textarea>
+          </label>
+          <div style="margin-top:8px">
+            <button id="addMedBtn" class="smallbtn">Add Medication</button>
+          </div>
+        </div>
+      </div>
+        </div>
+</div>
+
+<!-- Symptom Modal (hidden by default) -->
+<div id="symptomOverlay" class="modal-overlay hidden" aria-hidden="true">
+  <div class="symptom-modal" role="dialog" aria-modal="true" aria-labelledby="symptomTitle">
+    <h4 id="symptomTitle" style="margin:0 0 8px 0">Log symptoms (optional)</h4>
+    <div class="symptom-row" id="symptomButtons">
+      <button type="button" class="symptom-btn" data-symptom="nausea">Nausea</button>
+      <button type="button" class="symptom-btn" data-symptom="dizziness">Dizziness</button>
+      <button type="button" class="symptom-btn" data-symptom="drowsiness">Drowsiness</button>
+      <button type="button" class="symptom-btn" data-symptom="Dry Mouth">Dry Mouth</button>
+      
+
+    </div>
+    <textarea id="symptomText" class="symptom-text" rows="3" placeholder="Describe any other symptoms or notes..."></textarea>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px">
+      <button type="button" id="symptomCancel" class="ghost">Cancel</button>
+      <button type="button" id="symptomSubmit" class="">Submit</button>
+    </div>
+  </div>
+</div>
+
+      <div id="splitter" class="splitter"></div>
+
+      <aside>
+        <h3>Adherence History</h3>
+        <div id="history" class="muted"></div>
+
+        <div class="chart-card"><h4>Daily Trend</h4><canvas id="dailyTrendChart"></canvas></div>
+        <div class="chart-card"><h4>Taken vs Missed</h4><canvas id="takenMissedChart"></canvas></div>
+        <div class="chart-card"><h4>Adherence by Medication</h4><canvas id="medBarChart"></canvas></div>
+        <div class="chart-card"><h4>AM vs PM Adherence</h4><canvas id="amPmChart"></canvas></div>
+
+        <h4 style="margin-top:12px">Notes</h4>
+        <div class="muted">Medications added by doctors are labeled <strong>(Doctor)</strong>. You can add your own medications too.</div>
+        <p style="margin-top:12px"><a href="index.html">Home</a></p>
+      </aside>
+    </div>
+  </div>
+
+<script>
+/* Utilities */
+function uid(){ return Math.random().toString(36).slice(2,9); }
+function loadUsers(){ try{ return JSON.parse(localStorage.getItem('users')||'[]'); } catch(e){ console.error(e); return []; } }
+function loadLogs(){ try{ return JSON.parse(localStorage.getItem('adherenceLogs')||'{}'); } catch(e){ console.error(e); return {}; } }
+function saveLogs(l){ localStorage.setItem('adherenceLogs', JSON.stringify(l)); }
+function loadMeds(){ try{ return JSON.parse(localStorage.getItem('medications')||'{}'); } catch(e){ console.error(e); return {}; } }
+function saveMeds(m){ localStorage.setItem('medications', JSON.stringify(m)); }
+
+/* Sample meds for patient1 */
+const sampleMeds_patient1 = [
+  { id: "med1", name: "Metformin", type: "pill", dosage: "500 mg", schedule: "am", instructions: "Take with breakfast" },
+  { id: "med2", name: "Lisinopril", type: "pill", dosage: "10 mg", schedule: "am", instructions: "Take with water" },
+  { id: "med3", name: "Atorvastatin", type: "pill", dosage: "20 mg", schedule: "pm", instructions: "Take before bed" },
+  { id: "med4", name: "Vitamin D", type: "pill", dosage: "1000 IU", schedule: "both", instructions: "Take after meals" }
+];
+
+/* Generate sample adherence logs and meds for testing */
+function generateAdherenceData(patientId){
+  const medsStore = loadMeds();
+  const logs = loadLogs();
+
+  if(!medsStore[patientId] || medsStore[patientId].length === 0){
+    medsStore[patientId] = sampleMeds_patient1.map(m=> ({ ...m, addedBy: 'doctor:system' }));
+    saveMeds(medsStore);
+  }
+
+  // Create randomized last-7-days logs
+  logs[patientId] = [];
+  const today = new Date();
+  for(let i=6;i>=0;i--){
+    const d = new Date(today); d.setDate(today.getDate()-i);
+    medsStore[patientId].forEach(m=>{
+      const prob = (m.schedule === 'pm') ? 0.7 : 0.8;
+      if((m.schedule === 'am' || m.schedule === 'both') && Math.random() < prob){
+        logs[patientId].push({
+          ts: new Date(d.getFullYear(), d.getMonth(), d.getDate(), 8,0,0).toISOString(),
+          type:'taken', medId:m.id, medName:m.name, schedule:'am', note:m.instructions, by:patientId, symptoms: { flags: [], notes: '' }
+        });
+      }
+      if((m.schedule === 'pm' || m.schedule === 'both') && Math.random() < prob){
+        logs[patientId].push({
+          ts: new Date(d.getFullYear(), d.getMonth(), d.getDate(), 20,0,0).toISOString(),
+          type:'taken', medId:m.id, medName:m.name, schedule:'pm', note:m.instructions, by:patientId, symptoms: { flags: [], notes: '' }
+        });
+      }
+    });
+  }
+  saveLogs(logs);
+}
+
+/* Current user check */
+const current = localStorage.getItem('currentUser');
+const role = localStorage.getItem('currentRole');
+if(!current || role !== 'patient'){ alert('Not logged in as patient'); window.location.href = 'patient-login.html'; }
+
+/* Ensure sample data for testing */
+const medsStoreInit = loadMeds();
+if(current === 'patient1' && (!medsStoreInit['patient1'] || medsStoreInit['patient1'].length === 0)){
+  generateAdherenceData('patient1');
+}
+
+/* Elements */
+const headingEl = document.getElementById('heading');
+const infoEl = document.getElementById('info');
+const medsWrap = document.getElementById('medsWrap');
+const historyEl = document.getElementById('history');
+const symptomOverlay = document.getElementById('symptomOverlay');
+const symptomButtons = document.getElementById('symptomButtons');
+const symptomText = document.getElementById('symptomText');
+const symptomCancel = document.getElementById('symptomCancel');
+const symptomSubmit = document.getElementById('symptomSubmit');
+
+headingEl.textContent = 'Patient Dashboard — ' + current;
+const preferredDoc = (loadUsers().find(u=>u.username===current) || {}).preferredDoctor || 'none';
+infoEl.textContent = 'Preferred doctor: ' + preferredDoc;
+
+/* Modal state */
+let _modalPendingMed = null;
+let _modalPendingCheckbox = null;
+
+/* Modal functions */
+function openSymptomModal(med, checkboxEl){
+  _modalPendingMed = med;
+  _modalPendingCheckbox = checkboxEl || null;
+  symptomText.value = '';
+  symptomButtons.querySelectorAll('.symptom-btn').forEach(b => b.classList.remove('active'));
+  symptomOverlay.classList.remove('hidden');
+  symptomOverlay.setAttribute('aria-hidden','false');
+  symptomText.focus();
+}
+function closeSymptomModal(){
+  symptomOverlay.classList.add('hidden');
+  symptomOverlay.setAttribute('aria-hidden','true');
+  _modalPendingMed = null;
+  _modalPendingCheckbox = null;
+}
+
+/* Toggle symptom tag selection */
+symptomButtons.addEventListener('click', (e)=>{
+  const btn = e.target.closest('.symptom-btn');
+  if(!btn) return;
+  btn.classList.toggle('active');
+});
+
+/* Cancel / Submit buttons */
+symptomCancel.addEventListener('click', ()=> closeSymptomModal());
+symptomSubmit.addEventListener('click', ()=>{
+  if(!_modalPendingMed){ closeSymptomModal(); return; }
+  const flags = Array.from(symptomButtons.querySelectorAll('.symptom-btn.active')).map(b => b.dataset.symptom);
+  const notes = symptomText.value.trim();
+  const symptoms = { flags, notes };
+  logMedTaken(_modalPendingMed, symptoms);
+  if(_modalPendingCheckbox) _modalPendingCheckbox.checked = true;
+  renderHistory();
+  renderCharts();
+  closeSymptomModal();
+});
+
+/* Render medications list */
+function renderMeds(){
+  const meds = loadMeds();
+  const mine = meds[current] || [];
+  medsWrap.innerHTML = '';
+  if(mine.length === 0){ medsWrap.innerHTML = '<div class="muted">No medications assigned or added yet.</div>'; return; }
+
+  mine.forEach(m=>{
+    const div = document.createElement('div'); div.className = 'med-item';
+    const left = document.createElement('div');
+    left.innerHTML = `<div style="font-weight:700">${m.name} ${m.dosage? '— '+m.dosage: ''} ${m.addedBy && m.addedBy.startsWith('doctor:')?'<span style="font-weight:600;color:#06b6d4"> (Doctor)</span>':''}</div>
+                      <div class="muted">${m.type} • ${m.schedule} • ${m.instructions||''}</div>`;
+    const right = document.createElement('div');
+    const chk = document.createElement('input'); chk.type='checkbox'; chk.id = 'chk_'+m.id;
+    const label = document.createElement('label'); label.style.marginLeft='8px'; label.htmlFor = chk.id; label.textContent = 'Mark taken';
+    const takeBtn = document.createElement('button'); takeBtn.className='smallbtn'; takeBtn.textContent='Log';
+    takeBtn.onclick = ()=> openSymptomModal(m, chk);
+    const delBtn = document.createElement('button'); delBtn.className='smallbtn'; delBtn.style.marginLeft='8px'; delBtn.textContent='Delete';
+    if(m.addedBy && m.addedBy.startsWith('patient:')){
+      delBtn.onclick = ()=>{ if(confirm('Delete this medication?')){ deleteMed(m.id); } };
+    } else {
+      delBtn.disabled = true; delBtn.title = 'Doctor-added; cannot delete'; delBtn.style.opacity = 0.5;
+    }
+    right.appendChild(chk); right.appendChild(label); right.appendChild(takeBtn); right.appendChild(delBtn);
+    div.appendChild(left); div.appendChild(right);
+    medsWrap.appendChild(div);
+  });
+}
+
+/* Log med taken (accepts optional symptoms object and optional forcedSchedule) */
+function logMedTaken(med, symptoms, forcedSchedule){
+  const logs = loadLogs();
+  if(!logs[current]) logs[current] = [];
+
+  // Determine schedule to record
+  let schedule = forcedSchedule || med.schedule;
+  if(schedule === 'both' || schedule === 'custom' || !['am','pm'].includes(schedule)){
+    // use current hour to decide
+    const hour = new Date().getHours();
+    schedule = hour >= 12 ? 'pm' : 'am';
+  }
+
+  const ev = {
+    ts: new Date().toISOString(),
+    type: 'taken',
+    medId: med.id,
+    medName: med.name,
+    schedule: schedule,
+    note: med.instructions || '',
+    by: current,
+    symptoms: symptoms || { flags: [], notes: '' }
+  };
+  logs[current].push(ev);
+  saveLogs(logs);
+}
+
+/* Delete med */
+function deleteMed(medId){
+  const meds = loadMeds();
+  meds[current] = (meds[current]||[]).filter(m=>m.id !== medId);
+  saveMeds(meds);
+  renderMeds();
+  renderCharts();
+}
+
+/* Mark all AM */
+document.getElementById('markAmBtn').addEventListener('click', ()=>{
+  const meds = (loadMeds()[current]||[]).filter(m => m.schedule === 'am' || m.schedule === 'both');
+  if(meds.length === 0){ alert('No AM meds to mark.'); return; }
+  meds.forEach(m => logMedTaken(m, null, 'am'));
+  alert('All AM meds logged as taken.');
+  renderHistory(); renderCharts();
+});
+
+/* Mark all PM */
+document.getElementById('markPmBtn').addEventListener('click', ()=>{
+  const meds = (loadMeds()[current]||[]).filter(m => m.schedule === 'pm' || m.schedule === 'both');
+  if(meds.length === 0){ alert('No PM meds to mark.'); return; }
+  meds.forEach(m => logMedTaken(m, null, 'pm'));
+  alert('All PM meds logged as taken.');
+  renderHistory(); renderCharts();
+});
+
+/* Mark all assigned */
+document.getElementById('markAllBtn').addEventListener('click', ()=>{
+  const meds = (loadMeds()[current]||[]);
+  if(meds.length === 0){ alert('No meds to mark.'); return; }
+  meds.forEach(m => logMedTaken(m));
+  alert('All meds logged as taken.');
+  renderHistory(); renderCharts();
+});
+
+/* Add medication (patient) */
+document.getElementById('addMedBtn').addEventListener('click', ()=>{
+  const name = document.getElementById('medName').value.trim();
+  const type = document.getElementById('medType').value;
+  const dose = document.getElementById('medDose').value.trim();
+  const schedule = document.getElementById('medSchedule').value;
+  const instr = document.getElementById('medInstr').value.trim();
+
+  if(!name){ alert('Enter medication name'); return; }
+  const meds = loadMeds();
+  if(!meds[current]) meds[current] = [];
+  const entry = { id: 'med-'+uid(), name, type, dosage: dose, schedule, instructions: instr, addedBy: 'patient:' + current, createdAt: new Date().toISOString() };
+  meds[current].push(entry);
+  saveMeds(meds);
+  document.getElementById('medName').value=''; document.getElementById('medDose').value=''; document.getElementById('medInstr').value='';
+  renderMeds(); renderCharts(); alert('Medication added (patient).');
+});
+
+/* History render (includes symptoms) */
+function renderHistory(){
+  const logs = loadLogs();
+  const arr = logs[current] || [];
+  if(arr.length === 0){ historyEl.innerHTML = '<div class="muted">No events logged yet</div>'; return; }
+  const html = arr.slice().reverse().map(e=>{
+    let s = `<div>${new Date(e.ts).toLocaleString()} — ${e.medName || 'med'} — ${e.type}`;
+    if(e.note) s += ` — ${e.note}`;
+    if(e.symptoms && ((e.symptoms.flags && e.symptoms.flags.length) || e.symptoms.notes)){
+      const flags = (e.symptoms.flags && e.symptoms.flags.length) ? ` (${e.symptoms.flags.join(', ')})` : '';
+      const notes = e.symptoms.notes ? ` — Notes: ${e.symptoms.notes}` : '';
+      s += ` — Symptoms: ${flags}${notes}`;
+    }
+    s += `</div>`;
+    return s;
+  }).join('');
+  historyEl.innerHTML = html;
+}
+
+/* Charting (kept similar to prior implementation) */
+let dailyTrendChartInstance = null, takenMissedChartInstance = null, medBarChartInstance = null, amPmChartInstance = null;
+function renderCharts(){
+  const meds = loadMeds()[current] || [];
+  const logs = loadLogs()[current] || [];
+
+  if(meds.length === 0){
+    ['dailyTrendChart','takenMissedChart','medBarChart','amPmChart'].forEach(id=>{
+      const el = document.getElementById(id);
+      if(!el) return;
+    });
+    return;
+  }
+
+  // Build last-7-days map
+  const dailyData = {};
+  const today = new Date();
+  for(let i=6;i>=0;i--){
+    const d = new Date(today); d.setDate(today.getDate()-i);
+    const key = d.toISOString().split('T')[0];
+    dailyData[key] = { assigned: 0, taken: 0 };
+  }
+
+  meds.forEach(m=>{
+    for(const dateStr in dailyData){
+      if(m.schedule === 'both') dailyData[dateStr].assigned += 2;
+      else dailyData[dateStr].assigned += 1;
+    }
+  });
+
+  logs.forEach(l=>{
+    const dateStr = new Date(l.ts).toISOString().split('T')[0];
+    if(dailyData[dateStr]) dailyData[dateStr].taken++;
+  });
+
+  const dailyLabels = Object.keys(dailyData).map(d => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+  const dailyTaken = Object.values(dailyData).map(d=>d.taken);
+  const dailyAssigned = Object.values(dailyData).map(d=>d.assigned);
+
+  const totalAssigned = dailyAssigned.reduce((a,b)=>a+b,0);
+  const totalTaken = dailyTaken.reduce((a,b)=>a+b,0);
+  const totalMissed = Math.max(0, totalAssigned - totalTaken);
+
+  // Med adherence %
+  const medAdherence = {};
+  meds.forEach(m=>{
+    const assignedDoses = (m.schedule === 'both') ? 14 : 7;
+    medAdherence[m.name] = { assigned: assignedDoses, taken: 0 };
+  });
+  logs.filter(l=> dailyData.hasOwnProperty(new Date(l.ts).toISOString().split('T')[0]) ).forEach(l=>{
+    const entry = medAdherence[l.medName];
+    if(entry) entry.taken++;
+  });
+  const medBarLabels = Object.keys(medAdherence);
+  const medBarData = medBarLabels.map(name => {
+    const e = medAdherence[name];
+    return e.assigned > 0 ? Math.round(e.taken / e.assigned * 100) : 0;
+  });
+
+  // AM / PM adherence
+  let amAssigned = 0, pmAssigned = 0;
+  meds.forEach(m=>{
+    if(m.schedule === 'am' || m.schedule === 'both') amAssigned += 7;
+    if(m.schedule === 'pm' || m.schedule === 'both') pmAssigned += 7;
+  });
+  const recentLogs = logs.filter(l => dailyData.hasOwnProperty(new Date(l.ts).toISOString().split('T')[0]));
+  const amTaken = recentLogs.filter(l => l.schedule === 'am').length;
+  const pmTaken = recentLogs.filter(l => l.schedule === 'pm').length;
+  const amAdherence = amAssigned > 0 ? amTaken / amAssigned * 100 : 0;
+  const pmAdherence = pmAssigned > 0 ? pmTaken / pmAssigned * 100 : 0;
+
+  // Draw charts (Chart.js must be loaded)
+  try{
+    const ctxDaily = document.getElementById('dailyTrendChart').getContext('2d');
+    if(dailyTrendChartInstance) dailyTrendChartInstance.destroy();
+    dailyTrendChartInstance = new Chart(ctxDaily, {
+      type: 'line',
+      data: { labels: dailyLabels, datasets: [
+        { label: 'Assigned', data: dailyAssigned, borderColor: '#06b6d4', fill:false, tension:0.1 },
+        { label: 'Taken', data: dailyTaken, borderColor: '#2d9f6b', fill:false, tension:0.1 }
+      ] },
+      options: { maintainAspectRatio: true }
+    });
+
+    const ctxTaken = document.getElementById('takenMissedChart').getContext('2d');
+    if(takenMissedChartInstance) takenMissedChartInstance.destroy();
+    takenMissedChartInstance = new Chart(ctxTaken, {
+      type: 'pie',
+      data: { labels: ['Taken Doses','Missed Doses'], datasets:[{ data:[totalTaken,totalMissed], backgroundColor:['#2d9f6b','#ef4444'] }] },
+      options: { maintainAspectRatio: true }
+    });
+
+    const ctxMedBar = document.getElementById('medBarChart').getContext('2d');
+    if(medBarChartInstance) medBarChartInstance.destroy();
+    medBarChartInstance = new Chart(ctxMedBar, {
+      type: 'bar',
+      data: { labels: medBarLabels, datasets:[{ label:'Adherence (%)', data: medBarData, backgroundColor:'#06b6d4' }] },
+      options: { maintainAspectRatio: true, scales: { y: { beginAtZero:true, max: 100 } } }
+    });
+
+    const ctxAmPm = document.getElementById('amPmChart').getContext('2d');
+    if(amPmChartInstance) amPmChartInstance.destroy();
+    amPmChartInstance = new Chart(ctxAmPm, {
+      type: 'bar',
+      data: { labels: ['AM','PM'], datasets:[{ label:'Adherence (%)', data: [amAdherence, pmAdherence], backgroundColor:['#2d9f6b','#06b6d4'] }] },
+      options: { maintainAspectRatio: true, scales: { y: { beginAtZero:true, max:100 } } }
+    });
+  }catch(err){
+    console.warn('Chart draw skipped', err);
+  }
+}
+
+/* Resizable grid setup (safe no-op if elements missing) */
+function setupResizableGrid(){
+  const grid = document.querySelector('.grid');
+  const splitter = document.getElementById('splitter');
+  if(!grid || !splitter) return;
+  let isDragging = false;
+  splitter.addEventListener('mousedown', (e)=>{ isDragging = true; document.body.style.cursor = 'col-resize'; grid.style.pointerEvents = 'none'; e.preventDefault(); });
+  document.addEventListener('mousemove', (e)=>{
+    if(!isDragging) return;
+    const rect = grid.getBoundingClientRect();
+    let pct = (e.clientX - rect.left)/rect.width*100;
+    pct = Math.max(20, Math.min(80, pct));
+    grid.style.setProperty('--col-1-width', pct + '%');
+    grid.style.setProperty('--col-2-width', (100-pct) + '%');
+    renderCharts();
+  });
+  document.addEventListener('mouseup', ()=>{ if(isDragging){ isDragging = false; document.body.style.cursor='default'; grid.style.pointerEvents='auto'; } });
+}
+
+/* Refresh, logout handlers */
+document.getElementById('refreshBtn').addEventListener('click', ()=>{ renderMeds(); renderHistory(); renderCharts(); });
+document.getElementById('logout').addEventListener('click', ()=>{ localStorage.removeItem('currentUser'); localStorage.removeItem('currentRole'); window.location.href='patient-login.html'; });
+
+/* Init */
+function init(){
+  const meds = loadMeds();
+  if(!meds[current]){ meds[current] = []; saveMeds(meds); }
+  renderMeds(); renderHistory(); renderCharts(); setupResizableGrid();
+}
+init();
+</script>
+
+</body>
+</html>
