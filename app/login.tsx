@@ -10,6 +10,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   async function handleLogin() {
+    console.log('login submit', { email, hasPassword: !!password });
     setLoading(true);
     try {
       await loginUser(email, password);
@@ -22,6 +23,7 @@ export default function LoginPage() {
   }
 
   async function handleSignup() {
+    console.log('signup submit', { email, hasPassword: !!password });
     setLoading(true);
     try {
       await signupUser({ email, password, user_key: '' });
