@@ -14,9 +14,13 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_KEY, {
 });
 
 // Expose for quick dev inspection in the browser console only
-if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-  // @ts-ignore - attach for debugging only
-  (window as any).supabase = supabase;
+if (typeof window !== 'undefined') {
+  const hostname = (window.location && window.location.hostname) || '';
+  const isLocalHost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.endsWith('.local');
+  if (isLocalHost || process.env.NODE_ENV === 'development') {
+    // @ts-ignore - attach for debugging only
+    (window as any).supabase = supabase;
+  }
 }
 
 export default supabase;
