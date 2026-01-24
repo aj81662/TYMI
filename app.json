@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Capstone_Website",
-    "slug": "Capstone_Website",
+    "name": "capstone_website",
+    "slug": "capstone_website",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -19,7 +19,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.aishahsjaffery.capstone_website"
     },
     "web": {
       "output": "static",
@@ -43,13 +44,6 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    },
-    "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "0ad8f747-7fb9-44e5-b948-41292e1e2d49"
-      }
-    },
-    "owner": "tymi"
+    }
   }
 }

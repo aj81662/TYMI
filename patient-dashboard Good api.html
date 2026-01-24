@@ -1,0 +1,1666 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+<title>Patient Dashboard: Complete & Functional</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Glacial+Indifference&family=Hanken+Grotesk:wght@300;400;700&display=swap" rel="stylesheet"/>
+
+<style>
+
+/* ------------------------------------------------ */
+/* --- START ESSENTIAL STYLES --- */
+/* ------------------------------------------------ */
+:root {
+  --deep-green: #29423B;
+  --brick-red: #823A38;
+  --coral: #DB6A6A;
+  --mustard: #D7A346;
+  --sky: #D6E3ED;
+  --rose: #F8CED4;
+  --font-primary: 'Glacial Indifference', sans-serif;
+  --font-secondary: 'Hanken Grotesk', sans-serif;
+  --pet-fill: #2d9f6b; /* Green for health/pet fill */
+  --pet-empty: #eee;
+  /* Default Custom Pet Colors - will be overridden by JS */
+  --pet-body-color: #79f298; 
+  --pet-accent-color: #29423B; 
+}
+
+body {
+  font-family: var(--font-secondary);
+  background: var(--sky);
+  color: #222;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header & Nav */
+header {
+  background-color: var(--deep-green);
+  color: white;
+  padding: 16px 10%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+header h1 {
+  font-family: var(--font-primary);
+  font-size: 1.6rem;
+  margin: 0;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  margin-left: 18px;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+nav a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+/* Main Content Area */
+.container {
+  flex: 1;
+  padding: 20px 10%;
+}
+
+.box {
+  background: #fff;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Tab Navigation */
+.tab-nav {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #eee;
+  flex-wrap: wrap; 
+}
+
+.tab-nav button {
+  padding: 10px 15px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  border-bottom: 3px solid transparent;
+  color: #555;
+  transition: all 0.2s;
+}
+
+.tab-nav button.active {
+  color: var(--deep-green);
+  border-bottom: 3px solid var(--deep-green);
+}
+
+.tab-content {
+  display: none;
+  padding-top: 10px;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* General styles */
+button{padding:8px 10px;border-radius:8px;border:0;background:#06b6d4;color:#ffffff;cursor:pointer;transition: background 0.3s;}
+button:hover{background:#0492af}
+.ghost{background:transparent;border:1px solid #ccc;color:#666}
+.ghost:hover{background:#f4f4f4}
+.danger{background:var(--brick-red)}
+.danger:hover{background:#6a2d2c}
+.smallbtn{padding:6px 8px;font-size:0.9rem}
+input,select,textarea{padding:8px;border-radius:6px;border:1px solid #ccc;background:#ffffff;color:#333;width:100%;box-sizing:border-box;margin-bottom:10px}
+.muted{color:#888;font-size:13px}
+.med-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    border-bottom: 1px dashed #eee;
+    padding: 10px 0;
+    flex-direction: column; 
+}
+.med-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+.med-item:last-child {
+    border-bottom: none;
+}
+.med-details-content {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    background: #f9f9f9; 
+    border-left: 3px solid var(--coral);
+}
+.med-details-content ul {
+    margin: 5px 0 0 0;
+    padding-left: 20px;
+    font-size: 0.9em;
+}
+
+
+/* Log Tab Specifics */
+.med-list-log {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px dashed #eee;
+}
+.log-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.log-item-symptoms {
+    font-size: 0.85rem;
+    color: var(--coral);
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+/* Pet Status Styles (Pet Tab) */
+.pet-card {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    padding: 22px;
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 14px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(245,250,255,0.95));
+    box-shadow: 0 8px 24px rgba(16,24,40,0.06);
+}
+.pet-visual {
+    width: 140px;
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 140px;
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(240,248,255,0.6));
+    box-shadow: inset 0 -6px 18px rgba(50,80,100,0.03), 0 6px 20px rgba(16,24,40,0.05);
+}
+.pet-info {
+    flex-grow: 1;
+}
+.health-bar {
+    height: 20px;
+    background: var(--pet-empty);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 5px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+}
+.health-fill {
+    height: 100%;
+    background: var(--pet-fill);
+    transition: width 0.5s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 5px;
+    font-size: 0.8rem;
+    color: white;
+    font-weight: 600;
+}
+.pet-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.pet-customization-section {
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+.pet-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 8px;
+    margin-top: 10px;
+}
+.pet-option-btn {
+    font-size: 0.95rem;
+    padding: 8px 12px;
+    border: 2px solid transparent;
+    background: linear-gradient(180deg,#ffffff,#f7fbfd);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    font-weight: 700;
+    color: #2b2b2b;
+}
+.pet-option-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 18px rgba(16,24,40,0.06);
+}
+.pet-option-btn.selected {
+    border-color: var(--deep-green);
+    background: linear-gradient(180deg,var(--rose),#ffeef0);
+    box-shadow: 0 10px 28px rgba(147,65,63,0.08);
+    transform: translateY(-4px) scale(1.02);
+}
+.color-swatch {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* SVG Pet Styling and Animation */
+.animated-pet {
+    transform-origin: 50% 100%;
+    animation: subtle-float 4s ease-in-out infinite alternate;
+}
+@keyframes subtle-float {
+    0% { transform: translateY(0px) rotate(0deg); }
+    100% { transform: translateY(-5px) rotate(1deg); }
+}
+.pet-mouth {
+    transform-origin: 50% 50%;
+    animation: mouth-breathe 2s ease-in-out infinite alternate;
+}
+@keyframes mouth-breathe {
+    0% { transform: scaleY(1); }
+    100% { transform: scaleY(0.9); }
+}
+.low-health .pet-mouth {
+    transform: translateY(2px);
+    stroke: var(--brick-red);
+}
+.low-health .pet-eye {
+    fill: var(--brick-red);
+}
+.pet-ears {
+    fill: var(--pet-accent-color);
+}
+.low-health .pet-ears {
+    fill: var(--brick-red);
+}
+
+/* Symptom Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:998;display:flex;align-items:center;justify-content:center}
+.symptom-modal{width:360px;background:#fff;padding:16px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.12);z-index:999}
+.symptom-row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.symptom-btn{
+  padding:6px 10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  background:#fff;
+  cursor:pointer;
+  color:#333;
+  font-weight:600;
+  flex: 1 1 auto;
+}
+.symptom-btn:hover{
+  background:#e6f7fb;
+  color:#000;
+}
+.symptom-btn.active{
+  background:#06b6d4;
+  color:#fff;
+  border-color:#06b6d4;
+}
+.symptom-text{width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;resize:vertical}
+.hidden{display:none}
+/* ------------------------------------------------ */
+/* --- END ESSENTIAL STYLES --- */
+/* ------------------------------------------------ */
+
+/* --- CHAT STYLES --- */
+.chat-wrapper{display:flex;flex-direction:column;gap:12px}
+.chat-header{display:flex;align-items:center;gap:8px;justify-content:space-between;margin-bottom:6px}
+.chat-messages{height:320px;background:#fafafa;border:1px solid #eee;border-radius:10px;padding:12px;overflow:auto;display:flex;flex-direction:column;gap:8px}
+.chat-msg{max-width:78%;padding:8px 10px;border-radius:10px;font-size:0.95rem}
+.chat-msg.patient{align-self:flex-end;background:linear-gradient(180deg,#06b6d4,#0492af);color:#fff}
+.chat-msg.doctor{align-self:flex-start;background:#fff;border:1px solid #e6e6e6;color:#111}
+.chat-input-row{display:flex;gap:8px;align-items:center}
+.chat-input{flex:1;padding:8px;border-radius:8px;border:1px solid #ccc}
+.chat-send{padding:8px 12px;border-radius:8px;background:#29423B;color:#fff;border:0;cursor:pointer}
+.chat-meta{font-size:0.82rem;color:#777}
+
+</style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <header>
+    <h1>Take Your Medicine Innovations: Patient Dashboard</h1>
+    <nav>
+      <a href="./index.html">Home</a>
+      <a href="./doctor-login.html">Doctor Portal</a>
+      <a href="./patient-login.html">Patient Portal</a>
+      <a href="./change-password.html">Change Password</a>
+      <a href="./create-account.html">Create Account</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="box">
+        <h2 id="heading">Patient Dashboard</h2>
+        <div id="info" class="muted"></div>
+        
+        <div style="margin-top:16px">
+            <button id="logout" class="danger smallbtn">Logout</button>
+        </div>
+
+        <div class="tab-nav" style="margin-top:20px;">
+            <button id="tabMedications" data-tab="medications" class="active">Medications</button>
+            <button id="tabLog" data-tab="log">Log</button>
+            <button id="tabPet" data-tab="pet">Pet 🌟</button>
+            <button id="tabData" data-tab="data">Data & Trends</button>
+            <button id="tabChat" data-tab="chat">Chat</button>
+            <button id="refreshBtn" class="ghost smallbtn" style="margin-left:auto;">Refresh</button>
+        </div>
+
+        <div id="tabContent_medications" class="tab-content active">
+            <h3>Current Medications</h3>
+            <div id="medsWrap" class="med-list">
+                <p class="muted">Loading medications and drug details...</p>
+            </div>
+            
+            <h4 style="margin-top:20px">Add a medication</h4>
+            <div style="margin-top:8px">
+              <label>Medication name
+                <input id="medName" placeholder="e.g., Metformin" />
+              </label>
+              <label>Type
+                <select id="medType">
+                  <option value="pill">Pill</option><option value="liquid">Liquid</option><option value="injection">Injection</option><option value="other">Other</option>
+                </select>
+              </label>
+              <label>Dosage
+                <input id="medDose" placeholder="e.g., 500 mg" />
+              </label>
+              <label>Schedule
+                <select id="medSchedule">
+                  <option value="am">AM</option><option value="pm">PM</option><option value="both">Both</option><option value="custom">Custom</option>
+                </select>
+              </label>
+              <label>Instructions
+                <textarea id="medInstr" placeholder="Take with meal / empty stomach / etc." rows="2"></textarea>
+              </label>
+              <div style="margin-top:8px">
+                <button id="addMedBtn" class="smallbtn">Add Medication</button>
+              </div>
+            </div>
+        </div>
+
+        <div id="tabContent_log" class="tab-content">
+            <h3>Log Daily Intake & Symptoms</h3>
+
+            <div style="margin-bottom:15px">
+              <button id="markAmBtn" class="smallbtn">Mark All AM</button>
+              <button id="markPmBtn" class="smallbtn" style="margin-left:8px">Mark All PM</button>
+              <button id="markAllBtn" class="smallbtn" style="margin-left:8px">Mark All Assigned as Taken</button>
+            </div>
+            
+            <div id="logMedList">
+                </div>
+
+            <h4 style="margin-top:20px">Adherence History</h4>
+            <div id="history" class="muted"></div>
+        </div>
+
+        <div id="tabContent_pet" class="tab-content">
+            <h3>💊 Your Adherence Pet</h3>
+            
+            <div id="petStatus" class="pet-card">
+                <div id="petVisualSvg" class="pet-visual"></div>
+                <div id="petInfo" class="pet-info"></div>
+            </div>
+            
+            <div class="pet-customization-section">
+                <h4>Customize Pet: Body Shape</h4>
+                <div id="petBodyShapeOptions" class="pet-options"></div>
+
+                <h4>Customize Pet: Ears</h4>
+                <div id="petEarOptions" class="pet-options"></div>
+
+                <h4>Customize Pet: Colors</h4>
+                <div id="petColorOptions" class="pet-options"></div>
+
+                <h4>Customize Pet: Eyes</h4>
+                <div id="petEyeOptions" class="pet-options"></div>
+
+                <h4>Customize Pet: Mouth</h4>
+                <div id="petMouthOptions" class="pet-options"></div>
+            </div>
+
+            <h4 style="margin-top:20px">Pet Notes</h4>
+            <div class="muted">
+                <p>Earn **1 Adherence Point (AP)** for every scheduled medication dose you log as taken in the **Log** tab.</p>
+                <p>Spend AP to **feed** your pet and keep its health up. Health decays slowly over time, rewarding consistent logging!</p>
+            </div>
+        </div>
+
+
+        <div id="tabContent_data" class="tab-content">
+            <h3>📈 Adherence Data & Trends (Last 7 Days)</h3>
+            <div class="chart-grid">
+                <div class="chart-card"><h4>Daily Trend (Assigned vs. Taken)</h4><canvas id="dailyTrendChart"></canvas></div>
+                <div class="chart-card"><h4>Total Taken vs Missed</h4><canvas id="takenMissedChart"></canvas></div>
+                <div class="chart-card"><h4>Adherence by Medication (%)</h4><canvas id="medBarChart"></canvas></div>
+                <div class="chart-card"><h4>AM vs PM Adherence (%)</h4><canvas id="amPmChart"></canvas></div>
+                <div class="chart-card"><h4>Avg Symptom Severity (Last 7 Days)</h4><canvas id="symptomSeverityChart"></canvas></div>
+            </div>
+
+            <h4 style="margin-top:12px">Dashboard Notes</h4>
+            <div class="muted">
+                <p>Medications added by doctors are labeled <strong>(Doctor)</strong>. Data reflects adherence over the last 7 days.</p>
+            </div>
+        </div>
+
+        <div id="tabContent_chat" class="tab-content">
+            <h3>Chat with Your Doctor</h3>
+            <div class="chat-wrapper">
+                <div class="chat-header">
+                    <div>
+                        <label class="chat-meta">Doctor: <strong id="chatDoctorName">Dr. Care</strong></label>
+                    </div>
+                    <div>
+                        <button id="clearChat" class="ghost smallbtn">Clear</button>
+                    </div>
+                </div>
+                <div id="chatMessages" class="chat-messages" aria-live="polite"></div>
+                <div class="chat-input-row">
+                    <input id="chatInput" class="chat-input" placeholder="Type a message..." />
+                    <button id="chatSend" class="chat-send">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+<div id="symptomOverlay" class="modal-overlay hidden" aria-hidden="true">
+  <div class="symptom-modal" role="dialog" aria-modal="true" aria-labelledby="symptomTitle">
+    <h4 id="symptomTitle" style="margin:0 0 8px 0">Log symptoms (optional)</h4>
+    <div class="symptom-row" id="symptomButtons">
+      <button type="button" class="symptom-btn" data-symptom="Nausea">Nausea</button>
+      <button type="button" class="symptom-btn" data-symptom="Dizziness">Dizziness</button>
+      <button type="button" class="symptom-btn" data-symptom="Drowsiness">Drowsiness</button>
+      <button type="button" class="symptom-btn" data-symptom="Dry Mouth">Dry Mouth</button>
+      <button type="button" class="symptom-btn" data-symptom="Headache">Headache</button>
+      <button type="button" class="symptom-btn" data-symptom="Fatigue">Fatigue</button>
+    </div>
+        <textarea id="symptomText" class="symptom-text" rows="3" placeholder="Describe any other symptoms or notes..."></textarea>
+        <div class="symptom-row" style="align-items:center;margin-top:8px">
+            <label style="flex:1;display:flex;align-items:center;gap:8px">Severity:
+                <input id="symptomSeverity" type="range" min="1" max="10" value="5" style="flex:1" />
+                <span id="symptomSeverityValue" style="min-width:28px;text-align:center;display:inline-block">5</span>
+            </label>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px">
+            <button type="button" id="symptomClose" class="ghost">Cancel</button>
+            <button type="button" id="symptomCancel" class="ghost">Skip & Log</button>
+            <button type="button" id="symptomSubmit" class="">Submit</button>
+        </div>
+  </div>
+</div>
+<script>
+/* ------------------------------------------------ */
+/* --- GLOBAL VARIABLES --- */
+/* ------------------------------------------------ */
+let current = null;
+let currentLogEntry = null; 
+let selectedSymptoms = new Set(); 
+let symptomCallback = null; 
+
+/* ------------------------------------------------ */
+/* --- UTILITY FUNCTIONS --- */
+/* ------------------------------------------------ */
+function uid(){ return Math.random().toString(36).slice(2,9); }
+function loadLogs(){ try{ return JSON.parse(localStorage.getItem('adherenceLogs')||'{}'); } catch(e){ console.error(e); return {}; } }
+function saveLogs(l){ localStorage.setItem('adherenceLogs', JSON.stringify(l)); }
+function loadMeds(){ try{ return JSON.parse(localStorage.getItem('medications')||'{}'); } catch(e){ console.error(e); return {}; } }
+function saveMeds(m){ localStorage.setItem('medications', JSON.stringify(m)); }
+function loadAllPetStatus(){ try{ return JSON.parse(localStorage.getItem('petStatus')||'{}'); } catch(e){ return {}; } }
+function savePetStatus(s){ 
+    const petStore = loadAllPetStatus();
+    petStore[current] = s;
+    localStorage.setItem('petStatus', JSON.stringify(petStore));
+}
+
+// --- REAL API INTEGRATION (FDA) ---
+const CACHE_LIFESPAN_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+// This helper function cleans the text
+const getCleanedSection = (field, label, medicationName) => {
+    const rawText = label[field] && label[field].length > 0 ? label[field][0] : "";
+    if (rawText === "") return ["No specific details found in this section."];
+
+    let text = rawText;
+    let extractedItems = [];
+
+    // --- AGGRESSIVE CLEANING & PARSING RULES ---
+
+    // 1. SIDE EFFECTS (ADVERSE REACTIONS) 
+    if (field === 'adverse_reactions') {
+        
+        // --- Specific Rule for Metformin (Combination Drug Data) ---
+        if (medicationName === 'Metformin') {
+             const sections = text.split(/\[see Warnings and Precautions/);
+            if (sections[0]) {
+                const majorSideEffects = sections[0].match(/([A-Z][a-zA-Z0-9\s-]{3,}?)\s*(\(|\d\.\d)/g) || [];
+                majorSideEffects.forEach(item => {
+                    let cleaned = item.trim()
+                                  .replace(/(\s*\(\s*\d+\.\d+\s*\))|(\s*\(\s*\d+\s*\))|(\s*\d+\.\d+\s*$)/g, '') 
+                                  .replace(/^(Severe and Disabling|Most common adverse reactions|Hypoglycemia with Concomitant Use with Insulin or Insulin Secretagogues|The following adverse reactions are also discussed elsewhere in the prescribing information)/, '')
+                                  .trim();
+                    if (cleaned.length > 5 && !extractedItems.includes(cleaned)) {
+                         extractedItems.push(cleaned);
+                    }
+                });
+            }
+            if (text.includes('diarrhea') || text.includes('nausea')) {
+                 if (!extractedItems.includes('Diarrhea')) extractedItems.push('Diarrhea');
+                 if (!extractedItems.includes('Nausea/Vomiting')) extractedItems.push('Nausea/Vomiting');
+            }
+            return extractedItems.slice(0, 5);
+        }
+        
+        // --- Specific Rule for Lisinopril (Combination Drug Data) ---
+        if (medicationName === 'Lisinopril') {
+             const commonMatch = text.match(/(dizziness|headache|cough|fatigue|orthostatic effects|diarrhea|nausea)/gi);
+             if (commonMatch) {
+                 const uniqueCommon = [...new Set(commonMatch.map(s => s.charAt(0).toUpperCase() + s.slice(1)))];
+                 extractedItems.push(...uniqueCommon.slice(0, 4));
+             }
+             const severeMatch = text.match(/(Angioedema|Hypotension|Acute Renal Failure|Pancreatitis)/gi);
+             if (severeMatch) {
+                 const uniqueSevere = [...new Set(severeMatch.map(s => s.charAt(0).toUpperCase() + s.slice(1)))];
+                 extractedItems.push(...uniqueSevere.slice(0, 2));
+             }
+             return extractedItems.filter(item => item.length > 5);
+        }
+        
+        // --- Specific Rule for Insulin ---
+        if (medicationName === 'Insulin') {
+             const hypoMatch = text.match(/(adverse reaction of hypoglycemia|hypoglycemia|weight gain|injection site reaction|lipodystrophy)/gi);
+             if (hypoMatch) {
+                 const uniqueHypo = [...new Set(hypoMatch.map(s => s.charAt(0).toUpperCase() + s.slice(1)))];
+                 const prioritized = uniqueHypo.filter(item => item.includes('Hypoglycemia'));
+                 prioritized.push(...uniqueHypo.filter(item => !item.includes('Hypoglycemia')));
+                 
+                 if (prioritized.length === 0) {
+                      return ["Common adverse effects include hypoglycemia, weight gain, and injection site reactions."];
+                 }
+                 
+                 return prioritized.slice(0, 5);
+             }
+             
+             return ["Common adverse effects include hypoglycemia, weight gain, and injection site reactions."];
+        }
+
+    }
+
+    // 2. INTERACTIONS (DRUG INTERACTIONS) 
+    if (field === 'drug_interactions') {
+        // Rule 1: Extract drugs listed after "Examples:" 
+        const exampleMatch = text.match(/Examples:\s*([A-Za-z0-9\s-,\/]+)\./g);
+        if (exampleMatch) {
+            exampleMatch.forEach(match => {
+                const list = match.replace(/Examples:\s*/, '').replace(/\.$/, '').trim();
+                list.split(/,\s*|\s+or\s+/).forEach(drug => {
+                    const cleanedDrug = drug.replace(/\.$/g, '').trim();
+                    if (cleanedDrug && !extractedItems.includes(cleanedDrug) && cleanedDrug.length > 2) {
+                        extractedItems.push(cleanedDrug);
+                    }
+                });
+            });
+        }
+        
+        // Rule 2: Extract the type of interaction (if list of examples is short)
+        const interactionTypes = text.match(/Clinical Impact:\s*(.*?)\s*Intervention:/g) || [];
+        if (extractedItems.length < 3) {
+            interactionTypes.forEach(type => {
+                const cleanedType = type.replace(/Clinical Impact:\s*/, '').replace(/\s*Intervention:/, '').trim();
+                if (cleanedType.length > 20 && !cleanedType.includes('Monitor renal function')) {
+                     extractedItems.push(cleanedType); 
+                }
+            });
+        }
+
+        // Rule 3: Hard-coded common interactions for specific drugs if API is messy
+        if (medicationName === 'Lisinopril' && extractedItems.length < 3) {
+            extractedItems.push('Potassium Supplements/Potassium-sparing Diuretics');
+            extractedItems.push('Non-Steroidal Anti-Inflammatory Drugs (NSAIDs)');
+        }
+        if (medicationName === 'Insulin' && extractedItems.length < 3) {
+            extractedItems.push('Beta-Blockers (can mask hypoglycemia symptoms)');
+            extractedItems.push('Corticosteroids (may increase blood glucose)');
+        }
+        
+        return extractedItems.slice(0, 5); 
+    }
+
+    // 3. RECOMMENDATIONS (INDICATIONS AND USAGE)
+    if (field === 'indications_and_usage') {
+        
+        // --- Specific Rule for Insulin ---
+        if (medicationName === 'Insulin') {
+            const indicationMatch = text.match(/(Insulin is indicated to improve glycemic control in adult and pediatric patients with diabetes mellitus)/i) || 
+                                    text.match(/(Insulin is indicated as an adjunct to diet and exercise to improve glycemic control in patients with diabetes mellitus)/i);
+            if (indicationMatch) {
+                let indication = indicationMatch[1].trim();
+                if (!indication.endsWith('.')) indication += '.';
+                extractedItems.push(indication);
+            }
+            if (extractedItems.length > 0) return extractedItems.slice(0, 3);
+        }
+        
+        // Start by stating the main indication (usually the first sentence)
+        const mainIndicationMatch = text.match(/^([A-Z].*?\.)/);
+        if (mainIndicationMatch) {
+            let indication = mainIndicationMatch[1].trim();
+            // Strip common API headings like INDICATIONS AND USAGE
+            indication = indication.replace(/^INDICATIONS AND USAGE\s*/, '');
+            indication = indication.replace(/ZITUVIMET|PRINZIDE|ADMELOG/gi, medicationName);
+            extractedItems.push(indication);
+        }
+        
+        // Extract content after "Limitations of Use:"
+        const limitationsMatch = text.match(/Limitations of Use:\s*(.*)/i);
+        if (limitationsMatch && limitationsMatch[1].length > 20) {
+            let limitations = limitationsMatch[1].trim();
+            limitations = limitations.replace(/\[see Warnings and Precautions.*?\]/gi, ''); 
+            limitations = limitations.replace(/ZITUVIMET|PRINZIDE|ADMELOG/gi, medicationName);
+            
+            // Limit to two major limitation points for clarity
+            const limitPoints = limitations.split(/\.|\;/).filter(limit => limit.trim().length > 5).slice(0, 2); 
+            
+            limitPoints.forEach(limit => {
+                let cleanedLimit = limit.trim();
+                
+                // NEW FIX: Aggressively strip list numbering like (1), 1), ( a ), etc.
+                cleanedLimit = cleanedLimit.replace(/^\s*(\s*\(\s*\d+\s*\)|\d+\s*\.|\d+\s*\)|\d+\s*)\s*/, '').trim();
+                
+                if (cleanedLimit.length > 5) {
+                    if (!cleanedLimit.endsWith('.')) cleanedLimit += '.';
+                    extractedItems.push(cleanedLimit);
+                }
+            });
+        }
+
+        // If no recommendations were extracted, return a clear message.
+        if (extractedItems.length === 0) {
+            return ["No recommendations or limitations found in this section."];
+        }
+        
+        return extractedItems.slice(0, 4);
+    }
+    
+    // Fallback if the field-specific rules fail (should be rare now)
+    return [text.replace(/\s\s+/g, ' ').substring(0, 200) + '...'];
+};
+
+
+async function fetchDrugDetails(medicationName) {
+    // 1. SAFETY CHECK: Get User ID safely
+    const userStr = localStorage.getItem('loggedInUser');
+    if (!userStr) return { name: medicationName, error: "User not logged in" };
+    
+    const userId = JSON.parse(userStr).id;
+    const cacheKey = `drugDetailsCache_${userId}`;
+    let cache = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+    
+    // 2. CHECK CACHE
+    const cachedEntry = cache[medicationName];
+    const now = new Date().getTime();
+
+    if (cachedEntry && (now - cachedEntry.fetchedTime) < CACHE_LIFESPAN_MS) {
+        console.log(`[Cache Hit] Returning details for ${medicationName}`);
+        return cachedEntry.data;
+    }
+
+    // 3. FETCH FROM API (Refined Query)
+    console.log(`[Cache Miss] Fetching details for ${medicationName} from FDA API...`);
+    
+    const searchName = medicationName.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const apiUrl = `https://api.fda.gov/drug/label.json?search=openfda.generic_name:"${searchName}"&limit=1`;
+    
+    try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+            if (cachedEntry) return cachedEntry.data; 
+            return { name: medicationName, error: `Details not found (Status ${response.status})` };
+        }
+
+        const data = await response.json();
+        
+        if (!data.results || data.results.length === 0) {
+            return { name: medicationName, error: "Details not available in the API database." };
+        }
+
+        const label = data.results[0];
+
+        // 4. CAPTURE RAW DATA AND CLEANED DATA
+        const getRaw = (field) => label[field] && label[field].length > 0 ? label[field][0] : `No raw data available for the FDA field: ${field}`;
+        
+        const parsedDetails = { 
+            name: medicationName, 
+            
+            // --- RAW DATA CAPTURE ---
+            rawSideEffects: getRaw('adverse_reactions'),
+            rawInteractions: getRaw('drug_interactions'),
+            rawRecommendations: getRaw('indications_and_usage'),
+            
+            // --- CLEANED DATA (using the enhanced helper function) ---
+            sideEffects: getCleanedSection('adverse_reactions', label, medicationName), 
+            interactions: getCleanedSection('drug_interactions', label, medicationName), 
+            recommendations: getCleanedSection('indications_and_usage', label, medicationName), 
+        };
+
+        // 5. STORE IN CACHE
+        cache[medicationName] = {
+            fetchedTime: now,
+            data: parsedDetails
+        };
+        localStorage.setItem(cacheKey, JSON.stringify(cache));
+
+        return parsedDetails;
+
+    } catch (e) {
+        console.error(`Failed to fetch or parse details for ${medicationName}:`, e);
+        if (cachedEntry) {
+            console.log(`[Parsing Error] Returning last good cache for ${medicationName}.`);
+            return cachedEntry.data;
+        }
+        return { name: medicationName, error: "Network or parsing error. The FDA API may be unavailable." };
+    }
+}
+
+// Sample meds for patient1
+const sampleMeds_patient1 = [
+  { id: "med1", name: "Metformin", type: "pill", dosage: "500 mg", schedule: "am", instructions: "Take with breakfast", assignedBy: "doctor" },
+  { id: "med2", name: "Lisinopril", type: "pill", dosage: "10 mg", schedule: "pm", instructions: "Take before bed", assignedBy: "doctor" },
+  { id: "med3", name: "Insulin", type: "injection", dosage: "5 units", schedule: "both", instructions: "Inject with meals", assignedBy: "doctor" },
+];
+
+/* ------------------------------------------------ */
+/* --- PET CONFIG & STATUS FUNCTIONS --- */
+/* ------------------------------------------------ */
+const PET_COLORS = {
+    body: ['#79f298', '#f9f871', '#ffc7a3', '#a3a6ff', '#ffa3e5', '#a3fff8'],
+    accent: ['#29423B', '#FF6B6B', '#333333', '#8e44ad', '#f39c12', '#e74c3c']
+};
+const PET_BODIES = { 'blob': 'M20,30 C5,35 0,60 20,80 C40,95 60,95 80,80 C100,60 95,35 80,30 C60,5 40,5 20,30 Z', 'round': 'M50,5 C25,5 5,25 5,50 C5,75 25,95 50,95 C75,95 95,75 95,50 C95,25 75,5 50,5 Z', 'square': 'M15,15 H85 V85 H15 Z' };
+const PET_EARS = { 'none': '', 'bunny': '<ellipse cx="30" cy="15" rx="10" ry="25" /><ellipse cx="70" cy="15" rx="10" ry="25" />', 'cat': '<path d="M10,10 L25,-10 L40,10 Z M60,10 L75,-10 L90,10 Z" class="pet-ears" />', 'bear': '<circle cx="15" cy="10" r="10" class="pet-ears" /><circle cx="85" cy="10" r="10" class="pet-ears" />' };
+const PET_EYES = { 'circle': '<circle cx="30" cy="50" r="8" /><circle cx="70" cy="50" r="8" />', 'oval': '<ellipse cx="30" cy="50" rx="6" ry="10" /><ellipse cx="70" cy="50" rx="6" ry="10" />', 'dot': '<circle cx="30" cy="50" r="3" /><circle cx="70" cy="50" r="3" />'};
+const PET_MOUTHS = { 'smile': 'M40,75 C50,85 50,85 60,75', 'straight': 'M35,75 L65,75', 'o': 'M45,75 A5,5 0 1,1 55,75 A5,5 0 1,1 45,75' };
+const DEFAULT_PET_STATUS = {
+    health: 100, adherencePoints: 50, lastUpdate: new Date().getTime(),
+    bodyColor: PET_COLORS.body[0], accentColor: PET_COLORS.accent[0],
+    bodyShape: Object.keys(PET_BODIES)[0], earType: Object.keys(PET_EARS)[0],
+    eyeType: Object.keys(PET_EYES)[0], mouthType: Object.keys(PET_MOUTHS)[0]
+};
+const PET_FEED_COST = 5;
+const PET_HEALTH_GAIN = 10;
+const PET_DECAY_RATE_MS = 24 * 60 * 60 * 1000; 
+const PET_DECAY_AMOUNT = 5; 
+
+function loadPetStatus(){ 
+    try{
+        const petStore = loadAllPetStatus();
+        let status = petStore[current] || DEFAULT_PET_STATUS;
+        status = { ...DEFAULT_PET_STATUS, ...status }; 
+        
+        const now = new Date().getTime();
+        const elapsed = now - status.lastUpdate;
+        const decayCycles = Math.floor(elapsed / PET_DECAY_RATE_MS);
+        
+        if (decayCycles > 0) {
+            status.health = Math.max(0, status.health - (decayCycles * PET_DECAY_AMOUNT));
+            status.lastUpdate = now;
+            savePetStatus(status);
+        }
+        return status;
+    } catch(e){ 
+        console.error(e); 
+        return DEFAULT_PET_STATUS; 
+    } 
+}
+function updateAdherencePoints(points) {
+    let petStatus = loadPetStatus();
+    petStatus.adherencePoints = (petStatus.adherencePoints || 0) + points;
+    savePetStatus(petStatus);
+    renderPetStatus();
+}
+function generatePetSvg(petStatus) {
+    const { health, bodyColor, accentColor, bodyShape, earType, eyeType, mouthType } = petStatus;
+    
+    let currentEyeType = eyeType;
+    let currentMouthType = mouthType;
+    let petFill = bodyColor;
+    let petAccent = accentColor;
+    let healthClass = '';
+
+    const normalizedHealth = Math.max(0, Math.min(100, health)); 
+
+    if (normalizedHealth < 60) { 
+        currentEyeType = 'dot'; 
+        currentMouthType = 'straight';
+        healthClass = 'low-health';
+    } 
+    if (normalizedHealth < 30) { 
+        currentEyeType = 'dot';
+        currentMouthType = 'o';
+        healthClass = 'critical-health';
+    }
+    if (normalizedHealth === 0) {
+        petFill = '#ccc';
+        petAccent = '#888';
+        currentEyeType = 'dot';
+        currentMouthType = 'straight';
+        healthClass = 'deceased';
+    }
+
+    const bodyPath = PET_BODIES[bodyShape] || PET_BODIES['blob'];
+    const earPath = PET_EARS[earType] || PET_EARS['none'];
+    const eyePath = PET_EYES[currentEyeType] || PET_EYES['circle'];
+    const mouthPath = PET_MOUTHS[currentMouthType] || PET_MOUTHS['smile'];
+
+    // create a gradient id based on color to avoid collisions
+    const gradId = 'petGrad';
+    const shadowId = 'petShadow';
+    return `
+        <svg viewBox="0 -20 100 120" width="140" height="140" class="animated-pet ${healthClass}" preserveAspectRatio="xMidYMid meet">
+            <defs>
+                <linearGradient id="${gradId}" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stop-color="${lightenColor(petFill,18)}" />
+                    <stop offset="60%" stop-color="${petFill}" />
+                    <stop offset="100%" stop-color="${darkenColor(petFill,8)}" />
+                </linearGradient>
+                <filter id="${shadowId}" x="-50%" y="-50%" width="200%" height="200%">
+                    <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#0b1720" flood-opacity="0.12"/>
+                </filter>
+            </defs>
+            <g filter="url(#${shadowId})">
+                <path class="pet-body" d="${bodyPath}" fill="url(#${gradId})" stroke="rgba(0,0,0,0.08)" stroke-width="1.5" />
+            </g>
+            <g class="pet-ears" transform="translate(0,0)">${earPath}</g>
+            <g class="pet-eyes">${addEyeHighlights(eyePath)}</g>
+            <path d="${mouthPath}" class="pet-mouth" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke="${petAccent}" />
+        </svg>
+    `;
+}
+
+// Small helpers for SVG color manipulation and eye highlights
+function lightenColor(hex, percent) {
+    try {
+        const c = hex.replace('#','');
+        const num = parseInt(c,16);
+        let r = (num >> 16) + Math.round(255 * (percent/100));
+        let g = ((num >> 8) & 0x00FF) + Math.round(255 * (percent/100));
+        let b = (num & 0x0000FF) + Math.round(255 * (percent/100));
+        r = Math.min(255, r); g = Math.min(255, g); b = Math.min(255, b);
+        return `#${(r<<16 | g<<8 | b).toString(16).padStart(6,'0')}`;
+    } catch (e) { return hex; }
+}
+function darkenColor(hex, percent) {
+    try {
+        const c = hex.replace('#','');
+        const num = parseInt(c,16);
+        let r = (num >> 16) - Math.round(255 * (percent/100));
+        let g = ((num >> 8) & 0x00FF) - Math.round(255 * (percent/100));
+        let b = (num & 0x0000FF) - Math.round(255 * (percent/100));
+        r = Math.max(0, r); g = Math.max(0, g); b = Math.max(0, b);
+        return `#${(r<<16 | g<<8 | b).toString(16).padStart(6,'0')}`;
+    } catch (e) { return hex; }
+}
+
+function addEyeHighlights(eyeSvg) {
+    // Insert small white circle highlights for common eye types
+    if (!eyeSvg) return eyeSvg;
+    // simple heuristic: append small white ellipse highlights near typical eye positions
+    const highlight = '<g fill="#ffffff" opacity="0.85"><ellipse cx="27" cy="47" rx="2" ry="3" /><ellipse cx="73" cy="47" rx="2" ry="3" /></g>';
+    return eyeSvg + highlight;
+}
+
+function renderPetStatus() {
+    const petStatus = loadPetStatus();
+    document.getElementById('petInfo').innerHTML = `
+        <h4 style="margin: 0;">Pet Name (Level X)</h4>
+        <p class="muted" style="margin: 5px 0 10px 0;">Your health companion!</p>
+        <label>Health: ${petStatus.health}%</label>
+        <div class="health-bar"><div id="healthFill" class="health-fill" style="width: ${petStatus.health}%">${petStatus.health}%</div></div>
+        <p style="margin: 10px 0 0 0;">Adherence Points (AP): <strong id="adherencePoints">${petStatus.adherencePoints}</strong></p>
+        <div class="pet-actions">
+            <button id="feedPetBtn">Feed Pet (${PET_FEED_COST} AP)</button>
+            <span id="feedMessage" class="muted" style="margin-left:10px;"></span>
+        </div>
+    `;
+    document.getElementById('petVisualSvg').innerHTML = generatePetSvg(petStatus);
+    const feedBtn = document.getElementById('feedPetBtn');
+    if (feedBtn) feedBtn.onclick = handleFeedPet;
+}
+
+function handlePetCustomization(event) {
+    const { type, value } = event.currentTarget.dataset;
+    let petStatus = loadPetStatus();
+    petStatus[type] = value;
+    savePetStatus(petStatus);
+    renderPetStatus();
+    renderCustomizationOptions();
+}
+
+function handleFeedPet() {
+    let petStatus = loadPetStatus();
+    const feedMessage = document.getElementById('feedMessage');
+    if (petStatus.adherencePoints < PET_FEED_COST) {
+        feedMessage.textContent = 'Not enough AP!';
+        return;
+    }
+    if (petStatus.health >= 100) {
+        feedMessage.textContent = 'Pet is already full!';
+        return;
+    }
+    petStatus.adherencePoints -= PET_FEED_COST;
+    petStatus.health = Math.min(100, petStatus.health + PET_HEALTH_GAIN);
+    petStatus.lastUpdate = new Date().getTime(); 
+    savePetStatus(petStatus);
+    feedMessage.textContent = `Fed! Health +${PET_HEALTH_GAIN}!`;
+    renderPetStatus(); 
+}
+
+function renderCustomizationOptions() {
+    const petStatus = loadPetStatus();
+    const renderOptions = (containerId, options, type, values = null) => {
+        const container = document.getElementById(containerId);
+        if (!container) return; 
+        container.innerHTML = '';
+        const keys = values || Object.keys(options);
+        keys.forEach(key => {
+            const value = (type === 'bodyColor' || type === 'accentColor') ? key : key;
+            const isSelected = petStatus[type] === value;
+            const button = document.createElement('button');
+            button.className = `pet-option-btn ${isSelected ? 'selected' : ''}`;
+            button.dataset.value = value;
+            button.dataset.type = type;
+            button.onclick = handlePetCustomization;
+            if (type === 'bodyColor' || type === 'accentColor') {
+                button.innerHTML = `<div class="color-swatch" style="background-color:${value}"></div>`;
+            } else {
+                button.textContent = key.charAt(0).toUpperCase() + key.slice(1);
+            }
+            container.appendChild(button);
+        });
+    };
+    renderOptions('petBodyShapeOptions', PET_BODIES, 'bodyShape');
+    renderOptions('petEarOptions', PET_EARS, 'earType');
+    renderOptions('petEyeOptions', PET_EYES, 'eyeType');
+    renderOptions('petMouthOptions', PET_MOUTHS, 'mouthType');
+    renderOptions('petColorOptions', null, 'bodyColor', PET_COLORS.body);
+    renderOptions('petColorOptions', null, 'accentColor', PET_COLORS.accent);
+}
+
+/* ------------------------------------------------ */
+/* --- SYMPTOM LOGGING FUNCTIONS --- */
+/* ------------------------------------------------ */
+function showSymptomModal(medId, time, callback) {
+    currentLogEntry = { medId, time };
+    symptomCallback = callback; 
+    selectedSymptoms.clear();
+    document.getElementById('symptomText').value = '';
+    document.querySelectorAll('#symptomButtons .symptom-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    // attach toggle handler and init severity display
+    try {
+        document.querySelectorAll('#symptomButtons .symptom-btn').forEach(btn => {
+            btn.classList.remove('active');
+            btn.onclick = toggleSymptom;
+        });
+        const sevEl = document.getElementById('symptomSeverity');
+        const sevVal = document.getElementById('symptomSeverityValue');
+        if (sevEl) {
+            sevEl.value = 5;
+            if (sevVal) sevVal.textContent = sevEl.value;
+            sevEl.oninput = (e) => { if (sevVal) sevVal.textContent = e.target.value; };
+        }
+    } catch (e) {
+        console.error('Symptom modal init error', e);
+    }
+    document.getElementById('symptomOverlay').classList.remove('hidden');
+}
+
+function toggleSymptom(event) {
+    const symptom = event.target.dataset.symptom;
+    if (selectedSymptoms.has(symptom)) {
+        selectedSymptoms.delete(symptom);
+        event.target.classList.remove('active');
+    } else {
+        selectedSymptoms.add(symptom);
+        event.target.classList.add('active');
+    }
+}
+
+function submitSymptoms() {
+    const customText = document.getElementById('symptomText').value.trim();
+    let finalSymptoms = Array.from(selectedSymptoms);
+    if (customText) finalSymptoms.push(`Note: ${customText}`);
+    const textData = finalSymptoms.length > 0 ? finalSymptoms.join('; ') : null;
+    const severity = Number(document.getElementById('symptomSeverity')?.value || 0);
+    const symptomPayload = (textData === null && (!severity || severity === 0)) ? null : { text: textData, severity: severity || null };
+    if (symptomCallback && currentLogEntry) {
+        symptomCallback(currentLogEntry.medId, currentLogEntry.time, symptomPayload);
+    }
+    document.getElementById('symptomOverlay').classList.add('hidden');
+    currentLogEntry = null;
+    symptomCallback = null;
+    selectedSymptoms.clear();
+}
+
+function cancelSymptoms() {
+    if (symptomCallback && currentLogEntry) {
+        symptomCallback(currentLogEntry.medId, currentLogEntry.time, null);
+    }
+    document.getElementById('symptomOverlay').classList.add('hidden');
+    currentLogEntry = null;
+    symptomCallback = null;
+    selectedSymptoms.clear();
+}
+
+// Close modal without logging the dose (cancel action)
+function closeSymptomModal() {
+    const overlay = document.getElementById('symptomOverlay');
+    if (overlay) overlay.classList.add('hidden');
+    currentLogEntry = null;
+    symptomCallback = null;
+    if (typeof selectedSymptoms !== 'undefined' && typeof selectedSymptoms.clear === 'function') selectedSymptoms.clear();
+}
+
+/* ------------------------------------------------ */
+/* --- MAIN DASHBOARD LOGIC --- */
+/* ------------------------------------------------ */
+async function loadData() {
+    const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    if (!loggedInUser) {
+        document.getElementById('heading').textContent = 'Please Log In';
+        document.getElementById('info').textContent = 'You are not authenticated.';
+        document.getElementById('logout').classList.add('hidden');
+        return;
+    }
+    current = loggedInUser.id;
+    const userName = loggedInUser.firstName || 'Patient';
+    document.getElementById('heading').textContent = `${userName}'s Dashboard`;
+    document.getElementById('info').textContent = `Welcome back, ${userName}!`;
+    document.getElementById('logout').classList.remove('hidden');
+
+    const activeTab = document.querySelector('.tab-nav button.active').dataset.tab;
+    await handleTabRendering(activeTab);
+}
+
+function handleTabClick(event) {
+    const button = event.target.closest('[data-tab]');
+    if (!button || !button.dataset.tab) return; 
+
+    const targetTab = button.dataset.tab;
+    document.querySelectorAll('.tab-nav button').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+    button.classList.add('active');
+    document.getElementById(`tabContent_${targetTab}`).classList.add('active');
+    handleTabRendering(targetTab);
+}
+
+async function handleTabRendering(tab) {
+    const meds = loadMeds();
+    switch (tab) {
+        case 'medications':
+            await renderMedicationList(meds);
+            break;
+        case 'log':
+            renderLogList(meds);
+            break;
+        case 'pet':
+            renderPetStatus();
+            renderCustomizationOptions();
+            break;
+        case 'chat':
+            renderChat();
+            break;
+        case 'data':
+            renderCharts(); 
+            break;
+    }
+}
+
+/* ------------------------------------------------ */
+/* --- CHAT FUNCTIONS --- */
+/* ------------------------------------------------ */
+function getChatKey() {
+    const doctorId = 'doctor1';
+    return `chat_${current}_${doctorId}`;
+}
+function loadChatMessages() {
+    try { return JSON.parse(localStorage.getItem(getChatKey())||'[]'); } catch(e){ return []; }
+}
+function saveChatMessages(msgs) { localStorage.setItem(getChatKey(), JSON.stringify(msgs)); }
+function renderChatMessages() {
+    const container = document.getElementById('chatMessages');
+    if (!container) return;
+    const msgs = loadChatMessages();
+    container.innerHTML = '';
+    msgs.forEach(m => {
+        const el = document.createElement('div');
+        el.className = `chat-msg ${m.sender === 'patient' ? 'patient' : 'doctor'}`;
+        el.innerHTML = `<div>${m.text}</div><div class="chat-meta" style="margin-top:6px">${new Date(m.time).toLocaleString()}</div>`;
+        container.appendChild(el);
+    });
+    container.scrollTop = container.scrollHeight;
+}
+function sendChatMessage(text) {
+    if (!text || !text.trim()) return;
+    const msgs = loadChatMessages();
+    msgs.push({ id: uid(), sender: 'patient', text: text.trim(), time: new Date().getTime() });
+    saveChatMessages(msgs);
+    renderChatMessages();
+}
+let chatPollInterval = null;
+function startChatPolling() {
+    stopChatPolling();
+    chatPollInterval = setInterval(() => { renderChatMessages(); }, 2000);
+}
+function stopChatPolling() { if (chatPollInterval) { clearInterval(chatPollInterval); chatPollInterval = null; } }
+function clearChatHistory() { localStorage.removeItem(getChatKey()); renderChatMessages(); }
+function renderChat() {
+    const users = JSON.parse(localStorage.getItem('users')||'[]');
+    const doc = users.find(u => u.id === 'doctor1') || users.find(u => u.role === 'doctor') || { firstName: 'Doctor', lastName: 'Care' };
+    const docNameEl = document.getElementById('chatDoctorName');
+    if (docNameEl) docNameEl.textContent = `${doc.firstName} ${doc.lastName}`;
+    renderChatMessages();
+    startChatPolling();
+}
+
+/* --- MEDICATION TAB FUNCTIONS --- */
+async function renderMedicationList(meds) {
+    const medsWrap = document.getElementById('medsWrap');
+    const userMeds = meds[current] || [];
+    
+    // Add try/catch block to ensure we catch errors and clear "Loading..."
+    try {
+        if (userMeds.length === 0) {
+            medsWrap.innerHTML = '<p class="muted">No medications assigned yet.</p>';
+            return;
+        }
+        medsWrap.innerHTML = '<p class="muted">Loading medication details... <span style="font-size:1.2em;">⏳</span></p>';
+
+        const detailedMedsPromises = userMeds.map(async med => {
+            const details = await fetchDrugDetails(med.name);
+            return { ...med, details };
+        });
+        
+        const detailedMeds = await Promise.all(detailedMedsPromises);
+        medsWrap.innerHTML = ''; 
+
+        detailedMeds.forEach(med => {
+            const drugDetails = med.details;
+            const hasDetails = !drugDetails.error;
+            let infoHtml = '';
+
+            // START: DISPLAY CLEANED DATA (Default view)
+            if (hasDetails) {
+                // Formatting Recommendations list to include prefix only if necessary
+                const formatRecommendations = (recs) => {
+                    // This function is no longer needed since the parsing function now handles the prefixing/stripping.
+                    // We simply render the cleaned items.
+                    return recs.map(r => `<li>${r}</li>`).join('');
+                };
+                
+                infoHtml = `
+                    <div class="med-details-toggle" onclick="this.nextElementSibling.classList.toggle('hidden')">
+                        <span style="font-size:0.9em; color: var(--deep-green); cursor:pointer; font-weight: 600;">
+                            <i style="margin-right:5px;">ℹ️</i> View Drug Details
+                        </span>
+                    </div>
+                    <div class="med-details-content hidden">
+                        ${drugDetails.sideEffects && drugDetails.sideEffects.length > 0 ? `
+                            <p style="font-weight:600; margin-bottom:5px;">Common Side Effects:</p>
+                            <ul>${drugDetails.sideEffects.map(s => `<li>${s}</li>`).join('')}</ul>` : ''}
+                        ${drugDetails.interactions && drugDetails.interactions.length > 0 ? `
+                            <p style="font-weight:600; margin:10px 0 5px 0;">Key Interactions:</p>
+                            <ul>${drugDetails.interactions.map(i => `<li>${i}</li>`).join('')}</ul>` : ''}
+                        ${drugDetails.recommendations && drugDetails.recommendations.length > 0 ? `
+                            <p style="font-weight:600; margin:10px 0 5px 0;">Recommendations:</p>
+                            <ul>${formatRecommendations(drugDetails.recommendations)}</ul>` : ''}
+                        <div class="muted" style="margin-top:10px;">Disclaimer: This information is for educational purposes only.</div>
+                        
+                        <div class="med-details-toggle" style="margin-top: 15px;" onclick="this.nextElementSibling.classList.toggle('hidden'); this.scrollIntoView(true);">
+                            <span style="font-size:0.8em; color: var(--brick-red); cursor:pointer; font-weight: 600;">
+                                <i style="margin-right:5px;">⚠️</i> View RAW Drug Data (Technical)
+                            </span>
+                        </div>
+                        <div class="med-details-content hidden" style="white-space: pre-wrap; font-family: monospace; font-size: 0.8em; background: #f0f0f0; padding: 10px; border: 1px solid #ccc; max-height: 400px; overflow-y: scroll;">
+                            <h3 style="margin-top:0;">RAW SIDE EFFECTS</h3>
+                            <p>${drugDetails.rawSideEffects}</p>
+                            <hr>
+                            <h3>RAW INTERACTIONS</h3>
+                            <p>${drugDetails.rawInteractions}</p>
+                            <hr>
+                            <h3>RAW RECOMMENDATIONS</h3>
+                            <p>${drugDetails.rawRecommendations}</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                infoHtml = `<div class="muted" style="margin-top:5px; color: var(--brick-red);">⚠️ ${drugDetails.error}</div>`;
+            }
+            // END: DISPLAY CLEANED DATA
+
+            const medEl = document.createElement('div');
+            medEl.className = 'med-item';
+            medEl.innerHTML = `
+                <div class="med-item-header">
+                    <div>
+                        <strong>${med.name} (${med.dosage})</strong> 
+                        <span class="muted">${med.schedule.toUpperCase()}</span>
+                        ${med.assignedBy === 'doctor' ? '<span style="font-size:0.8em; color: var(--brick-red); font-weight:700;">(Doctor)</span>' : ''}
+                        <div class="muted">${med.instructions}</div>
+                    </div>
+                    <button class="danger smallbtn delete-med" data-id="${med.id}">Delete</button>
+                </div>
+                ${infoHtml}
+            `;
+            medsWrap.appendChild(medEl);
+        });
+
+        document.querySelectorAll('.delete-med').forEach(button => {
+            button.addEventListener('click', handleDeleteMedication);
+        });
+    } catch (err) {
+        console.error("Error rendering medication list:", err);
+        medsWrap.innerHTML = '<p class="danger">Error loading medications. Please try again later.</p>';
+    }
+}
+
+function handleDeleteMedication(event) {
+    const medIdToDelete = event.target.dataset.id;
+    let meds = loadMeds();
+    if (meds[current]) {
+        meds[current] = meds[current].filter(med => med.id !== medIdToDelete);
+        saveMeds(meds);
+        renderMedicationList(meds);
+        renderLogList(meds);
+    }
+}
+
+function handleAddMedication() {
+    const name = document.getElementById('medName').value.trim();
+    const type = document.getElementById('medType').value;
+    const dose = document.getElementById('medDose').value.trim();
+    const schedule = document.getElementById('medSchedule').value;
+    const instructions = document.getElementById('medInstr').value.trim();
+
+    if (!name || !dose) {
+        alert("Please enter a medication name and dosage.");
+        return;
+    }
+    const newMed = { id: uid(), name, type, dosage: dose, schedule, instructions, assignedBy: 'patient' };
+    let meds = loadMeds();
+    if (!meds[current]) meds[current] = [];
+    meds[current].push(newMed);
+    saveMeds(meds);
+    document.getElementById('medName').value = '';
+    document.getElementById('medDose').value = '';
+    document.getElementById('medInstr').value = '';
+    renderMedicationList(meds);
+    renderLogList(meds);
+}
+
+/* --- LOG TAB FUNCTIONS --- */
+function logMedicationTaken(medId, time, symptomData = null) {
+    const logs = loadLogs();
+    const today = new Date().toISOString().slice(0, 10);
+    const logKey = `${today}_${medId}_${time}`;
+    if (!logs[current]) logs[current] = {};
+    if (logs[current][logKey] && logs[current][logKey].taken) return; 
+
+    logs[current][logKey] = {
+        medId: medId,
+        time: new Date().getTime(),
+        doseTime: time,
+        taken: true,
+        symptoms: symptomData 
+    };
+    saveLogs(logs);
+    renderLogList(loadMeds()); 
+    updateAdherencePoints(1); 
+}
+
+function renderLogList(meds) {
+    const logMedList = document.getElementById('logMedList');
+    logMedList.innerHTML = '';
+    const userMeds = meds[current] || [];
+    const logs = loadLogs()[current] || {};
+    const today = new Date().toISOString().slice(0, 10);
+    // Helper to format symptom display (handles legacy string and new {text,severity} payloads)
+    const formatSymptomsDisplay = (sym) => {
+        if (!sym) return '';
+        if (typeof sym === 'string') return `<div class="log-item-symptoms">Symptoms: ${sym}</div>`;
+        const txt = sym.text || '';
+        const sev = (typeof sym.severity === 'number' && !isNaN(sym.severity)) ? ` (Severity: ${sym.severity}/10)` : '';
+        const displayText = txt ? `${txt}${sev}` : `Severity: ${sym.severity}/10`;
+        return `<div class="log-item-symptoms">Symptoms: ${displayText}</div>`;
+    };
+    
+    if (userMeds.length === 0) {
+        logMedList.innerHTML = '<p class="muted">No medications to log. Please add some in the Medications tab.</p>';
+        return;
+    }
+
+    userMeds.forEach(med => {
+        const amKey = `${today}_${med.id}_am`;
+        const pmKey = `${today}_${med.id}_pm`;
+        const isAmLogged = logs[amKey] && logs[amKey].taken;
+        const isPmLogged = logs[pmKey] && logs[pmKey].taken;
+        
+        const amSymptoms = isAmLogged && logs[amKey].symptoms ? formatSymptomsDisplay(logs[amKey].symptoms) : '';
+        const pmSymptoms = isPmLogged && logs[pmKey].symptoms ? formatSymptomsDisplay(logs[pmKey].symptoms) : '';
+
+        const amButton = med.schedule.includes('am') || med.schedule.includes('both') ? 
+            `<button class="smallbtn ${isAmLogged ? 'ghost' : ''}" data-id="${med.id}" data-time="am" onclick="handleLogClick(this, 'am', ${isAmLogged})">${isAmLogged ? 'AM Logged' : 'Log AM'}</button>` : '';
+        const pmButton = med.schedule.includes('pm') || med.schedule.includes('both') ? 
+            `<button class="smallbtn ${isPmLogged ? 'ghost' : ''}" data-id="${med.id}" data-time="pm" onclick="handleLogClick(this, 'pm', ${isPmLogged})">${isPmLogged ? 'PM Logged' : 'Log PM'}</button>` : '';
+
+        logMedList.innerHTML += `
+            <div class="med-list-log">
+                <div><strong>${med.name} (${med.dosage})</strong>${amSymptoms}${pmSymptoms}</div>
+                <div class="log-controls">${amButton}${pmButton}</div>
+            </div>`;
+    });
+}
+
+function handleLogClick(button, time, isLogged) {
+    if (isLogged) {
+        alert("This dose is already logged for today.");
+        return;
+    }
+    const medId = button.dataset.id;
+    showSymptomModal(medId, time, (id, t, symptoms) => {
+        logMedicationTaken(id, t, symptoms);
+    });
+}
+
+function handleBulkLog(time) {
+    const meds = loadMeds()[current] || [];
+    let dosesToLog = [];
+    
+    meds.forEach(med => {
+        let doses = [];
+        if (time === 'am' && (med.schedule.includes('am') || med.schedule.includes('both'))) doses.push('am');
+        else if (time === 'pm' && (med.schedule.includes('pm') || med.schedule.includes('both'))) doses.push('pm');
+        else if (time === 'all') {
+            if (med.schedule.includes('am') || med.schedule.includes('both')) doses.push('am');
+            if (med.schedule.includes('pm') || med.schedule.includes('both')) doses.push('pm');
+        }
+        
+        doses.forEach(doseTime => {
+            if (!isDoseLogged(med.id, doseTime)) {
+                dosesToLog.push({ medId: med.id, time: doseTime });
+            }
+        });
+    });
+
+    if (dosesToLog.length === 0) {
+        alert(`No unlogged doses found for ${time === 'am' ? 'AM' : (time === 'pm' ? 'PM' : 'Today')}.`);
+        return;
+    }
+
+    // Trigger modal for bulk logging (pass null for medId)
+    showSymptomModal(null, time, (ignoredId, ignoredTime, symptomData) => {
+        let loggedCount = 0;
+        dosesToLog.forEach(dose => {
+            logMedicationTaken(dose.medId, dose.time, symptomData);
+            loggedCount++;
+        });
+        if (loggedCount > 0) {
+            alert(`${loggedCount} doses logged for ${time.toUpperCase()} with symptoms.`);
+        }
+    });
+}
+
+function isDoseLogged(medId, time) {
+    const logs = loadLogs()[current] || {};
+    const today = new Date().toISOString().slice(0, 10);
+    const logKey = `${today}_${medId}_${time}`;
+    return logs[logKey] && logs[logKey].taken;
+}
+
+/* --- CHART FUNCTIONS --- */
+function getAdherenceDataForCharts() {
+    const today = new Date();
+    const labels = [], assigned = [], taken = [];
+    const meds = loadMeds()[current] || [];
+    const medNames = meds.map(m => m.name);
+    
+    // Mock data for visualization
+    const medAdherenceData = medNames.map(() => Math.floor(Math.random() * 40) + 60); 
+    const amAdherence = Math.floor(Math.random() * 40) + 60; 
+    const pmAdherence = Math.floor(Math.random() * 40) + 60; 
+
+    for (let i = 6; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        labels.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+        
+        const totalAssigned = meds.length * (meds.filter(m => m.schedule === 'both').length > 0 ? 2 : 1);
+        assigned.push(totalAssigned || 5); 
+        taken.push(Math.floor(Math.random() * (totalAssigned || 5) * 0.8)); 
+    }
+
+    const totalTaken = taken.reduce((a, b) => a + b, 0);
+    const totalMissed = assigned.reduce((a, b) => a + b, 0) - totalTaken;
+
+    return { dailyLabels: labels, dailyAssigned: assigned, dailyTaken: taken, totalTaken, totalMissed, medNames, medAdherence: medAdherenceData, amAdherence, pmAdherence };
+}
+
+let charts = {};
+function renderCharts() {
+    const data = getAdherenceDataForCharts();
+    const destroyChart = (id) => { if (charts[id]) { charts[id].destroy(); delete charts[id]; } };
+    
+    destroyChart('dailyTrendChart');
+    charts.dailyTrendChart = new Chart(document.getElementById('dailyTrendChart').getContext('2d'), {
+        type: 'line',
+        data: { labels: data.dailyLabels, datasets: [{ label: 'Taken', data: data.dailyTaken, borderColor: '#4BC0C0', fill: true }, { label: 'Assigned', data: data.dailyAssigned, borderColor: '#FF6384', borderDash: [5,5] }] }
+    });
+
+    destroyChart('takenMissedChart');
+    charts.takenMissedChart = new Chart(document.getElementById('takenMissedChart').getContext('2d'), {
+        type: 'doughnut',
+        data: { labels: ['Taken', 'Missed'], datasets: [{ data: [data.totalTaken, data.totalMissed], backgroundColor: ['#4BC0C0', '#FF6384'] }] }
+    });
+
+    destroyChart('medBarChart');
+    charts.medBarChart = new Chart(document.getElementById('medBarChart').getContext('2d'), {
+        type: 'bar',
+        data: { labels: data.medNames, datasets: [{ label: 'Adherence (%)', data: data.medAdherence, backgroundColor: '#36A2EB' }] },
+        options: { scales: { y: { beginAtZero: true, max: 100 } } }
+    });
+
+    destroyChart('amPmChart');
+    charts.amPmChart = new Chart(document.getElementById('amPmChart').getContext('2d'), {
+        type: 'polarArea',
+        data: { labels: ['AM', 'PM'], datasets: [{ data: [data.amAdherence, data.pmAdherence], backgroundColor: ['#FFCD56', '#4BC0C0'] }] }
+    });
+
+    // Symptom severity chart (average severity per day for each symptom over last 7 days)
+    const symptomKeys = ['Nausea','Dizziness','Drowsiness','Dry Mouth','Headache','Fatigue','Unspecified'];
+    const symptomColors = ['#e74c3c','#f39c12','#9b59b6','#3498db','#2ecc71','#e67e22','#95a5a6'];
+
+    const getPerSymptomSeverity = () => {
+        const logs = loadLogs()[current] || {};
+        const today = new Date();
+        const labels = [];
+        // perSym[symptom] -> array of 7 arrays (one per day) collecting severity numbers
+        const perSym = {};
+        symptomKeys.forEach(k => perSym[k] = Array.from({length:7}, () => []));
+
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date(today);
+            d.setDate(today.getDate() - i);
+            const keyDate = d.toISOString().slice(0,10);
+            labels.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+            const dayIndex = 6 - i; // 0..6
+
+            Object.keys(logs).forEach(k => {
+                if (!k.startsWith(keyDate + '_')) return;
+                const entry = logs[k];
+                const s = entry && entry.symptoms;
+                if (!s) return;
+                // determine severity number if present
+                let severity = null;
+                if (typeof s === 'object' && typeof s.severity === 'number') severity = s.severity;
+                else if (typeof s === 'string') {
+                    const m = s.match(/Severity[:\s]*?(\d{1,2})\/?10?/i);
+                    if (m && m[1]) severity = Number(m[1]);
+                }
+
+                // extract symptom tokens from text portion
+                let tokens = [];
+                if (typeof s === 'object' && s.text) tokens = s.text.split(';').map(t => t.trim()).filter(Boolean);
+                else if (typeof s === 'string') tokens = s.split(';').map(t => t.trim()).filter(Boolean);
+
+                if (tokens.length === 0) {
+                    if (severity !== null) perSym['Unspecified'][dayIndex].push(severity);
+                } else {
+                    tokens.forEach(tok => {
+                        if (/^Note:/i.test(tok)) {
+                            if (severity !== null) perSym['Unspecified'][dayIndex].push(severity);
+                            return;
+                        }
+                        const normalized = tok.replace(/^Note:\s*/i, '').trim();
+                        if (symptomKeys.includes(normalized)) {
+                            if (severity !== null) perSym[normalized][dayIndex].push(severity);
+                        } else {
+                            if (severity !== null) perSym['Unspecified'][dayIndex].push(severity);
+                        }
+                    });
+                }
+            });
+        }
+
+        // compute averages
+        const datasetsValues = {};
+        symptomKeys.forEach(k => {
+            datasetsValues[k] = perSym[k].map(arr => arr.length === 0 ? null : Math.round((arr.reduce((a,b)=>a+b,0)/arr.length)*10)/10);
+        });
+        return { labels, datasetsValues };
+    };
+
+    const perSymData = getPerSymptomSeverity();
+    const datasets = symptomKeys.map((sym, idx) => ({
+        label: sym,
+        data: perSymData.datasetsValues[sym],
+        borderColor: symptomColors[idx],
+        backgroundColor: symptomColors[idx].replace('#', '0x') ? `rgba(0,0,0,0)` : 'rgba(0,0,0,0)',
+        spanGaps: true,
+        tension: 0.2
+    }));
+
+    destroyChart('symptomSeverityChart');
+    charts.symptomSeverityChart = new Chart(document.getElementById('symptomSeverityChart').getContext('2d'), {
+        type: 'line',
+        data: { labels: perSymData.labels, datasets: datasets },
+        options: { scales: { y: { beginAtZero: true, min: 0, max: 10 } }, plugins: { legend: { position: 'bottom' } } }
+    });
+}
+
+/* --- INITIALIZATION --- */
+function seedData() {
+    const patientId = "patient1";
+    if (!localStorage.getItem('users')) {
+        const users = [
+            { id: patientId, firstName: "Patient1", lastName: "Sample", email: "alex@test.com", password: "password", role: 'patient' },
+            { id: 'doctor1', firstName: "Doctor", lastName: "Care", email: "doc@test.com", password: "password", role: 'doctor' }
+        ];
+        localStorage.setItem('users', JSON.stringify(users));
+        localStorage.setItem('loggedInUser', JSON.stringify({ id: patientId, firstName: "Patient1", lastName: "Sample" }));
+
+        // Seed a starter chat between patient and doctor
+        const chatKey = `chat_${patientId}_doctor1`;
+        const sampleChat = [
+            { id: uid(), sender: 'doctor', text: 'Hello — I can see your adherence. Let me know any concerns.', time: new Date().getTime() - 1000 * 60 * 60 },
+            { id: uid(), sender: 'patient', text: 'Thanks, I logged my meds today.', time: new Date().getTime() - 1000 * 60 * 30 }
+        ];
+        localStorage.setItem(chatKey, JSON.stringify(sampleChat));
+    }
+    let meds = loadMeds();
+    if (!meds[patientId] || meds[patientId].length === 0) {
+        meds[patientId] = sampleMeds_patient1; 
+        saveMeds(meds);
+    }
+    let petStatusStore = loadAllPetStatus();
+    if (!petStatusStore[patientId]) {
+        petStatusStore[patientId] = DEFAULT_PET_STATUS;
+        localStorage.setItem('petStatus', JSON.stringify(petStatusStore));
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    seedData(); 
+    await loadData();
+
+    document.querySelectorAll('.tab-nav button').forEach(button => button.addEventListener('click', handleTabClick));
+    document.getElementById('logout').addEventListener('click', () => { localStorage.removeItem('loggedInUser'); window.location.reload(); });
+    document.getElementById('refreshBtn').addEventListener('click', loadData);
+    document.getElementById('addMedBtn').addEventListener('click', handleAddMedication);
+    
+    document.getElementById('markAmBtn').addEventListener('click', () => handleBulkLog('am'));
+    document.getElementById('markPmBtn').addEventListener('click', () => handleBulkLog('pm'));
+    document.getElementById('markAllBtn').addEventListener('click', () => handleBulkLog('all'));
+
+    document.getElementById('symptomSubmit').addEventListener('click', submitSymptoms);
+    document.getElementById('symptomCancel').addEventListener('click', cancelSymptoms);
+    document.getElementById('symptomClose').addEventListener('click', closeSymptomModal);
+    document.querySelectorAll('#symptomButtons .symptom-btn').forEach(btn => btn.addEventListener('click', toggleSymptom));
+    // clicking outside the modal will now cancel (do not log)
+    document.getElementById('symptomOverlay').addEventListener('click', (e) => { if (e.target.id === 'symptomOverlay') closeSymptomModal(); });
+
+    // Chat listeners
+    const chatSend = document.getElementById('chatSend');
+    const chatInput = document.getElementById('chatInput');
+    const clearChatBtn = document.getElementById('clearChat');
+    if (chatSend && chatInput) {
+        chatSend.addEventListener('click', () => { sendChatMessage(chatInput.value); chatInput.value = ''; });
+        chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); sendChatMessage(chatInput.value); chatInput.value = ''; } });
+    }
+    if (clearChatBtn) clearChatBtn.addEventListener('click', () => { if (confirm('Clear chat history?')) clearChatHistory(); });
+
+    // Ensure polling stops when leaving the page
+    window.addEventListener('beforeunload', stopChatPolling);
+});
+</script>
+</body>
+</html>

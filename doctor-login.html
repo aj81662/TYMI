@@ -132,10 +132,10 @@ footer {
   <header>
     <h1>Take Your Medicine Innovations</h1>
     <nav>
-      <a href="index.html">Home</a>
-      <a href="patient-login.html">Patient Portal</a>
-      <a href="change-password.html">Change Password</a>
-      <a href="create-account.html">Create Account</a>
+      <a href="./index.html">Home</a>
+      <a href="./patient-login.html">Patient Portal</a>
+      <a href="./change-password.html">Change Password</a>
+      <a href="./create-account.html">Create Account</a>
     </nav>
   </header>
 
@@ -145,7 +145,7 @@ footer {
       <input id="username" placeholder="Username" />
       <input id="password" placeholder="Password" type="password" />
       <button id="login">Login</button>
-      <div id="msg"></div>
+      <div id="message"></div>
     </div>
   </div>
 
@@ -154,38 +154,160 @@ footer {
   </footer>
 
 <script>
-// ---------- Load or initialize users ----------
-function loadUsers(){ 
-  try{ return JSON.parse(localStorage.getItem('users')||'[]'); }
-  catch(e){ return []; }
+/* Inlined _storage.js to avoid bundler 404/MIME issues when loaded inside WebView */
+const STORAGE_KEY_PREFIX = 'TYMI_';
+const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
+const isReactNativeWebView = isBrowser && !!window.ReactNativeWebView;
+const nativeStorageQueue = {};
+function generateTransactionId(){return Math.random().toString(36).substring(2,15);} 
+function resolveNativeStorageResponse(message){ if (message.type !== 'STORAGE_RESPONSE') return; const { txId, value, error } = message; const promiseHandlers = nativeStorageQueue[txId]; if (promiseHandlers){ delete nativeStorageQueue[txId]; if (error){ console.error(`WebView Storage Error (Tx:${txId}):`, error); promiseHandlers.reject(new Error(error)); } else { promiseHandlers.resolve(value); } } }
+function sendNativeStorageRequest(action, key, value = null){ if (!isReactNativeWebView) { return Promise.reject(new Error("Attempted native storage outside WebView.")); } const txId = generateTransactionId(); return new Promise((resolve, reject) => { nativeStorageQueue[txId] = { resolve, reject }; try { console.log(`[WebView] Sending ${action} request for key: ${key}, TxID: ${txId}`); window.ReactNativeWebView.postMessage(JSON.stringify({ type: "STORAGE_OPERATION", action: action, key: key, value: value, txId: txId, })); } catch (e) { if (nativeStorageQueue[txId]) delete nativeStorageQueue[txId]; console.error("Failed to send native storage request:", e); reject(e); } }); }
+async function getItem(key){ const fullKey = STORAGE_KEY_PREFIX + key; if (!isBrowser) return null; if (isReactNativeWebView){ return sendNativeStorageRequest('getItem', fullKey); } else { return Promise.resolve(localStorage.getItem(fullKey)); } }
+async function setItem(key, value){ const fullKey = STORAGE_KEY_PREFIX + key; if (!isBrowser) return; if (isReactNativeWebView){ return sendNativeStorageRequest('setItem', fullKey, value); } else { localStorage.setItem(fullKey, value); return Promise.resolve(); } }
+async function removeItem(key){ const fullKey = STORAGE_KEY_PREFIX + key; if (!isBrowser) return; if (isReactNativeWebView){ return sendNativeStorageRequest('removeItem', fullKey); } else { localStorage.removeItem(fullKey); return Promise.resolve(); } }
+if (isBrowser){ window.Storage = { getItem: getItem, setItem: setItem, removeItem: removeItem, }; if (isReactNativeWebView){ window.addEventListener('message', (event) => { try { let data = event.data; if (typeof data === 'string') { data = JSON.parse(data); } if (data && data.type === 'STORAGE_RESPONSE') { resolveNativeStorageResponse(data); } } catch (e) { console.error("Error parsing native response in listener:", e); } }); } }
+</script>
+
+<script>
+// --- CORE STORAGE HELPERS (Inlined from the first <script> block) ---
+// The global window.Storage object is defined in the previous inlined <script> tag.
+// We only need to define the simple data helpers here.
+
+// Global variable to hold all users once loaded by initializeUsers
+let ALL_USERS = []; 
+const DEFAULT_DOCTOR_USERNAME = "doctor1";
+const DEFAULT_DOCTOR_PASSWORD = "docpass";
+
+async function loadUsers() {
+    try {
+        // Uses the window.Storage.getItem defined in the first script block
+        const rawData = await window.Storage.getItem('users');
+        const users = JSON.parse(rawData || '[]');
+        return Array.isArray(users) ? users : [];
+    } catch (e) {
+        console.error("Error loading or parsing users:", e);
+        return [];
+    }
 }
 
-function saveUsers(users){
-  localStorage.setItem('users', JSON.stringify(users));
+async function saveUsers(usersArray) {
+    try {
+        await window.Storage.setItem('users', JSON.stringify(usersArray));
+    } catch (e) {
+        console.error("Error saving users:", e);
+    }
 }
 
-// ---------- Add default doctor if none exist ----------
-let users = loadUsers();
-if(!users.find(u=>u.role==='doctor')){
-  users.push({username:'doctor1', password:'docpass', role:'doctor'});
-  saveUsers(users);
+// --- AUTHENTICATION LOGIC ---
+
+async function doLogin() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    
+    // 🔑 FIX 1: Change 'message' to 'msg' to match the HTML ID
+    const messageElement = document.getElementById('message'); 
+    
+    // Ensure the message element is present before trying to use it
+    if (!messageElement) {
+        console.error("CRITICAL UI ERROR: Login message element with ID 'msg' not found.");
+        return;
+    }
+
+    messageElement.textContent = ''; // Clear previous message
+
+    if (!username || !password) {
+        messageElement.textContent = 'Please enter both username and password.';
+        return;
+    }
+
+    // Use the global ALL_USERS loaded during initialization
+    const users = ALL_USERS; 
+    const user = users.find(u => u.username === username);
+
+    if (user && user.password === password && user.role === 'doctor') {
+        // SUCCESS: Save current user session and redirect
+        const userSession = {
+            username: user.username,
+            role: user.role,
+        };
+        
+        // Save the session data using the async Storage proxy
+        await window.Storage.setItem('currentUser', JSON.stringify(userSession));
+        await window.Storage.setItem('currentRole', user.role); // Save role separately for simplicity
+        
+        // Redirect to the dashboard
+        window.location.href = 'doctor-dashboard.html';
+
+    } else {
+        // FAILURE
+        messageElement.textContent = 'Invalid doctor credentials or role.';
+        console.warn(`Login failed for user: ${username}`);
+    }
 }
 
-// ---------- Login ----------
-document.getElementById('login').addEventListener('click', ()=>{
-  const u = document.getElementById('username').value.trim();
-  const p = document.getElementById('password').value.trim();
-  const msg = document.getElementById('msg');
-  users = loadUsers();
-  const found = users.find(x=>x.username===u && x.role==='doctor' && x.password===p);
-  if(found){
-    localStorage.setItem('currentUser', u);
-    localStorage.setItem('currentRole', 'doctor');
-    window.location.href='doctor-dashboard.html';
-  } else{
-    msg.textContent='Invalid doctor credentials';
-  }
-});
+// --- INITIALIZATION AND SEEDING ---
+
+async function initializeUsers() {
+    console.log("Starting user initialization...");
+    let users = await loadUsers(); 
+
+    const DEFAULT_USER = {
+        username: DEFAULT_DOCTOR_USERNAME,
+        password: DEFAULT_DOCTOR_PASSWORD,
+        role: "doctor",
+        approved: true,
+    };
+    
+    let changed = false;
+    const idx = users.findIndex(u => u.username === DEFAULT_USER.username && u.role === "doctor");
+    
+    if (idx === -1) {
+        users.push(DEFAULT_USER);
+        changed = true;
+        console.log(`Default doctor '${DEFAULT_DOCTOR_USERNAME}' added.`);
+    } else {
+        // Minor check to ensure the existing default user has the doctor role
+        if (users[idx].role !== 'doctor') {
+            users[idx].role = 'doctor';
+            changed = true;
+            console.log(`Default user '${DEFAULT_DOCTOR_USERNAME}' role corrected to doctor.`);
+        } else {
+            console.log(`Default doctor '${DEFAULT_DOCTOR_USERNAME}' already present.`);
+        }
+    }
+
+    if (changed) {
+        await saveUsers(users); 
+    }
+    
+    // CRITICAL FIX: Assign the loaded/seeded users to the global variable
+    ALL_USERS = users; 
+    console.log(`Initialization complete. Total users: ${ALL_USERS.length}.`);
+    
+    // Attach event listeners only after ASYNC initialization is complete
+    const loginButton = document.getElementById("login");
+    const passwordInput = document.getElementById("password");
+
+    if (loginButton) {
+        loginButton.addEventListener("click", doLogin);
+    }
+    
+    // ASYNC keydown handler for "Enter" key on password field
+    if (passwordInput) {
+        passwordInput.addEventListener("keydown", async function(e){ 
+            if (e.key === "Enter"){
+                e.preventDefault(); 
+                await doLogin();
+            }
+        });
+    }
+}
+
+// --- START THE PROCESS ---
+// 🔑 FIX 2: Ensure we wait for the DOMContentLoaded event before starting
+// the ASYNC process to ensure input elements are available.
+document.addEventListener("DOMContentLoaded", initializeUsers);
+
 </script>
 </body>
 </html>

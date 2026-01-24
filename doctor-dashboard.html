@@ -153,6 +153,16 @@ footer {
     .small{font-size:13px}
     .hidden{display:none}
 
+    /* Chat styles */
+    .chat-messages{height:300px;overflow:auto;padding:10px;background:#fafafa;border-radius:8px;border:1px solid #eee}
+    .chat-msg{max-width:78%;padding:8px 10px;border-radius:8px;margin-bottom:8px;font-size:0.95rem}
+    .chat-msg.doctor{align-self:flex-start;background:#fff;border:1px solid #e6e6e6}
+    .chat-msg.patient{align-self:flex-end;background:linear-gradient(180deg,#06b6d4,#0492af);color:#fff}
+    /* Doctor chat input styles */
+    .doctor-chat-row{display:flex;gap:8px;margin-top:8px;align-items:center}
+    .doctor-chat-input{flex:1;padding:10px;border-radius:8px;border:1px solid #ccc;font-size:1rem}
+    .doctor-chat-send{padding:8px 10px;border-radius:8px;background:#29423B;color:#fff;border:0;cursor:pointer;width:76px}
+
     /* Patient Details Resizable Grid */
     .pd-grid {
       display: grid;
@@ -230,6 +240,11 @@ footer {
         </div>
       </div>
     </div>
+
+        <div style="display:flex;gap:8px;align-items:center;margin:14px 0">
+            <button id="docTabOverview" class="ghost">Overview</button>
+            <button id="docTabChat">Chat</button>
+        </div>
 
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
@@ -318,8 +333,25 @@ footer {
       </div>
     </div>
 
-    <div class="card">
-      <h3 style="margin:0">Add Medication for a Patient</h3>
+        <div class="card" id="doctorChatCard">
+            <h3 style="margin:0">Doctor Chat</h3>
+            <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+                <select id="chatPatientSelector" style="flex:1;padding:8px;border-radius:6px;background:#ffffff;color:#333;border:1px solid #ccc"></select>
+                <button id="openChat">Open</button>
+                <button id="clearChatDoc" class="ghost">Clear</button>
+            </div>
+            <div id="doctorChat" class="panel hidden" style="margin-top:10px">
+                <div id="doctorChatMessages" class="chat-messages"></div>
+                <div class="doctor-chat-row">
+                    <input id="doctorChatInput" class="doctor-chat-input" placeholder="Type a message..." />
+                    <button id="doctorChatSend" class="doctor-chat-send">Send</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card">
+            <h3 style="margin:0">Add Medication for a Patient</h3>
       <div style="margin-top:8px" class="med-form">
         <select id="selectPatient"><option value="">-- select patient --</option></select>
         <input id="d_medName" placeholder="Medication name" />
@@ -347,41 +379,213 @@ footer {
       <div id="logs" style="margin-top:8px"></div>
     </div>
   </div>
+<script>
+/* Inlined _storage.js to avoid bundler 404/MIME issues when loaded inside WebView */
 
+/* ============================================================
+ * storage.js
+ * FINAL FIX FOR REDECLARATION ERROR
+ * ============================================================ */
+
+// 1. Internal Constant Declaration (This must be the only place it is declared)
+const STORAGE_KEY_PREFIX = 'TYMI_'; 
+
+// 2. SAFELY determine the execution environment
+const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
+const isReactNativeWebView = isBrowser && !!window.ReactNativeWebView;
+
+// 3. Promise Queue for Asynchronous getItem Resolution (WebView only)
+const nativeStorageQueue = {}; 
+
+function generateTransactionId() {
+    return Math.random().toString(36).substring(2, 15);
+}
+
+// Global function called by the React Native side 
+function resolveNativeStorageResponse(message) {
+    if (message.type !== 'STORAGE_RESPONSE') return;
+    const { txId, value, error } = message;
+    const promiseHandlers = nativeStorageQueue[txId];
+
+    if (promiseHandlers) {
+        delete nativeStorageQueue[txId];
+        if (error) {
+            console.error(`WebView Storage Error (Tx:${txId}):`, error);
+            promiseHandlers.reject(new Error(error));
+        } else {
+            promiseHandlers.resolve(value); 
+        }
+    }
+}
+
+// Sends a storage operation request to the native side
+function sendNativeStorageRequest(action, key, value = null) {
+    if (!isReactNativeWebView) {
+        return Promise.reject(new Error("Attempted native storage outside WebView."));
+    }
+
+    const txId = generateTransactionId();
+
+    return new Promise((resolve, reject) => {
+        // 🔑 FIX: Store ALL promises in the queue, regardless of action.
+        // This forces the JS to wait until the native side sends a response.
+        nativeStorageQueue[txId] = { resolve, reject };
+
+        try {
+            console.log(`[WebView] Sending ${action} request for key: ${key}, TxID: ${txId}`);
+            
+            window.ReactNativeWebView.postMessage(
+                JSON.stringify({
+                    type: "STORAGE_OPERATION",
+                    action: action,
+                    key: key,
+                    value: value,
+                    txId: txId, 
+                })
+            );
+        } catch (e) {
+            // Clean up the promise queue if the postMessage itself failed
+            if (nativeStorageQueue[txId]) delete nativeStorageQueue[txId]; 
+            console.error("Failed to send native storage request:", e);
+            reject(e);
+        }
+    });
+}
+
+
+/* ------------------------------------------------ */
+/* --- EXPORTED ASYNCHRONOUS FUNCTIONS --- */
+/* ------------------------------------------------ */
+
+async function getItem(key) {
+    const fullKey = STORAGE_KEY_PREFIX + key;
+    if (!isBrowser) return null;
+    
+    if (isReactNativeWebView) {
+        return sendNativeStorageRequest('getItem', fullKey);
+    } else {
+        return Promise.resolve(localStorage.getItem(fullKey));
+    }
+}
+
+async function setItem(key, value) {
+    const fullKey = STORAGE_KEY_PREFIX + key;
+    if (!isBrowser) return;
+
+    if (isReactNativeWebView) {
+        return sendNativeStorageRequest('setItem', fullKey, value);
+    } else {
+        localStorage.setItem(fullKey, value);
+        return Promise.resolve();
+    }
+}
+
+async function removeItem(key) {
+    const fullKey = STORAGE_KEY_PREFIX + key;
+    if (!isBrowser) return;
+
+    if (isReactNativeWebView) {
+        return sendNativeStorageRequest('removeItem', fullKey);
+    } else {
+        localStorage.removeItem(fullKey);
+        return Promise.resolve();
+    }
+}
+
+/* ------------------------------------------------ */
+/* --- GLOBAL SCOPE INITIALIZATION (Client Only) --- */
+/* ------------------------------------------------ */
+
+// 4. Create a global Storage object for easy access in other dashboard scripts
+if (isBrowser) {
+    // Assign the exports to the global window object for use in the static HTML file
+    window.Storage = {
+        getItem: getItem,
+        setItem: setItem,
+        removeItem: removeItem,
+    };
+
+    // Attach the global listener for native replies
+    if (isReactNativeWebView) {
+    // ⚠️ CRITICAL FIX: Listen on the window object for the event dispatched by RN.
+    window.addEventListener('message', (event) => {
+        try {
+            // event.data may be a JSON string or already an object depending on
+            // how the native side injected the message. Handle both.
+            let data = event.data;
+            if (typeof data === 'string') {
+                data = JSON.parse(data);
+            }
+
+            if (data && data.type === 'STORAGE_RESPONSE') {
+                resolveNativeStorageResponse(data);
+            }
+        } catch (e) {
+            console.error("Error parsing native response in listener:", e);
+        }
+    });
+}
+}
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 /* -------------------------
-    Storage helpers (same keys as system)
-    ------------------------- */
+    Storage helpers (Async Proxy)
+    ------------------------- */
 function uid(){ return Math.random().toString(36).slice(2,9); }
-function loadUsers(){ try{return JSON.parse(localStorage.getItem('users')||'[]')}catch(e){return []} }
-function saveUsers(u){ localStorage.setItem('users', JSON.stringify(u)); }
-function loadLogs(){ try{return JSON.parse(localStorage.getItem('adherenceLogs')||'{}')}catch(e){return {}} }
-function saveLogs(l){ localStorage.setItem('adherenceLogs', JSON.stringify(l)); }
-function loadMeds(){ try{return JSON.parse(localStorage.getItem('medications')||'{}')}catch(e){return {}} }
-function saveMeds(m){ localStorage.setItem('medications', JSON.stringify(m)); }
+
+// All storage functions are now ASYNCHRONOUS and use window.Storage
+async function loadUsers(){ 
+    try{
+        const json = await window.Storage.getItem('users');
+        return JSON.parse(json || '[]');
+    }catch(e){ return [] } 
+}
+async function saveUsers(u){ 
+    await window.Storage.setItem('users', JSON.stringify(u)); 
+}
+
+async function loadLogs(){ 
+    try{
+        const json = await window.Storage.getItem('adherenceLogs');
+        return JSON.parse(json || '{}');
+    }catch(e){ return {} } 
+}
+async function saveLogs(l){ 
+    await window.Storage.setItem('adherenceLogs', JSON.stringify(l)); 
+}
+
+async function loadMeds(){ 
+    try{
+        const json = await window.Storage.getItem('medications');
+        return JSON.parse(json || '{}');
+    }catch(e){ return {} } 
+}
+async function saveMeds(m){ 
+    await window.Storage.setItem('medications', JSON.stringify(m)); 
+}
 
 /* -------------------------
-    Basic auth guard
-    ------------------------- */
-const current = localStorage.getItem('currentUser');
-const role = localStorage.getItem('currentRole');
-if(!current || role!=='doctor'){ alert('Not logged in as doctor'); window.location.href='doctor-login.html'; }
-document.getElementById('who').textContent = 'Logged in as: ' + current;
+    Global State & Auth Check
+    ------------------------- */
+let current = null; // Current logged-in username
+let role = null;    // Current logged-in role
 
 // --- Sample Data Definitions ---
 const SAMPLE_PATIENT = 'patient1';
 const SAMPLE_DOCTOR = 'doctor1';
 
 const sampleMeds_patient1 = [
-  { id: "med1", name: "Metformin", type: "pill", dosage: "500 mg", schedule: "am", instructions: "Take with breakfast" },
-  { id: "med2", name: "Lisinopril", type: "pill", dosage: "10 mg", schedule: "am", instructions: "Take with water" },
-  { id: "med3", name: "Atorvastatin", type: "pill", dosage: "20 mg", schedule: "pm", instructions: "Take before bed" },
-  { id: "med4", name: "Vitamin D", type: "pill", dosage: "1000 IU", schedule: "both", instructions: "Take after meals" }
+  { id: "med1", name: "Metformin", type: "pill", dosage: "500 mg", schedule: "am", instructions: "Take with breakfast", assignedBy: "doctor" },
+  { id: "med2", name: "Lisinopril", type: "pill", dosage: "10 mg", schedule: "pm", instructions: "Take before bed", assignedBy: "doctor" },
+  { id: "med3", name: "Insulin", type: "injection", dosage: "5 units", schedule: "both", instructions: "Inject with meals", assignedBy: "doctor" },
 ];
 
 // --- Sample Data Generation Function ---
-function generateAdherenceData(patientId, medsList) {
-    let logs = loadLogs();
+async function generateAdherenceData(patientId, medsList) {
+    let logs = await loadLogs(); // AWAIT
     logs[patientId] = [];
     const today = new Date();
     
@@ -391,14 +595,13 @@ function generateAdherenceData(patientId, medsList) {
         date.setDate(today.getDate() - i);
         
         medsList.forEach(med => {
-            // Simulate adherence: AM (80%), PM (70%)
             const prob = (med.schedule === "pm") ? 0.7 : 0.8; 
             
             // Log for AM dose (if applicable)
             if ((med.schedule === 'am' || med.schedule === 'both') && Math.random() < prob) {
                 logs[patientId].push({
                     ts: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 8, 0, 0).toISOString(),
-                    type: "taken", medId: med.id, medName: med.name, schedule: 'am', // Log as AM slot
+                    type: "taken", medId: med.id, medName: med.name, schedule: 'am',
                     note: med.instructions, by: patientId
                 });
             }
@@ -407,21 +610,21 @@ function generateAdherenceData(patientId, medsList) {
             if ((med.schedule === 'pm' || med.schedule === 'both') && Math.random() < prob) {
                 logs[patientId].push({
                     ts: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 20, 0, 0).toISOString(),
-                    type: "taken", medId: med.id, medName: med.name, schedule: 'pm', // Log as PM slot
+                    type: "taken", medId: med.id, medName: med.name, schedule: 'pm',
                     note: med.instructions, by: patientId
                 });
             }
         });
     }
-    saveLogs(logs);
+    await saveLogs(logs); // AWAIT
 }
 
 /* -------------------------
-    Seed demo 
-    ------------------------- */
-(function seedDemo(){
-    let users = loadUsers();
-    let medsStore = loadMeds();
+    Seed demo 
+    ------------------------- */
+async function seedDemo(){ // ASYNC
+    let users = await loadUsers(); // AWAIT
+    let medsStore = await loadMeds(); // AWAIT
     
     // 1. Ensure Doctor and Patient accounts exist
     if(!users.find(u=>u.username===SAMPLE_DOCTOR)){
@@ -432,27 +635,141 @@ function generateAdherenceData(patientId, medsList) {
             username:SAMPLE_PATIENT,
             password:'patpass',
             role:'patient',
-            approved:true, // Auto-approve for demo
+            approved:true, 
             preferredDoctor:SAMPLE_DOCTOR,
             assignedDoctor:SAMPLE_DOCTOR
         });
     }
-    saveUsers(users);
+    await saveUsers(users); // AWAIT
 
     // 2. Ensure Medications and Logs for patient1 exist
     if(!medsStore[SAMPLE_PATIENT] || medsStore[SAMPLE_PATIENT].length === 0){
-        // Add meds, marked as doctor-added
         medsStore[SAMPLE_PATIENT] = sampleMeds_patient1.map(m => ({ ...m, addedBy: 'doctor:' + SAMPLE_DOCTOR }));
-        saveMeds(medsStore);
+        await saveMeds(medsStore); // AWAIT
         
-        // Generate logs for the new meds
-        generateAdherenceData(SAMPLE_PATIENT, medsStore[SAMPLE_PATIENT]);
+        await generateAdherenceData(SAMPLE_PATIENT, medsStore[SAMPLE_PATIENT]); // AWAIT
     }
-})();
+}
 
 /* -------------------------
-    Chart objects & Instances
-    ------------------------- */
+    Doctor Chat helpers
+    ------------------------- */
+    async function getDoctorId(){ return current || SAMPLE_DOCTOR; }
+    async function chatKeyFor(patientUsername){ const d = await getDoctorId(); return `chat_${patientUsername}_${d}`; }
+    async function loadChatMessages(patientUsername){
+        try{
+            const key = await chatKeyFor(patientUsername);
+            if (window.Storage && typeof window.Storage.getItem === 'function'){
+                const json = await window.Storage.getItem(key);
+                return JSON.parse(json||'[]');
+            }
+            // fallback to localStorage to match patient dashboard
+            return JSON.parse(localStorage.getItem(key) || '[]');
+        }catch(e){return []}
+    }
+    async function saveChatMessages(patientUsername, msgs){
+        const key = await chatKeyFor(patientUsername);
+        try{
+            if (window.Storage && typeof window.Storage.setItem === 'function'){
+                await window.Storage.setItem(key, JSON.stringify(msgs));
+            }
+        }catch(e){
+            console.warn('window.Storage unavailable, falling back to localStorage');
+        }
+        // Ensure patient UI (which reads localStorage) also sees messages
+        try{ localStorage.setItem(key, JSON.stringify(msgs)); }catch(e){}
+        // update unread badge after saving
+        try{ updateUnreadBadge(); }catch(e){}
+    }
+    async function renderDoctorChat(patientUsername){ const wrap = document.getElementById('doctorChatMessages'); if(!wrap) return; const msgs = await loadChatMessages(patientUsername); wrap.innerHTML = ''; msgs.forEach(m=>{ const el = document.createElement('div'); el.className = 'chat-msg ' + (m.sender==='patient' ? 'patient' : 'doctor'); el.innerHTML = `<div>${escapeHtml(m.text)}</div><div class="muted" style="font-size:0.75rem;margin-top:6px">${new Date(m.time).toLocaleString()}</div>`; wrap.appendChild(el); }); wrap.scrollTop = wrap.scrollHeight; }
+    async function sendDoctorChat(patientUsername, text){ if(!patientUsername || !text || !text.trim()) return; const msgs = await loadChatMessages(patientUsername); msgs.push({ id: uid(), sender: 'doctor', text: text.trim(), time: new Date().getTime() }); await saveChatMessages(patientUsername, msgs); await renderDoctorChat(patientUsername); }
+    async function sendDoctorChat(patientUsername, text){
+        try{
+            if(!patientUsername || !text || !text.trim()) return;
+            const msgs = await loadChatMessages(patientUsername);
+            msgs.push({ id: uid(), sender: 'doctor', text: text.trim(), time: new Date().getTime() });
+            await saveChatMessages(patientUsername, msgs);
+            await renderDoctorChat(patientUsername);
+        }catch(e){ console.error('sendDoctorChat error', e); throw e; }
+    }
+    let doctorChatPoll = null;
+    function startDoctorChatPolling(patientUsername){ stopDoctorChatPolling(); doctorChatPoll = setInterval(()=>{ renderDoctorChat(patientUsername); }, 2000); }
+    function stopDoctorChatPolling(){ if(doctorChatPoll){ clearInterval(doctorChatPoll); doctorChatPoll = null; } }
+    async function clearDoctorChat(patientUsername){
+        const key = await chatKeyFor(patientUsername);
+        try{ if(window.Storage && typeof window.Storage.removeItem === 'function') await window.Storage.removeItem(key); }catch(e){}
+        try{ localStorage.removeItem(key); }catch(e){}
+        await renderDoctorChat(patientUsername);
+    }
+
+    function escapeHtml(str){ if(!str) return ''; return String(str).replace(/[&<>\"']/g, function(s){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[s]; }); }
+
+    /* -------------------------
+        Unread badge + last-seen helpers
+       ------------------------- */
+    async function lastSeenKeyFor(patientUsername){ const d = await getDoctorId(); return `chatLastSeen_${patientUsername}_${d}`; }
+    async function setLastSeenForPatient(patientUsername){ try{ const key = await lastSeenKeyFor(patientUsername); const ts = Date.now().toString(); if(window.Storage && typeof window.Storage.setItem==='function'){ await window.Storage.setItem(key, ts); } localStorage.setItem(key, ts); }catch(e){console.error('setLastSeen error',e);} }
+    async function getLastSeenForPatient(patientUsername){ try{ const key = await lastSeenKeyFor(patientUsername); if(window.Storage && typeof window.Storage.getItem==='function'){ const v = await window.Storage.getItem(key); if(v) return Number(v); } const v2 = localStorage.getItem(key); if(v2) return Number(v2); }catch(e){ } return 0; }
+
+    async function getUnreadCountForPatient(patientUsername){ try{ const msgs = await loadChatMessages(patientUsername); const last = await getLastSeenForPatient(patientUsername) || 0; return msgs.filter(m => m.sender==='patient' && Number(m.time) > Number(last)).length; }catch(e){ return 0; } }
+
+    let unreadPoll = null;
+    async function updateUnreadBadge(){ try{
+        const sel = document.getElementById('chatPatientSelector');
+        let patients = [];
+        if (sel && sel.options.length>0) {
+            for (let i=0;i<sel.options.length;i++){ const v = sel.options[i].value; if(v) patients.push(v); }
+        } else {
+            const users = await loadUsers(); patients = users.filter(u=>u.role==='patient' && u.approved && u.assignedDoctor===current).map(u=>u.username);
+        }
+        let total = 0;
+        for (const p of patients) { total += await getUnreadCountForPatient(p); }
+        const tab = document.getElementById('docTabChat');
+        if(tab){ tab.textContent = total>0 ? `Chat (${total})` : 'Chat'; }
+    }catch(e){ console.error('updateUnreadBadge', e); } }
+    function startUnreadPolling(){ stopUnreadPolling(); unreadPoll = setInterval(()=>{ updateUnreadBadge(); }, 2500); }
+    function stopUnreadPolling(){ if(unreadPoll){ clearInterval(unreadPoll); unreadPoll = null; } }
+
+
+/* -------------------------
+    Basic async auth guard
+    ------------------------- */
+async function checkAuthAndInit() {
+    const currentJSON = await window.Storage.getItem('currentUser');
+    const roleString = await window.Storage.getItem('currentRole');
+
+    // Parse current user from the stringified JSON stored in the login step
+    try {
+        current = JSON.parse(currentJSON)?.username || null;
+    } catch (e) {
+        current = null;
+    }
+    role = roleString;
+
+    if(!current || role !== 'doctor'){ 
+        alert('Not logged in as doctor'); 
+        window.location.href='doctor-login.html'; 
+        return; 
+    }
+
+    // After successful auth, display username
+    const whoElement = document.getElementById('who');
+    if (whoElement) {
+        whoElement.textContent = 'Logged in as: ' + current;
+    }
+
+    // Run seeding and then the main dashboard UI refresh
+    await seedDemo();
+    await refreshUI(); 
+    
+    // Auto-select and open patient1 for demonstration
+    document.getElementById('patientSelector').value = 'patient1';
+    await openPatientPanel('patient1');
+}
+
+// ----------------------------------------------------
+// Chart objects & Instances
+// ----------------------------------------------------
 let overallChart = null;
 let patientPieChart = null;
 let patientDailyTrendChart = null;
@@ -460,544 +777,680 @@ let patientMedBarChart = null;
 let patientAmPmChart = null;
 
 const chartColors = {
-    taken: '#2d9f6b',
-    missed: '#ef4444',
-    assigned: '#06b6d4'
+    taken: '#2d9f6b',
+    missed: '#ef4444',
+    assigned: '#06b6d4'
 };
 
 
 function buildOverallChart(taken, missed){
-  const ctx = document.getElementById('overallChart').getContext('2d');
-  if(overallChart) overallChart.destroy();
-  overallChart = new Chart(ctx, {
-    type: 'pie',
-    data: {
-      labels: ['Taken','Missed (proxy)'],
-      datasets: [{
-        data: [taken, missed],
-        backgroundColor: [chartColors.taken, chartColors.missed],
-        hoverOffset: 6
-      }]
-    },
-    options: {
-      plugins: { legend: { position: 'bottom', labels: { color: '#333' } } },
-      responsive: true,
-      maintainAspectRatio: true 
-    }
-  });
+    const ctx = document.getElementById('overallChart').getContext('2d');
+    if(overallChart) overallChart.destroy();
+    overallChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Taken','Missed (proxy)'],
+            datasets: [{
+                data: [taken, missed],
+                backgroundColor: [chartColors.taken, chartColors.missed],
+                hoverOffset: 6
+            }]
+        },
+        options: {
+            plugins: { legend: { position: 'bottom', labels: { color: '#333' } } },
+            responsive: true,
+            maintainAspectRatio: true 
+        }
+    });
 }
 
 /**
- * Builds all 4 patient-specific charts for the given patient.
- */
-function buildPatientCharts(username){
-  const logs = loadLogs()[username] || [];
-  const meds = loadMeds()[username] || [];
-  
-  // --- Data Processing for Charts (Last 7 Days) ---
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-  
-  const dailyData = {};
-  const today = new Date();
-  
-  // 1. Initialize data for the last 7 days (date strings in YYYY-MM-DD format)
-  for (let i = 6; i >= 0; i--) { 
-    const d = new Date(today);
-    d.setDate(today.getDate() - i);
-    const dateStr = d.toISOString().split('T')[0];
-    dailyData[dateStr] = { assigned: 0, taken: 0 };
-  }
+ * Builds all 4 patient-specific charts for the given patient.
+ */
+async function buildPatientCharts(username){ // ASYNC
+    const logs = await loadLogs(); // AWAIT
+    const meds = await loadMeds(); // AWAIT
+    
+    const patientLogs = logs[username] || [];
+    const patientMeds = meds[username] || [];
+    
+    // --- Data Processing for Charts (Last 7 Days) ---
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    
+    const dailyData = {};
+    const today = new Date();
+    
+    // 1. Initialize data for the last 7 days (date strings in YYYY-MM-DD format)
+    for (let i = 6; i >= 0; i--) { 
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        const dateStr = d.toISOString().split('T')[0];
+        dailyData[dateStr] = { assigned: 0, taken: 0 };
+    }
 
-  // Calculate assigned doses for the 7-day period
-  meds.forEach(m => {
-    for (const dateStr in dailyData) {
-      dailyData[dateStr].assigned += (m.schedule === 'both' ? 2 : 1);
-    }
-  });
+    // Calculate assigned doses for the 7-day period
+    patientMeds.forEach(m => {
+        for (const dateStr in dailyData) {
+            dailyData[dateStr].assigned += (m.schedule === 'both' ? 2 : 1);
+        }
+    });
 
-  // Filter and count taken doses for the 7-day period
-  logs.filter(l => new Date(l.ts) >= sevenDaysAgo).forEach(l => {
-    const dateStr = new Date(l.ts).toISOString().split('T')[0];
-    if (dailyData[dateStr]) {
-      dailyData[dateStr].taken++;
-    }
-  });
+    // Filter and count taken doses for the 7-day period
+    patientLogs.filter(l => new Date(l.ts) >= sevenDaysAgo).forEach(l => {
+        const dateStr = new Date(l.ts).toISOString().split('T')[0];
+        if (dailyData[dateStr]) {
+            dailyData[dateStr].taken++;
+        }
+    });
 
-  const dailyLabels = Object.keys(dailyData).map(d => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
-  const dailyTaken = Object.values(dailyData).map(d => d.taken);
-  const dailyAssigned = Object.values(dailyData).map(d => d.assigned);
-  
-  // 2. Taken vs Missed Data (Overall Adherence for the 7-day period)
-  const totalAssigned = dailyAssigned.reduce((a, b) => a + b, 0);
-  const totalTaken = dailyTaken.reduce((a, b) => a + b, 0);
-  const totalMissed = Math.max(0, totalAssigned - totalTaken); 
-  
-  // Update stats display
-  document.getElementById('pd_stats').textContent = `Taken (7d): ${totalTaken} • Missed (est): ${totalMissed} • Total Logs: ${logs.length}`;
-
-
-  // 3. Adherence by Medication (Bar Chart - Last 7 days)
-  const medAdherence = {};
-  meds.forEach(m => {
-    medAdherence[m.name] = { id: m.id, assigned: 7 * (m.schedule === 'both' ? 2 : 1), taken: 0 }; 
-  });
-
-  logs.filter(l => new Date(l.ts) >= sevenDaysAgo).forEach(l => {
-    const med = medAdherence[l.medName];
-    if(med) med.taken++;
-  });
-  
-  const medBarLabels = Object.keys(medAdherence);
-  const medBarData = medBarLabels.map(name => {
-    const m = medAdherence[name];
-    return m.assigned > 0 ? (m.taken / m.assigned * 100) : 0; 
-  });
-  
-  // 4. AM vs PM Adherence (Last 7 days)
-  let amAssigned = 0;
-  let pmAssigned = 0;
-  meds.forEach(m => {
-    if (m.schedule === 'am' || m.schedule === 'both') amAssigned += 7;
-    if (m.schedule === 'pm' || m.schedule === 'both') pmAssigned += 7;
-  });
-
-  const recentLogs = logs.filter(l => new Date(l.ts) >= sevenDaysAgo);
-
-  const amTaken = recentLogs.filter(l => l.schedule === 'am' || (l.schedule === 'both' && new Date(l.ts).getHours() < 12)).length;
-  const pmTaken = recentLogs.filter(l => l.schedule === 'pm' || (l.schedule === 'both' && new Date(l.ts).getHours() >= 12)).length;
-
-  const amAdherence = amAssigned > 0 ? amTaken / amAssigned * 100 : 0;
-  const pmAdherence = pmAssigned > 0 ? pmTaken / pmAssigned * 100 : 0;
+    const dailyLabels = Object.keys(dailyData).map(d => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+    const dailyTaken = Object.values(dailyData).map(d => d.taken);
+    const dailyAssigned = Object.values(dailyData).map(d => d.assigned);
+    
+    // 2. Taken vs Missed Data (Overall Adherence for the 7-day period)
+    const totalAssigned = dailyAssigned.reduce((a, b) => a + b, 0);
+    const totalTaken = dailyTaken.reduce((a, b) => a + b, 0);
+    const totalMissed = Math.max(0, totalAssigned - totalTaken); 
+    
+    // Update stats display
+    document.getElementById('pd_stats').textContent = `Taken (7d): ${totalTaken} • Missed (est): ${totalMissed} • Total Logs: ${patientLogs.length}`;
 
 
-  // --- Chart Drawing ---
-  
-  // 1. Patient Pie Chart (Taken vs Missed)
-  const ctxPie = document.getElementById('patientPieChart').getContext('2d');
-  if (patientPieChart) patientPieChart.destroy();
-  patientPieChart = new Chart(ctxPie, {
-    type: 'doughnut',
-    data: {
-      labels: ['Taken','Missed (est)'],
-      datasets: [{ data: [totalTaken, totalMissed], backgroundColor: [chartColors.taken, chartColors.missed] }]
-    },
-    options: { cutout: '60%', plugins: { legend: { display: false } }, responsive: true, maintainAspectRatio: true }
-  });
+    // 3. Adherence by Medication (Bar Chart - Last 7 days)
+    const medAdherence = {};
+    patientMeds.forEach(m => {
+        medAdherence[m.name] = { id: m.id, assigned: 7 * (m.schedule === 'both' ? 2 : 1), taken: 0 }; 
+    });
 
-  // 2. Patient Daily Trend Chart (Line)
-  const ctxDaily = document.getElementById('patientDailyTrendChart').getContext('2d');
-  if (patientDailyTrendChart) patientDailyTrendChart.destroy();
-  patientDailyTrendChart = new Chart(ctxDaily, {
-    type: 'line',
-    data: {
-      labels: dailyLabels,
-      datasets: [
-        { label: 'Assigned', data: dailyAssigned, borderColor: chartColors.assigned, fill: false, tension: 0.1 },
-        { label: 'Taken', data: dailyTaken, borderColor: chartColors.taken, fill: false, tension: 0.1 }
-      ]
-    },
-    options: { maintainAspectRatio: true, plugins: { legend: { labels: { color: '#666' } } }, scales: { x: { ticks: { color: '#666' } }, y: { ticks: { color: '#666' } } } }
-  });
+    patientLogs.filter(l => new Date(l.ts) >= sevenDaysAgo).forEach(l => {
+        const med = medAdherence[l.medName];
+        if(med) med.taken++;
+    });
+    
+    const medBarLabels = Object.keys(medAdherence);
+    const medBarData = medBarLabels.map(name => {
+        const m = medAdherence[name];
+        return m.assigned > 0 ? (m.taken / m.assigned * 100) : 0; 
+    });
+    
+    // 4. AM vs PM Adherence (Last 7 days)
+    let amAssigned = 0;
+    let pmAssigned = 0;
+    patientMeds.forEach(m => {
+        if (m.schedule === 'am' || m.schedule === 'both') amAssigned += 7;
+        if (m.schedule === 'pm' || m.schedule === 'both') pmAssigned += 7;
+    });
 
-  // 3. Adherence by Medication (Bar Chart)
-  const ctxMedBar = document.getElementById('patientMedBarChart').getContext('2d');
-  if (patientMedBarChart) patientMedBarChart.destroy();
-  patientMedBarChart = new Chart(ctxMedBar, {
-    type: 'bar',
-    data: {
-      labels: medBarLabels,
-      datasets: [{
-        label: 'Adherence (%)',
-        data: medBarData,
-        backgroundColor: chartColors.assigned,
-      }]
-    },
-    options: { 
-        maintainAspectRatio: true,
-        plugins: { legend: { display: false } },
-        scales: { y: { beginAtZero: true, max: 100, ticks: { color: '#666' } }, x: { ticks: { color: '#666' } } }
-    }
-  });
-  
-  // 4. AM vs PM Adherence (Bar Chart)
-  const ctxAmPm = document.getElementById('patientAmPmChart').getContext('2d');
-  if (patientAmPmChart) patientAmPmChart.destroy();
-  patientAmPmChart = new Chart(ctxAmPm, {
-    type: 'bar',
-    data: {
-      labels: ['AM', 'PM'],
-      datasets: [{
-        label: 'Adherence (%)',
-        data: [amAdherence, pmAdherence],
-        backgroundColor: [chartColors.taken, chartColors.assigned],
-      }]
-    },
-    options: { 
-        maintainAspectRatio: true,
-        plugins: { legend: { display: false } },
-        scales: { y: { beginAtZero: true, max: 100, ticks: { color: '#666' } }, x: { ticks: { color: '#666' } } }
-    }
-  });
+    const recentLogs = patientLogs.filter(l => new Date(l.ts) >= sevenDaysAgo);
 
+    const amTaken = recentLogs.filter(l => l.schedule === 'am' || (l.schedule === 'both' && new Date(l.ts).getHours() < 12)).length;
+    const pmTaken = recentLogs.filter(l => l.schedule === 'pm' || (l.schedule === 'both' && new Date(l.ts).getHours() >= 12)).length;
+
+    const amAdherence = amAssigned > 0 ? amTaken / amAssigned * 100 : 0;
+    const pmAdherence = pmAssigned > 0 ? pmTaken / pmAssigned * 100 : 0;
+
+
+    // --- Chart Drawing ---
+    
+    // 1. Patient Pie Chart (Taken vs Missed)
+    const ctxPie = document.getElementById('patientPieChart').getContext('2d');
+    if (patientPieChart) patientPieChart.destroy();
+    patientPieChart = new Chart(ctxPie, {
+        type: 'doughnut',
+        data: {
+            labels: ['Taken','Missed (est)'],
+            datasets: [{ data: [totalTaken, totalMissed], backgroundColor: [chartColors.taken, chartColors.missed] }]
+        },
+        options: { cutout: '60%', plugins: { legend: { display: false } }, responsive: true, maintainAspectRatio: true }
+    });
+
+    // 2. Patient Daily Trend Chart (Line)
+    const ctxDaily = document.getElementById('patientDailyTrendChart').getContext('2d');
+    if (patientDailyTrendChart) patientDailyTrendChart.destroy();
+    patientDailyTrendChart = new Chart(ctxDaily, {
+        type: 'line',
+        data: {
+            labels: dailyLabels,
+            datasets: [
+                { label: 'Assigned', data: dailyAssigned, borderColor: chartColors.assigned, fill: false, tension: 0.1 },
+                { label: 'Taken', data: dailyTaken, borderColor: chartColors.taken, fill: false, tension: 0.1 }
+            ]
+        },
+        options: { maintainAspectRatio: true, plugins: { legend: { labels: { color: '#666' } } }, scales: { x: { ticks: { color: '#666' } }, y: { ticks: { color: '#666' } } } }
+    });
+
+    // 3. Adherence by Medication (Bar Chart)
+    const ctxMedBar = document.getElementById('patientMedBarChart').getContext('2d');
+    if (patientMedBarChart) patientMedBarChart.destroy();
+    patientMedBarChart = new Chart(ctxMedBar, {
+        type: 'bar',
+        data: {
+            labels: medBarLabels,
+            datasets: [{
+                label: 'Adherence (%)',
+                data: medBarData,
+                backgroundColor: chartColors.assigned,
+            }]
+        },
+        options: { 
+            maintainAspectRatio: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, max: 100, ticks: { color: '#666' } }, x: { ticks: { color: '#666' } } }
+        }
+    });
+    
+    // 4. AM vs PM Adherence (Bar Chart)
+    const ctxAmPm = document.getElementById('patientAmPmChart').getContext('2d');
+    if (patientAmPmChart) patientAmPmChart.destroy();
+    patientAmPmChart = new Chart(ctxAmPm, {
+        type: 'bar',
+        data: {
+            labels: ['AM', 'PM'],
+            datasets: [{
+                label: 'Adherence (%)',
+                data: [amAdherence, pmAdherence],
+                backgroundColor: [chartColors.taken, chartColors.assigned],
+            }]
+        },
+        options: { 
+            maintainAspectRatio: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, max: 100, ticks: { color: '#666' } }, x: { ticks: { color: '#666' } } }
+        }
+    });
 }
 
 
 /* -------------------------
-    Compute overall adherence & update UI
-    ------------------------- */
-function computeOverall(){
-  const users = loadUsers();
-  const assignedPatients = users.filter(u=>u.role==='patient' && u.approved && u.assignedDoctor === current); 
-  const logs = loadLogs();
-  let overallTaken = 0, overallEvents = 0;
-  
-  assignedPatients.forEach(p=>{
-      const evs = logs[p.username] || [];
-      overallTaken += evs.filter(e=>e.type==='taken').length;
-      overallEvents += evs.length;
-  });
-  
-  // Note: 'overallEvents' counts all logs, including 'taken' events. 
-  // A better proxy for 'missed' is total assigned doses minus taken doses 
-  // from the past 7 days across all patients. For simplicity and consistency with the chart logic, 
-  // we'll use a rough proxy of all events minus taken events.
-  const overallMissed = overallEvents - overallTaken; 
-  const avgAdh = overallEvents ? Math.round((overallTaken/overallEvents)*100) : '—';
-  
-  document.getElementById('totalPatients').textContent = assignedPatients.length;
-  document.getElementById('totalEvents').textContent = overallEvents;
-  document.getElementById('totalTaken').textContent = overallTaken;
-  document.getElementById('totalMissed').textContent = overallMissed;
-  document.getElementById('avgAdherence').textContent = (avgAdh==='—'? '—' : avgAdh + '%');
-  buildOverallChart(overallTaken, overallMissed);
+    Compute overall adherence & update UI
+    ------------------------- */
+async function computeOverall(){ // ASYNC
+    const users = await loadUsers(); // AWAIT
+    const logs = await loadLogs(); // AWAIT
+
+    const assignedPatients = users.filter(u=>u.role==='patient' && u.approved && u.assignedDoctor === current); 
+    let overallTaken = 0, overallEvents = 0;
+    
+    assignedPatients.forEach(p=>{
+        const evs = logs[p.username] || [];
+        overallTaken += evs.filter(e=>e.type==='taken').length;
+        overallEvents += evs.length;
+    });
+    
+    const overallMissed = overallEvents - overallTaken; 
+    const avgAdh = overallEvents ? Math.round((overallTaken/overallEvents)*100) : '—';
+    
+    document.getElementById('totalPatients').textContent = assignedPatients.length;
+    document.getElementById('totalEvents').textContent = overallEvents;
+    document.getElementById('totalTaken').textContent = overallTaken;
+    document.getElementById('totalMissed').textContent = overallMissed;
+    document.getElementById('avgAdherence').textContent = (avgAdh==='—'? '—' : avgAdh + '%');
+    buildOverallChart(overallTaken, overallMissed);
 }
 
 /* -------------------------
-    Pending approvals
-    ------------------------- */
-function renderPending(){
-  const users = loadUsers(); 
-  const pending = users.filter(u=>u.role==='patient' && !u.approved && u.preferredDoctor === current);
-  const container = document.getElementById('pendingWrap');
-  if(pending.length===0){ container.innerHTML = '<div class="muted">No pending requests for you</div>'; return; }
-  container.innerHTML = '<table><tr><th>Username</th><th>Action</th></tr>' + pending.map(p=>{
-    return `<tr><td>${p.username}</td><td><button onclick="approve('${p.username}')">Approve & Assign</button></td></tr>`;
-  }).join('') + '</table>';
+    Pending approvals
+    ------------------------- */
+async function renderPending(){ // ASYNC
+    const users = await loadUsers(); // AWAIT
+    const pending = users.filter(u=>u.role==='patient' && !u.approved && u.preferredDoctor === current);
+    const container = document.getElementById('pendingWrap');
+    if(pending.length===0){ container.innerHTML = '<div class="muted">No pending requests for you</div>'; return; }
+    container.innerHTML = '<table><tr><th>Username</th><th>Action</th></tr>' + pending.map(p=>{
+        return `<tr><td>${p.username}</td><td><button onclick="approve('${p.username}')">Approve & Assign</button></td></tr>`;
+    }).join('') + '</table>';
 }
-function approve(username){
-  const users = loadUsers(); const u = users.find(x=>x.username===username);
-  if(!u) return alert('User missing');
-  u.approved = true; u.assignedDoctor = current; 
-  
-  users.forEach(doc=>{
-      if(doc.role==='doctor' && Array.isArray(doc.pendingPatients)){
-          doc.pendingPatients = doc.pendingPatients.filter(p=>p !== username);
-      }
-  });
 
-  saveUsers(users);
-  const meds = loadMeds(); if(!meds[username]) meds[username]=[]; saveMeds(meds);
-  renderPending(); refreshUI();
+async function approve(username){ // ASYNC
+    const users = await loadUsers(); const u = users.find(x=>x.username===username); // AWAIT
+    if(!u) return alert('User missing');
+    u.approved = true; u.assignedDoctor = current; 
+    
+    // Update doctor's pending list (if stored, though not explicitly used here)
+    users.forEach(doc=>{
+        if(doc.role==='doctor' && Array.isArray(doc.pendingPatients)){
+            doc.pendingPatients = doc.pendingPatients.filter(p=>p !== username);
+        }
+    });
+
+    await saveUsers(users); // AWAIT
+    
+    const meds = await loadMeds(); // AWAIT
+    if(!meds[username]) meds[username]=[]; 
+    await saveMeds(meds); // AWAIT
+    
+    await renderPending(); await refreshUI(); // AWAIT calls
 }
 
 /* -------------------------
-    Patient selector + Patient details panel
-    ------------------------- */
-function getPatientAdherence(username){
-  const logs = loadLogs(); 
-  const arr = logs[username] || [];
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-  const recentLogs = arr.filter(e => new Date(e.ts) >= sevenDaysAgo);
-  
-  const taken = recentLogs.filter(e=>e.type==='taken').length;
-  const meds = loadMeds()[username] || [];
-  let assignedDoses = 0;
-  meds.forEach(m => {
-    assignedDoses += 7 * (m.schedule === 'both' ? 2 : 1);
-  });
-  
-  const missed = Math.max(0, assignedDoses - taken);
-  
-  return { taken, missed, totalEvents: arr.length };
+    Patient selector + Patient details panel
+    ------------------------- */
+async function getPatientAdherence(username){ // ASYNC
+    const logs = await loadLogs(); // AWAIT
+    const meds = await loadMeds(); // AWAIT
+
+    const arr = logs[username] || [];
+    const patientMeds = meds[username] || [];
+    
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const recentLogs = arr.filter(e => new Date(e.ts) >= sevenDaysAgo);
+    
+    const taken = recentLogs.filter(e=>e.type==='taken').length;
+    
+    let assignedDoses = 0;
+    patientMeds.forEach(m => {
+        assignedDoses += 7 * (m.schedule === 'both' ? 2 : 1);
+    });
+    
+    const missed = Math.max(0, assignedDoses - taken);
+    
+    return { taken, missed, totalEvents: arr.length };
 }
 
-function populatePatientSelector(){
-  const sel = document.getElementById('patientSelector'); sel.innerHTML = '<option value="">-- select patient --</option>';
-  loadUsers().filter(u=>u.role==='patient' && u.approved && u.assignedDoctor === current).forEach(p=>{
-    const opt = document.createElement('option'); opt.value = p.username; opt.textContent = p.username; sel.appendChild(opt);
-  });
-}
-function fillDoctorPatientSelect(){
-  const sel = document.getElementById('selectPatient'); sel.innerHTML = '<option value="">-- select patient --</option>';
-  loadUsers().filter(u=>u.role==='patient' && u.approved && u.assignedDoctor === current).forEach(p=>{
-    const opt = document.createElement('option'); opt.value = p.username; opt.textContent = p.username; sel.appendChild(opt);
-  });
+async function populatePatientSelector(){ // ASYNC
+    const users = await loadUsers(); // AWAIT
+    const sel = document.getElementById('patientSelector'); 
+    sel.innerHTML = '<option value="">-- select patient --</option>';
+    users.filter(u=>u.role==='patient' && u.approved && u.assignedDoctor === current).forEach(p=>{
+        const opt = document.createElement('option'); opt.value = p.username; opt.textContent = p.username; sel.appendChild(opt);
+    });
 }
 
-document.getElementById('viewPatient').addEventListener('click', ()=>{
-  const username = document.getElementById('patientSelector').value;
-  if(!username) return alert('Choose a patient');
-  openPatientPanel(username);
+async function fillDoctorPatientSelect(){ // ASYNC
+    const users = await loadUsers(); // AWAIT
+    const sel = document.getElementById('selectPatient'); 
+    sel.innerHTML = '<option value="">-- select patient --</option>';
+    users.filter(u=>u.role==='patient' && u.approved && u.assignedDoctor === current).forEach(p=>{
+        const opt = document.createElement('option'); opt.value = p.username; opt.textContent = p.username; sel.appendChild(opt);
+    });
+}
+
+async function populateChatPatientSelector(){
+    const users = await loadUsers();
+    const sel = document.getElementById('chatPatientSelector');
+    if(!sel) return;
+    sel.innerHTML = '<option value="">-- select patient --</option>';
+    users.filter(u=>u.role==='patient' && u.approved && u.assignedDoctor === current).forEach(p=>{
+        const opt = document.createElement('option'); opt.value = p.username; opt.textContent = p.username; sel.appendChild(opt);
+    });
+}
+
+document.getElementById('viewPatient').addEventListener('click', async ()=>{ // ASYNC
+    const username = document.getElementById('patientSelector').value;
+    if(!username) return alert('Choose a patient');
+    await openPatientPanel(username); // AWAIT
 });
+
 document.getElementById('closePatient').addEventListener('click', ()=>{ 
-    document.getElementById('patientPanel').classList.add('hidden'); 
+    document.getElementById('patientPanel').classList.add('hidden'); 
 });
 
-function openPatientPanel(username){
-  const users = loadUsers(); 
-  const patient = users.find(u=>u.username===username && u.role==='patient');
-  if(!patient) return alert('Patient not found');
-  document.getElementById('patientPanel').classList.remove('hidden');
-  document.getElementById('pd_name').textContent = patient.username;
-  document.getElementById('pd_assigned').textContent = 'Assigned doctor: ' + (patient.assignedDoctor||'—');
-  
-  renderPatientMeds(username);
-  renderPatientEvents(username);
-  
-  buildPatientCharts(username);
+async function openPatientPanel(username){ // ASYNC
+    const users = await loadUsers(); // AWAIT
+    const patient = users.find(u=>u.username===username && u.role==='patient');
+    if(!patient) return alert('Patient not found');
+    document.getElementById('patientPanel').classList.remove('hidden');
+    document.getElementById('pd_name').textContent = patient.username;
+    document.getElementById('pd_assigned').textContent = 'Assigned doctor: ' + (patient.assignedDoctor||'—');
+    
+    await renderPatientMeds(username); // AWAIT
+    await renderPatientEvents(username); // AWAIT
+    
+    await buildPatientCharts(username); // AWAIT
+    // Auto-select patient in chat selector
+    try{
+        const chatSel = document.getElementById('chatPatientSelector');
+        if (chatSel) chatSel.value = username;
+
+        // If Chat tab is active, open chat for this patient automatically
+        const chatTab = document.getElementById('docTabChat');
+        if (chatTab && chatTab.classList.contains('ghost')) {
+            document.getElementById('doctorChat').classList.remove('hidden');
+            await renderDoctorChat(username);
+            setLastSeenForPatient(username); // mark as read
+            startDoctorChatPolling(username);
+        }
+        // update unread badge after selection
+        updateUnreadBadge();
+    }catch(e){ console.error('Auto-select chat error', e); }
 }
 
 /* export patient CSV */
-document.getElementById('exportPatientCSV').addEventListener('click', ()=>{
-  const username = document.getElementById('pd_name').textContent;
-  if(!username || username==='—') return alert('Open a patient first');
-  const logs = loadLogs(); const arr = logs[username] || [];
-  let csv = 'time,patient,event,medName,note\n';
-  arr.forEach(e=>{
-    csv += `"${e.ts}","${username}","${e.type}","${e.medName||''}","${(e.note||'').replace(/"/g,'""')}"\n`;
-  });
-  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'}); const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = `${username}_adherence.csv`; a.click(); a.remove();
+document.getElementById('exportPatientCSV').addEventListener('click', async ()=>{ // ASYNC
+    const username = document.getElementById('pd_name').textContent;
+    if(!username || username==='—') return alert('Open a patient first');
+    const logs = await loadLogs(); const arr = logs[username] || []; // AWAIT
+    let csv = 'time,patient,event,medName,note\n';
+    arr.forEach(e=>{
+        csv += `"${e.ts}","${username}","${e.type}","${e.medName||''}","${(e.note||'').replace(/"/g,'""')}"\n`;
+    });
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'}); const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = `${username}_adherence.csv`; a.click(); a.remove();
 });
 
 /* -------------------------
-    Render patient meds and events
-    ------------------------- */
-function renderPatientMeds(username){
-  const meds = loadMeds(); const list = meds[username] || [];
-  const wrap = document.getElementById('pd_meds'); if(list.length===0){ wrap.innerHTML = '<div class="muted">No medications assigned</div>'; return;}
-  let html = '<table><tr><th>Med</th><th>Dosage</th><th>Schedule</th><th>Instr</th></tr>';
-  list.forEach(m => { html += `<tr><td>${m.name}</td><td>${m.dosage||''}</td><td>${m.schedule||''}</td><td>${m.instructions||''}</td></tr>`; });
-  html += '</table>'; wrap.innerHTML = html;
+    Render patient meds and events
+    ------------------------- */
+async function renderPatientMeds(username){ // ASYNC
+    const meds = await loadMeds(); // AWAIT
+    const list = meds[username] || [];
+    const wrap = document.getElementById('pd_meds'); 
+    if(list.length===0){ wrap.innerHTML = '<div class="muted">No medications assigned</div>'; return;}
+    let html = '<table><tr><th>Med</th><th>Dosage</th><th>Schedule</th><th>Instr</th></tr>';
+    list.forEach(m => { html += `<tr><td>${m.name}</td><td>${m.dosage||''}</td><td>${m.schedule||''}</td><td>${m.instructions||''}</td></tr>`; });
+    html += '</table>'; wrap.innerHTML = html;
 }
 
-function renderPatientEvents(username){
-  const logs = loadLogs(); const arr = logs[username] || [];
-  const wrap = document.getElementById('pd_events');
-  if(arr.length===0) { wrap.innerHTML = '<div class="muted">No events</div>'; return; }
-  let html = '<table><tr><th>Time</th><th>Med</th><th>Type</th><th>Note</th></tr>';
-  arr.slice().reverse().forEach(e => {
-    html += `<tr><td>${new Date(e.ts).toLocaleString()}</td><td>${e.medName||e.medId||'—'}</td><td>${e.type}</td><td>${e.note||''}</td></tr>`;
-  });
-  html += '</table>'; wrap.innerHTML = html;
+async function renderPatientEvents(username){ // ASYNC
+    const logs = await loadLogs(); // AWAIT
+    const arr = logs[username] || [];
+    const wrap = document.getElementById('pd_events');
+    if(arr.length===0) { wrap.innerHTML = '<div class="muted">No events</div>'; return; }
+    let html = '<table><tr><th>Time</th><th>Med</th><th>Type</th><th>Note</th></tr>';
+    arr.slice().reverse().forEach(e => {
+        html += `<tr><td>${new Date(e.ts).toLocaleString()}</td><td>${e.medName||e.medId||'—'}</td><td>${e.type}</td><td>${e.note||''}</td></tr>`;
+    });
+    html += '</table>'; wrap.innerHTML = html;
 }
 
 /* -------------------------
-    Add medication (doctor)
-    ------------------------- */
-document.getElementById('d_addMedBtn').addEventListener('click', ()=>{
-  const patient = document.getElementById('selectPatient').value;
-  const name = document.getElementById('d_medName').value.trim();
-  const type = document.getElementById('d_medType').value;
-  const dosage = document.getElementById('d_medDose').value.trim();
-  const schedule = document.getElementById('d_medSchedule').value;
-  const instr = document.getElementById('d_medInstr').value.trim();
-  if(!patient){ alert('Select patient'); return; }
-  if(!name){ alert('Enter medication name'); return; }
-  const meds = loadMeds(); if(!meds[patient]) meds[patient]=[];
-  const entry = { id: 'med-'+uid(), name, type, dosage, schedule, instructions: instr, addedBy: 'doctor:' + current, createdAt: new Date().toISOString() };
-  meds[patient].push(entry); saveMeds(meds);
-  
-  if (document.getElementById('pd_name').textContent === patient) {
-      renderPatientMeds(patient); 
-      buildPatientCharts(patient); 
-  }
-  renderMedManagement(); 
-  renderSummary(); 
-  alert('Medication added for ' + patient);
+    Add medication (doctor)
+    ------------------------- */
+document.getElementById('d_addMedBtn').addEventListener('click', async ()=>{ // ASYNC
+    const patient = document.getElementById('selectPatient').value;
+    const name = document.getElementById('d_medName').value.trim();
+    const type = document.getElementById('d_medType').value;
+    const dosage = document.getElementById('d_medDose').value.trim();
+    const schedule = document.getElementById('d_medSchedule').value;
+    const instr = document.getElementById('d_medInstr').value.trim();
+    if(!patient){ alert('Select patient'); return; }
+    if(!name){ alert('Enter medication name'); return; }
+    
+    const meds = await loadMeds(); // AWAIT
+    if(!meds[patient]) meds[patient]=[];
+    
+    const entry = { id: 'med-'+uid(), name, type, dosage, schedule, instructions: instr, addedBy: 'doctor:' + current, createdAt: new Date().toISOString() };
+    meds[patient].push(entry); 
+    await saveMeds(meds); // AWAIT
+    
+    if (document.getElementById('pd_name').textContent === patient) {
+        await renderPatientMeds(patient); // AWAIT
+        await buildPatientCharts(patient); // AWAIT
+    }
+    await renderMedManagement(); // AWAIT
+    await renderSummary(); // AWAIT
+    alert('Medication added for ' + patient);
 });
 
 /* -------------------------
-    Patient summary / med management / logs (reuse earlier functions)
-    ------------------------- */
-function renderSummary(){
-  const users = loadUsers(); 
-  const patients = users.filter(u=>u.role==='patient' && u.approved && u.assignedDoctor === current); 
-  const meds = loadMeds(); 
-  const html = '<table><tr><th>Patient</th><th>Meds</th><th>Events</th><th>Adherence % (7d est)</th></tr>' + patients.map(p=>{
-    const pMeds = meds[p.username] || [];
-    const { taken, missed } = getPatientAdherence(p.username); 
-    const evs = loadLogs()[p.username] || [];
-    const denom = taken+missed;
-    const pct = denom ? Math.round((taken/denom)*100) : '—';
-    return `<tr><td>${p.username}</td><td>${pMeds.length}</td><td>${evs.length}</td><td>${pct}</td></tr>`;
-  }).join('') + '</table>';
-  document.getElementById('patientSummary').innerHTML = html;
+    Patient summary / med management / logs (reuse earlier functions)
+    ------------------------- */
+async function renderSummary(){ // ASYNC
+    const users = await loadUsers(); // AWAIT
+    const meds = await loadMeds(); // AWAIT
+
+    const patients = users.filter(u=>u.role==='patient' && u.approved && u.assignedDoctor === current); 
+    
+    // 🔑 FIX: 
+    // 1. Create a variable (patientRows) to hold the array of strings.
+    // 2. AWAIT the result of Promise.all(map) to get the array.
+    const patientRows = await Promise.all(patients.map(async p => {
+        const pMeds = meds[p.username] || [];
+        const { taken, missed } = await getPatientAdherence(p.username); // AWAIT
+        
+        // Ensure you await loadLogs here as well
+        const evs = await loadLogs(); 
+        const pLogs = evs[p.username] || [];
+
+        const denom = taken+missed;
+        const pct = denom ? Math.round((taken/denom)*100) : '—';
+        return `<tr><td>${p.username}</td><td>${pMeds.length}</td><td>${pLogs.length}</td><td>${pct}</td></tr>`;
+    }));
+    
+    // 3. Now, call .join('') on the awaited array (patientRows)
+    const html = '<table><tr><th>Patient</th><th>Meds</th><th>Events</th><th>Adherence % (7d est)</th></tr>' + 
+                 patientRows.join('') + 
+                 '</table>';
+                 
+    document.getElementById('patientSummary').innerHTML = html;
+}
+async function renderMedManagement(){ // ASYNC
+    const meds = await loadMeds(); // AWAIT
+    const users = await loadUsers(); // AWAIT
+
+    const approvedPatients = users.filter(u=>u.role==='patient' && u.approved && u.assignedDoctor === current);
+    const wrap = document.getElementById('medManagement');
+    if(approvedPatients.length===0){ wrap.innerHTML = '<div class="muted">No approved patients assigned to you</div>'; return; }
+    let html = '';
+    approvedPatients.forEach(p=>{
+        html += `<h4 style="margin-bottom:6px">${p.username}</h4>`;
+        const list = meds[p.username] || [];
+        if(list.length===0){ html += '<div class="muted">No meds</div>'; }
+        else{
+            html += '<table><tr><th>Med</th><th>Schedule</th><th>Instr</th><th>AddedBy</th><th>Actions</th></tr>';
+            list.forEach(m=>{
+                html += `<tr><td>${m.name} ${m.dosage?('— '+m.dosage):''}</td><td>${m.schedule}</td><td>${m.instructions||''}</td><td>${m.addedBy||''}</td><td>
+                         <button onclick="editMed('${p.username}','${m.id}')">Edit</button>
+                         <button onclick="deleteMedDoctor('${p.username}','${m.id}')" style="margin-left:6px" class="ghost">Delete</button>
+                         </td></tr>`;
+            });
+            html += '</table>';
+        }
+    });
+    wrap.innerHTML = html;
 }
 
-function renderMedManagement(){
-  const meds = loadMeds();
-  const users = loadUsers().filter(u=>u.role==='patient' && u.approved && u.assignedDoctor === current);
-  const wrap = document.getElementById('medManagement');
-  if(users.length===0){ wrap.innerHTML = '<div class="muted">No approved patients assigned to you</div>'; return; }
-  let html = '';
-  users.forEach(p=>{
-    html += `<h4 style="margin-bottom:6px">${p.username}</h4>`;
-    const list = meds[p.username] || [];
-    if(list.length===0){ html += '<div class="muted">No meds</div>'; }
-    else{
-      html += '<table><tr><th>Med</th><th>Schedule</th><th>Instr</th><th>AddedBy</th><th>Actions</th></tr>';
-      list.forEach(m=>{
-        html += `<tr><td>${m.name} ${m.dosage?('— '+m.dosage):''}</td><td>${m.schedule}</td><td>${m.instructions||''}</td><td>${m.addedBy||''}</td><td>
-                  <button onclick="editMed('${p.username}','${m.id}')">Edit</button>
-                  <button onclick="deleteMedDoctor('${p.username}','${m.id}')" style="margin-left:6px" class="ghost">Delete</button>
-                  </td></tr>`;
-      });
-      html += '</table>';
-    }
-  });
-  wrap.innerHTML = html;
-}
-function editMed(patientUser, medId){
-  const meds = loadMeds(); const list = meds[patientUser] || []; const m = list.find(x=>x.id===medId);
-  if(!m) return alert('Missing med');
-  const name = prompt('Medication name', m.name); if(name===null) return;
-  const dosage = prompt('Dosage', m.dosage||''); if(dosage===null) return;
-  const schedule = prompt('Schedule (am/pm/both/custom)', m.schedule||''); if(schedule===null) return;
-  const instr = prompt('Instructions', m.instructions||''); if(instr===null) return;
-  m.name = name; m.dosage = dosage; m.schedule = schedule; m.instructions = instr;
-  saveMeds(meds); renderMedManagement(); renderSummary();
-  if (document.getElementById('pd_name').textContent === patientUser) {
-      renderPatientMeds(patientUser); 
-      buildPatientCharts(patientUser);
-  }
-}
-function deleteMedDoctor(patientUser, medId){
-  if(!confirm('Delete medication?')) return;
-  const meds = loadMeds(); meds[patientUser] = (meds[patientUser]||[]).filter(m=>m.id!==medId); saveMeds(meds);
-  renderMedManagement(); renderSummary();
-  if (document.getElementById('pd_name').textContent === patientUser) {
-      renderPatientMeds(patientUser); 
-      buildPatientCharts(patientUser);
-  }
+async function editMed(patientUser, medId){ // ASYNC
+    const meds = await loadMeds(); const list = meds[patientUser] || []; const m = list.find(x=>x.id===medId); // AWAIT
+    if(!m) return alert('Missing med');
+    const name = prompt('Medication name', m.name); if(name===null) return;
+    const dosage = prompt('Dosage', m.dosage||''); if(dosage===null) return;
+    const schedule = prompt('Schedule (am/pm/both/custom)', m.schedule||''); if(schedule===null) return;
+    const instr = prompt('Instructions', m.instructions||''); if(instr===null) return;
+    m.name = name; m.dosage = dosage; m.schedule = schedule; m.instructions = instr;
+    await saveMeds(meds); // AWAIT
+    await renderMedManagement(); await renderSummary(); // AWAIT
+    if (document.getElementById('pd_name').textContent === patientUser) {
+        await renderPatientMeds(patientUser); // AWAIT
+        await buildPatientCharts(patientUser); // AWAIT
+    }
 }
 
-/* -------------------------
-    Logs rendering (global)
-    ------------------------- */
-function renderLogs(){
-  const logs = loadLogs(); 
-  const assignedPatients = loadUsers().filter(u => u.role === 'patient' && u.approved && u.assignedDoctor === current).map(u => u.username);
-  const wrap = document.getElementById('logs');
-  
-  if(assignedPatients.length === 0){ wrap.innerHTML = '<div class="muted">No logs from your assigned patients yet</div>'; return; }
-  
-  let allEvents = [];
-
-  assignedPatients.forEach(k => {
-      const arr = logs[k] || [];
-      allEvents.push(...arr.map(e => ({ ...e, patient: k })));
-  });
-  
-  if (allEvents.length === 0) {
-      wrap.innerHTML = '<div class="muted">No events from your assigned patients yet</div>';
-      return;
-  }
-
-  allEvents.sort((a, b) => new Date(b.ts) - new Date(a.ts));
-  
-  let html = '<table><tr><th>Time</th><th>Patient</th><th>Med</th><th>Type</th><th>Note</th></tr>';
-  allEvents.forEach(e => {
-      html += `<tr><td>${new Date(e.ts).toLocaleString()}</td><td>${e.patient}</td><td>${e.medName||e.medId}</td><td>${e.type}</td><td>${e.note||''}</td></tr>`;
-  });
-  html += '</table>';
-  wrap.innerHTML = html;
+async function deleteMedDoctor(patientUser, medId){ // ASYNC
+    if(!confirm('Delete medication?')) return;
+    const meds = await loadMeds(); // AWAIT
+    meds[patientUser] = (meds[patientUser]||[]).filter(m=>m.id!==medId); 
+    await saveMeds(meds); // AWAIT
+    await renderMedManagement(); await renderSummary(); // AWAIT
+    if (document.getElementById('pd_name').textContent === patientUser) {
+        await renderPatientMeds(patientUser); // AWAIT
+        await buildPatientCharts(patientUser); // AWAIT
+    }
 }
 
 /* -------------------------
-    Resizable Panel Logic
-    ------------------------- */
+    Logs rendering (global)
+    ------------------------- */
+async function renderLogs(){ // ASYNC
+    const logs = await loadLogs(); // AWAIT
+    const users = await loadUsers(); // AWAIT
+    
+    const assignedPatients = users.filter(u => u.role === 'patient' && u.approved && u.assignedDoctor === current).map(u => u.username);
+    const wrap = document.getElementById('logs');
+    
+    if(assignedPatients.length === 0){ wrap.innerHTML = '<div class="muted">No logs from your assigned patients yet</div>'; return; }
+    
+    let allEvents = [];
+
+    assignedPatients.forEach(k => {
+        const arr = logs[k] || [];
+        allEvents.push(...arr.map(e => ({ ...e, patient: k })));
+    });
+    
+    if (allEvents.length === 0) {
+        wrap.innerHTML = '<div class="muted">No events from your assigned patients yet</div>';
+        return;
+    }
+
+    allEvents.sort((a, b) => new Date(b.ts) - new Date(a.ts));
+    
+    let html = '<table><tr><th>Time</th><th>Patient</th><th>Med</th><th>Type</th><th>Note</th></tr>';
+    allEvents.forEach(e => {
+        html += `<tr><td>${new Date(e.ts).toLocaleString()}</td><td>${e.patient}</td><td>${e.medName||e.medId}</td><td>${e.type}</td><td>${e.note||''}</td></tr>`;
+    });
+    html += '</table>';
+    wrap.innerHTML = html;
+}
+
+/* -------------------------
+    Resizable Panel Logic
+    ------------------------- */
 function setupResizablePatientPanel() {
-    const grid = document.querySelector('.pd-grid');
-    const splitter = document.getElementById('pd-splitter');
-    let isDragging = false;
+    // Logic remains synchronous as it only handles DOM interaction, not data loading.
+    const grid = document.querySelector('.pd-grid');
+    const splitter = document.getElementById('pd-splitter');
+    let isDragging = false;
 
-    if (!grid || !splitter) return;
+    if (!grid || !splitter) return;
 
-    // 1. Mouse Down (Start Drag)
-    splitter.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        document.body.style.cursor = 'col-resize';
-        grid.style.pointerEvents = 'none'; 
-        e.preventDefault(); 
-    });
+    // 1. Mouse Down (Start Drag)
+    splitter.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        document.body.style.cursor = 'col-resize';
+        grid.style.pointerEvents = 'none'; 
+        e.preventDefault(); 
+    });
 
-    // 2. Mouse Move (Dragging)
-    document.addEventListener('mousemove', (e) => {
-        if (!isDragging) return;
+    // 2. Mouse Move (Dragging)
+    document.addEventListener('mousemove', async (e) => { // ASYNC needed here for chart redraw
+        if (!isDragging) return;
 
-        const gridRect = grid.getBoundingClientRect();
-        let newCol1Width = (e.clientX - gridRect.left) / gridRect.width * 100;
+        const gridRect = grid.getBoundingClientRect();
+        let newCol1Width = (e.clientX - gridRect.left) / gridRect.width * 100;
 
-        // Set limits (min 20% / max 80%)
-        newCol1Width = Math.max(20, Math.min(80, newCol1Width));
-        
-        const newCol2Width = 100 - newCol1Width;
+        // Set limits (min 20% / max 80%)
+        newCol1Width = Math.max(20, Math.min(80, newCol1Width));
+        
+        const newCol2Width = 100 - newCol1Width;
 
-        // Apply new widths using CSS variables
-        grid.style.setProperty('--pd-col-1-width', `${newCol1Width}%`);
-        grid.style.setProperty('--pd-col-2-width', `${newCol2Width}%`);
-        
-        // Crucial for Chart.js to redraw
-        const openPatient = document.getElementById('pd_name').textContent;
-        if (openPatient && openPatient !== '—') {
-            buildPatientCharts(openPatient);
-        }
-    });
+        // Apply new widths using CSS variables
+        grid.style.setProperty('--pd-col-1-width', `${newCol1Width}%`);
+        grid.style.setProperty('--pd-col-2-width', `${newCol2Width}%`);
+        
+        // Crucial for Chart.js to redraw
+        const openPatient = document.getElementById('pd_name').textContent;
+        if (openPatient && openPatient !== '—') {
+            await buildPatientCharts(openPatient); // AWAIT
+        }
+    });
 
-    // 3. Mouse Up (End Drag)
-    document.addEventListener('mouseup', () => {
-        if (isDragging) {
-            isDragging = false;
-            document.body.style.cursor = 'default';
-            grid.style.pointerEvents = 'auto';
-        }
-    });
+    // 3. Mouse Up (End Drag)
+    document.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            document.body.style.cursor = 'default';
+            grid.style.pointerEvents = 'auto';
+        }
+    });
 }
 
 
 /* -------------------------
-    Initialization / Event Handlers
-    ------------------------- */
-function refreshUI(){
-  computeOverall();
-  renderPending();
-  populatePatientSelector();
-  fillDoctorPatientSelect();
-  renderSummary();
-  renderMedManagement();
-  renderLogs();
-  setupResizablePatientPanel();
+    Initialization / Event Handlers
+    ------------------------- */
+async function refreshUI(){ // ASYNC
+    await computeOverall();
+    await renderPending();
+    await populatePatientSelector();
+    await fillDoctorPatientSelect();
+    await populateChatPatientSelector();
+    await renderSummary();
+    await renderMedManagement();
+    await renderLogs();
+    setupResizablePatientPanel();
+    // start unread badge polling
+    startUnreadPolling();
 }
 
 document.getElementById('refresh').addEventListener('click', refreshUI);
-document.getElementById('logout').addEventListener('click', ()=>{
-  localStorage.removeItem('currentUser'); localStorage.removeItem('currentRole'); window.location.href='doctor-login.html';
+
+document.getElementById('logout').addEventListener('click', async ()=>{ // ASYNC
+    await window.Storage.removeItem('currentUser'); // AWAIT
+    await window.Storage.removeItem('currentRole'); // AWAIT
+    window.location.href='doctor-login.html';
 });
-// Final initialization call
-refreshUI();
 
-// ----------------------------------------------------
-//Auto-select and open patient1 for demonstration
-document.getElementById('patientSelector').value = 'patient1';
-openPatientPanel('patient1');
-// ----------------------------------------------------
+// Tab switching for Overview / Chat
+document.getElementById('docTabOverview').addEventListener('click', ()=>{
+    document.querySelectorAll('.wrap > .card').forEach(c => c.classList.remove('hidden'));
+    document.getElementById('docTabOverview').classList.add('ghost');
+    document.getElementById('docTabChat').classList.remove('ghost');
+    stopDoctorChatPolling();
+});
+document.getElementById('docTabChat').addEventListener('click', ()=>{
+    document.querySelectorAll('.wrap > .card').forEach(c => c.classList.add('hidden'));
+    const chatCard = document.getElementById('doctorChatCard'); if(chatCard) chatCard.classList.remove('hidden');
+    document.getElementById('docTabChat').classList.add('ghost');
+    document.getElementById('docTabOverview').classList.remove('ghost');
+});
 
-// --- Fix for missing setupResizablePatientPanel logic ---
-setupResizablePatientPanel();
+// Chat UI event wiring
+document.getElementById('openChat').addEventListener('click', async ()=>{
+    try{
+        const sel = document.getElementById('chatPatientSelector'); if(!sel) return; const patient = sel.value; if(!patient) return alert('Select a patient');
+        document.getElementById('doctorChat').classList.remove('hidden');
+        await renderDoctorChat(patient);
+        await setLastSeenForPatient(patient);
+        await updateUnreadBadge();
+        startDoctorChatPolling(patient);
+    }catch(err){ console.error('Open chat error', err); alert('Failed to open chat (see console)'); }
+});
+document.getElementById('doctorChatSend').addEventListener('click', async ()=>{
+    try{
+        const sel = document.getElementById('chatPatientSelector'); if(!sel) return; const patient = sel.value; if(!patient) return alert('Select a patient');
+        const input = document.getElementById('doctorChatInput'); if(!input) return; const txt = input.value; input.value=''; await sendDoctorChat(patient, txt);
+    }catch(err){ console.error('Send chat error', err); alert('Failed to send message (see console)'); }
+});
+document.getElementById('doctorChatInput').addEventListener('keydown', async (e)=>{ if(e.key==='Enter'){ e.preventDefault(); document.getElementById('doctorChatSend').click(); } });
+document.getElementById('clearChatDoc').addEventListener('click', async ()=>{
+    const sel = document.getElementById('chatPatientSelector'); if(!sel) return; const patient = sel.value; if(!patient) return alert('Select a patient');
+    if(confirm('Clear chat history for ' + patient + '?')){ await clearDoctorChat(patient); }
+});
 
+// Final initialization call (Starts the entire process)
+document.addEventListener("DOMContentLoaded", checkAuthAndInit);
+</script>
+
+<script>
+    // Moved the auto-select logic into a new function to ensure it runs after 
+    // the main initialization. This is a robust way to ensure the elements are ready.
+    async function postInitAutoDisplay() {
+        // Wait for the full UI refresh to complete
+        await new Promise(resolve => setTimeout(resolve, 100)); // Small delay for rendering
+
+        // ----------------------------------------------------
+        // Auto-select and open patient1 for demonstration
+        // ----------------------------------------------------
+        const selector = document.getElementById('patientSelector');
+        if (selector) {
+            selector.value = 'patient1';
+        }
+        
+        // This function must be awaited since it loads and displays data
+        await openPatientPanel('patient1');
+        
+        console.log("Auto-display of patient1 completed.");
+    }
+
+    // Replace the final block from the previous response with this structure:
+    document.addEventListener("DOMContentLoaded", async () => {
+        await checkAuthAndInit(); // This runs seedDemo() and refreshUI()
+        if (current && role === 'doctor') {
+            await postInitAutoDisplay();
+        }
+    });
 </script>
 </body>
 </html>
