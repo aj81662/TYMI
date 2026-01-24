@@ -13,4 +13,10 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_KEY, {
   },
 });
 
+// Expose for quick dev inspection in the browser console only
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  // @ts-ignore - attach for debugging only
+  (window as any).supabase = supabase;
+}
+
 export default supabase;
