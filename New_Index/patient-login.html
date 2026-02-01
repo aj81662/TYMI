@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Patient Login</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Glacial+Indifference&family=Hanken+Grotesk:wght@300;400&display=swap" rel="stylesheet"/>
+
+<style>
+/* ===== inlined: src/index.css (partial copy to match merged.html styles) ===== */
+/* Minimal subset of the merged CSS to preserve layout and colors */
+:root{--color-blue-600:#2563eb;--color-blue-500:#3b82f6;--color-gray-900:#111827;--color-gray-600:#4b5563;--color-gray-400:#9ca3af;--color-white:#fff;--radius:.625rem;--spacing:.25rem;--container-7xl:80rem}
+html{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;}
+body{margin:0;background:var(--color-white);color:var(--color-gray-900);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.max-w-7xl{max-width:var(--container-7xl);margin-inline:auto;padding-inline:1rem}
+.px-4{padding-inline:1rem}.sm\:px-6{padding-inline:1.5rem}.lg\:px-8{padding-inline:2rem}
+.py-16{padding-block:4rem}.py-20{padding-block:5rem}
+.text-2xl{font-size:1.5rem}.text-3xl{font-size:1.875rem}.text-4xl{font-size:2.25rem}.text-5xl{font-size:3rem}
+.font-bold{font-weight:700}.font-semibold{font-weight:600}
+.text-gray-600{color:var(--color-gray-600)}.text-gray-400{color:var(--color-gray-400)}
+.text-blue-600{color:var(--color-blue-600)}.bg-blue-600{background:var(--color-blue-600)}.bg-blue-500{background:var(--color-blue-500)}
+.rounded-full{border-radius:9999px}.rounded-2xl{border-radius:1rem}
+.bg-white{background:var(--color-white)}.border{border:1px solid #e5e7eb}
+.shadow-sm{box-shadow:0 1px 2px rgba(0,0,0,.05)}.shadow-lg{box-shadow:0 10px 15px rgba(0,0,0,.08)}
+.hidden{display:none}.md\:flex{display:flex}.md\:hidden{display:none}
+.flex{display:flex}.items-center{align-items:center}.justify-between{justify-content:space-between}
+.h-16{height:4rem}.w-full{width:100%}
+.text-center{text-align:center}.mx-auto{margin-left:auto;margin-right:auto}
+.px-6{padding-inline:1.5rem}.py-3{padding-block:.75rem}
+.container{max-width:var(--container-7xl);margin:0 auto;padding:0 1rem}
+nav.site-nav{position:fixed;inset-inline:0;top:0;background:var(--color-white);box-shadow:0 1px 2px rgba(0,0,0,.04);z-index:50}
+.nav-row{display:flex;align-items:center;justify-content:space-between;height:64px;max-width:1200px;margin:0 auto;padding:0 16px}
+.logo{font-weight:700;color:var(--color-blue-600);font-size:1.25rem}
+.nav-links{display:flex;gap:20px;align-items:center}
+.nav-links a{color:var(--color-gray-600);text-decoration:none}
+.auth a{padding:8px 16px;border-radius:9999px;text-decoration:none}
+.auth .primary{background:var(--color-blue-600);color:var(--color-white)}
+.hero{padding-top:120px;padding-bottom:80px;background:linear-gradient(180deg,#f8fafc 0,#eef2ff 100%);text-align:center}
+.card{max-width:700px;margin:0 auto;background:var(--color-white);padding:32px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.06)}
+footer.site-footer{background:#0f172a;color:#cbd5e1;padding:48px 16px}
+.site-footer a{color:inherit;text-decoration:none}
+
+</style>
+<style>
+/* Exact nav appearance overrides to match merged.html / doctor-login */
+nav.fixed{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif}
+nav.fixed .text-2xl{font-size:1.5rem;line-height:1;font-weight:700}
+nav.fixed a, nav.fixed button{background:transparent!important;border:0!important;box-shadow:none!important;text-decoration:none!important;color:inherit!important;padding:0.5rem 0.75rem;font-size:1rem}
+nav.fixed a:hover, nav.fixed button:hover{color:#2563eb!important}
+nav.fixed a:focus, nav.fixed button:focus{outline:none!important;box-shadow:none!important}
+</style>
+<style>
+/* Force the desktop login dropdown to be a vertical list */
+#navLoginMenuPatient{position:absolute;right:0;top:100%;margin-top:0.5rem;width:11rem;background:#fff;border:1px solid #e5e7eb;border-radius:0.5rem;box-shadow:0 10px 15px rgba(0,0,0,.08);display:flex;flex-direction:column;}
+#navLoginMenuPatient.hidden{display:none}
+#navLoginMenuPatient a{display:block;width:100%;padding:.5rem 1rem;text-align:left;color:var(--color-gray-700);text-decoration:none}
+#navLoginMenuPatient a:hover{background:#eff6ff;color:var(--color-blue-600)}
+</style>
+</head>
+
+<body>
+
+                <nav class="fixed top-0 left-0 right-0 bg-white shadow-sm z-50">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div class="flex items-center justify-between h-16">
+                            <div class="flex-shrink-0"><span class="text-2xl font-bold text-blue-600">TYM</span></div>
+
+                            <div class="hidden md:flex items-center space-x-8">
+                                <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='merged.html#home'">Home</button>
+                                <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='merged.html#about'">About</button>
+                                <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='merged.html#solutions'">Solutions</button>
+                                <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='merged.html#contact'">Contact</button>
+                            </div>
+
+                            <div class="hidden md:flex items-center space-x-4">
+                                <div class="relative">
+                                    <button id="navLoginBtnPatient" class="px-4 py-2 text-blue-600 hover:text-blue-700 transition-colors">Login ▾</button>
+                                    <div id="navLoginMenuPatient" class="hidden absolute right-0 mt-2 w-44 bg-white border rounded shadow-lg">
+                                        <a class="block px-4 py-2 text-gray-700 hover:bg-blue-50" href="patient-login.html">Patient Login</a>
+                                        <a class="block px-4 py-2 text-gray-700 hover:bg-blue-50" href="doctor-login.html">Doctor Login</a>
+                                    </div>
+                                </div>
+                                <a class="px-6 py-2 bg-blue-600 text-white rounded-full" href="create-account.html">Sign Up</a>
+                            </div>
+
+                            <div class="md:hidden">
+                                <button id="toggleBtnPatient" class="text-gray-700 hover:text-blue-600">☰</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="mobileMenuPatient" class="md:hidden bg-white border-t" style="display:none;">
+                        <div class="px-4 pt-2 pb-4 space-y-2">
+                            <button onclick="location.href='merged.html#home'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">Home</button>
+                            <button onclick="location.href='merged.html#about'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">About</button>
+                            <button onclick="location.href='merged.html#solutions'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">Solutions</button>
+                            <button onclick="location.href='merged.html#contact'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">Contact</button>
+                            <div class="pt-4 space-y-2">
+                                <a href="patient-login.html" class="block w-full px-4 py-2 text-blue-600 border border-blue-600 rounded-full hover:bg-blue-50">Patient Login</a>
+                                <a href="doctor-login.html" class="block w-full px-4 py-2 text-gray-700 border rounded-full hover:bg-blue-50">Doctor Login</a>
+                                <a href="create-account.html" class="block w-full px-4 py-2 bg-blue-600 text-white rounded-full">Sign Up</a>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+
+<script>
+;(function(){
+    const btn = document.getElementById('navLoginBtnPatient');
+    const menu = document.getElementById('navLoginMenuPatient');
+    let _closeHandler = null;
+    if (btn && menu) {
+        btn.setAttribute('aria-haspopup', 'true');
+        btn.setAttribute('aria-expanded', 'false');
+
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isHidden = menu.classList.contains('hidden');
+            if (isHidden) {
+                menu.classList.remove('hidden');
+                btn.setAttribute('aria-expanded', 'true');
+                menu.style.position = 'fixed';
+                menu.style.display = 'block';
+                menu.style.visibility = 'hidden';
+                menu.style.zIndex = '9999';
+                menu.style.background = '#fff';
+                menu.style.border = '1px solid #e5e7eb';
+                menu.style.boxShadow = '0 10px 15px rgba(0,0,0,.08)';
+                menu.style.padding = '0.25rem 0';
+                menu.style.minWidth = '11rem';
+                menu.style.flexDirection = 'column';
+
+                const btnRect = btn.getBoundingClientRect();
+                const measuredWidth = menu.offsetWidth || 176;
+                const left = Math.max(8, Math.min(window.innerWidth - measuredWidth - 8, btnRect.right - measuredWidth));
+                const top = btnRect.bottom + 6;
+                menu.style.left = left + 'px';
+                menu.style.top = top + 'px';
+                menu.style.visibility = 'visible';
+
+                _closeHandler = function outsideClickListener(ev) {
+                    if (!menu.contains(ev.target) && ev.target !== btn) {
+                        menu.classList.add('hidden');
+                        menu.style.display = 'none';
+                        menu.style.position = 'absolute';
+                        btn.setAttribute('aria-expanded', 'false');
+                        document.removeEventListener('click', _closeHandler);
+                        _closeHandler = null;
+                        console.log('[nav] Patient menu closed by outside click');
+                    }
+                };
+                setTimeout(() => document.addEventListener('click', _closeHandler));
+
+            } else {
+                menu.classList.add('hidden');
+                menu.style.display = 'none';
+                menu.style.position = 'absolute';
+                btn.setAttribute('aria-expanded', 'false');
+                if (_closeHandler) { document.removeEventListener('click', _closeHandler); _closeHandler = null; }
+            }
+
+            console.log('[nav] Patient Login toggle — open:', !isHidden, 'btnRect:', btn.getBoundingClientRect(), 'menuRect:', menu.getBoundingClientRect());
+        });
+
+        document.addEventListener('keydown', (ev) => {
+            if (ev.key === 'Escape' && !menu.classList.contains('hidden')) {
+                menu.classList.add('hidden');
+                menu.style.display = 'none';
+                menu.style.position = 'absolute';
+                btn.setAttribute('aria-expanded', 'false');
+                if (_closeHandler) { document.removeEventListener('click', _closeHandler); _closeHandler = null; }
+                console.log('[nav] Patient menu closed by Escape');
+            }
+        });
+
+    } else {
+        console.warn('[nav] Missing patient login button or menu element', { btn, menu });
+    }
+
+    const toggleBtn = document.getElementById('toggleBtnPatient');
+    const mobileMenu = document.getElementById('mobileMenuPatient');
+    if(toggleBtn && mobileMenu){ toggleBtn.addEventListener('click', ()=>{ if(mobileMenu.style.display === 'none'){ mobileMenu.style.display = ''; toggleBtn.textContent = '✕'; } else { mobileMenu.style.display = 'none'; toggleBtn.textContent = '☰'; } }); }
+})();
+</script>
+
+<main>
+            <section class="hero">
+                <div class="container">
+                    <h1 class="text-4xl font-bold">Welcome Back</h1>
+                    <p class="text-gray-600" style="margin-top:12px;">Sign in to manage your medications and appointments.</p>
+                </div>
+            </section>
+
+            <section style="padding:40px 16px;">
+                <div class="container">
+                    <div class="card" style="max-width:420px;margin:0 auto;text-align:left;">
+                        <h3 class="text-2xl font-bold" style="margin-bottom:12px">Patient Login</h3>
+
+                        <label class="text-sm font-semibold text-gray-700">Username</label>
+                        <input id="username" class="w-full px-4 py-3 border rounded-2xl" placeholder="Username" />
+
+                        <label class="text-sm font-semibold text-gray-700" style="margin-top:8px">Password</label>
+                        <input id="password" class="w-full px-4 py-3 border rounded-2xl" placeholder="Password" type="password" />
+
+                        <div style="display:flex;gap:12px;margin-top:12px;">
+                            <button id="login" class="px-6 py-3 bg-blue-600 text-white rounded-full shadow-sm">Login</button>
+                            <a href="merged.html" class="px-6 py-3 border rounded-2xl text-gray-700" style="display:inline-flex;align-items:center;justify-content:center;">Cancel</a>
+                        </div>
+
+                        <div id="msg" class="text-gray-400" style="margin-top:12px"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <div class="container" style="max-width:1200px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;">
+                <div>
+                    <h3 style="color:#7dd3fc;font-size:1.25rem;margin-bottom:8px;">TYM</h3>
+                    <p style="color:#9ca3af;font-size:0.9rem;">Empowering better health through innovative medication adherence solutions.</p>
+                </div>
+                <div>
+                    <h4 style="font-weight:600;margin-bottom:8px;">Quick Links</h4>
+                    <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
+                        <li><a href="merged.html#home">Home</a></li>
+                        <li><a href="merged.html#about">About</a></li>
+                        <li><a href="merged.html#solutions">Solutions</a></li>
+                        <li><a href="merged.html#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="font-weight:600;margin-bottom:8px;">Resources</h4>
+                    <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Research</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="font-weight:600;margin-bottom:8px;">Contact Us</h4>
+                    <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
+                        <li>✉️ info@tym.health</li>
+                        <li>📞 (555) 123-4567</li>
+                        <li>📍 San Francisco, CA</li>
+                    </ul>
+                </div>
+            </div>
+            <div style="text-align:center;margin-top:24px;color:#94a3b8;">© 2026 Take Your Medicine Innovations. All rights reserved.</div>
+        </footer>
+<script>
+/* Inlined _storage.js to avoid bundler 404/MIME issues when loaded inside WebView */
+const STORAGE_KEY_PREFIX = 'TYMI_';
+const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
+const isReactNativeWebView = isBrowser && !!window.ReactNativeWebView;
+const nativeStorageQueue = {};
+function generateTransactionId(){return Math.random().toString(36).substring(2,15);} 
+function resolveNativeStorageResponse(message){ if (message.type !== 'STORAGE_RESPONSE') return; const { txId, value, error } = message; const promiseHandlers = nativeStorageQueue[txId]; if (promiseHandlers){ delete nativeStorageQueue[txId]; if (error){ console.error(`WebView Storage Error (Tx:${txId}):`, error); promiseHandlers.reject(new Error(error)); } else { promiseHandlers.resolve(value); } } }
+function sendNativeStorageRequest(action, key, value = null){ if (!isReactNativeWebView) { return Promise.reject(new Error("Attempted native storage outside WebView.")); } const txId = generateTransactionId(); return new Promise((resolve, reject) => { nativeStorageQueue[txId] = { resolve, reject }; try { console.log(`[WebView] Sending ${action} request for key: ${key}, TxID: ${txId}`); window.ReactNativeWebView.postMessage(JSON.stringify({ type: "STORAGE_OPERATION", action: action, key: key, value: value, txId: txId, })); } catch (e) { if (nativeStorageQueue[txId]) delete nativeStorageQueue[txId]; console.error("Failed to send native storage request:", e); reject(e); } }); }
+async function getItem(key){ const fullKey = STORAGE_KEY_PREFIX + key; if (!isBrowser) return null; if (isReactNativeWebView){ return sendNativeStorageRequest('getItem', fullKey); } else { return Promise.resolve(localStorage.getItem(fullKey)); } }
+async function setItem(key, value){ const fullKey = STORAGE_KEY_PREFIX + key; if (!isBrowser) return; if (isReactNativeWebView){ return sendNativeStorageRequest('setItem', fullKey, value); } else { localStorage.setItem(fullKey, value); return Promise.resolve(); } }
+async function removeItem(key){ const fullKey = STORAGE_KEY_PREFIX + key; if (!isBrowser) return; if (isReactNativeWebView){ return sendNativeStorageRequest('removeItem', fullKey); } else { localStorage.removeItem(fullKey); return Promise.resolve(); } }
+if (isBrowser){ window.Storage = { getItem: getItem, setItem: setItem, removeItem: removeItem, }; if (isReactNativeWebView){ window.addEventListener('message', (event) => { try { let data = event.data; if (typeof data === 'string') { data = JSON.parse(data); } if (data && data.type === 'STORAGE_RESPONSE') { resolveNativeStorageResponse(data); } } catch (e) { console.error("Error parsing native response in listener:", e); } }); } }
+</script>
+
+<script>
+    // Global variable to hold all users once loaded by initializeUsers
+    let ALL_USERS = []; 
+
+    // --- 1. CORE STORAGE HELPERS ---
+
+    async function loadUsers() {
+        try {
+            const rawData = await Storage.getItem('users');
+            if (!rawData) {
+                console.log("No user data found in storage. Initializing with empty array.");
+                return [];
+            }
+            const users = JSON.parse(rawData);
+            if (Array.isArray(users)) {
+                return users;
+            } else {
+                console.warn("Storage data for users was not an array. Returning empty array.");
+                return [];
+            }
+        } catch (e) {
+            console.error("Error loading or parsing users:", e);
+            return [];
+        }
+    }
+
+    async function saveUsers(usersArray) {
+        try {
+            await Storage.setItem('users', JSON.stringify(usersArray));
+        } catch (e) {
+            console.error("Error saving users:", e);
+        }
+    }
+
+    // --- 2. AUTHENTICATION LOGIC (Completed) ---
+
+    async function doLogin() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const messageElement = document.getElementById('msg'); // message container on this page is #msg
+        const users = ALL_USERS; // 🔑 FIX: Use the global ALL_USERS loaded during initialization
+
+        if (!messageElement) {
+            console.error("CRITICAL UI ERROR: Login message element with ID 'msg' not found.");
+            return;
+        }
+
+        messageElement.textContent = ''; // Clear previous message
+
+        if (!username || !password) {
+            messageElement.textContent = 'Please enter both username and password.';
+            return;
+        }
+
+        const user = users.find(u => u.username === username);
+
+        if (user && user.password === password && user.role === 'patient') {
+            const userSession = {
+                username: user.username,
+                role: user.role,
+                preferredDoctor: user.preferredDoctor || null,
+            };
+            await Storage.setItem('currentUser', JSON.stringify(userSession));
+            window.location.href = 'patient-dashboard Good api.html';
+
+        } else {
+            messageElement.textContent = 'Invalid patient credentials.';
+            console.warn(`Login failed for user: ${username}`);
+        }
+    }
+
+    // --- 3. INITIALIZATION AND SEEDING ---
+
+    async function initializeUsers() {
+        let users = await loadUsers(); 
+
+        const DEFAULT_USER = {
+            username: "patient1",
+            password: "patientpass",
+            role: "patient",
+            approved: true,
+            preferredDoctor: "doctor1"
+        };
+        const idx = users.findIndex(u => u.username === DEFAULT_USER.username && u.role === "patient");
+
+        let changed = false;
+        
+        if (idx === -1) {
+            users.push(DEFAULT_USER);
+            changed = true;
+            console.log("Default patient1 added.");
+        } else {
+            const u = users[idx];
+            let needsUpdate = false;
+            
+            if (u.approved !== true) { u.approved = true; needsUpdate = true; }
+            if (!u.preferredDoctor) { u.preferredDoctor = "doctor1"; needsUpdate = true; }
+
+            if (needsUpdate) {
+                users[idx] = u;
+                changed = true;
+                console.log("Default patient updated.");
+            } else {
+                console.log("Default patient 'patient1' already present and up-to-date.");
+            }
+        }
+
+        if (changed) {
+            await saveUsers(users); 
+        }
+        
+        ALL_USERS = users; 
+        console.log(`Initialization complete. Total users: ${ALL_USERS.length}.`);
+        
+        document.getElementById("login").addEventListener("click", doLogin);
+        
+        document.addEventListener("keydown", async function(e){ 
+            if (e.key === "Enter"){
+                e.preventDefault(); 
+                await doLogin();
+            }
+        });
+    }
+
+    // --- 4. START THE PROCESS ---
+    document.addEventListener("DOMContentLoaded", initializeUsers);
+
+</script>
+</body>
+</html>

@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Create Account</title>
+    <style>
+/* ===== inlined: src/index.css (partial copy to match merged.html styles) ===== */
+/* Minimal subset of the merged CSS to preserve layout and colors */
+:root{--color-blue-600:#2563eb;--color-blue-500:#3b82f6;--color-gray-900:#111827;--color-gray-600:#4b5563;--color-gray-400:#9ca3af;--color-white:#fff;--radius:.625rem;--spacing:.25rem;--container-7xl:80rem}
+html{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;}
+body{margin:0;background:var(--color-white);color:var(--color-gray-900);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.max-w-7xl{max-width:var(--container-7xl);margin-inline:auto;padding-inline:1rem}
+.px-4{padding-inline:1rem}.sm\:px-6{padding-inline:1.5rem}.lg\:px-8{padding-inline:2rem}
+.py-16{padding-block:4rem}.py-20{padding-block:5rem}
+.text-2xl{font-size:1.5rem}.text-3xl{font-size:1.875rem}.text-4xl{font-size:2.25rem}.text-5xl{font-size:3rem}
+.font-bold{font-weight:700}.font-semibold{font-weight:600}
+.text-gray-600{color:var(--color-gray-600)}.text-gray-400{color:var(--color-gray-400)}
+.text-blue-600{color:var(--color-blue-600)}.bg-blue-600{background:var(--color-blue-600)}.bg-blue-500{background:var(--color-blue-500)}
+.rounded-full{border-radius:9999px}.rounded-2xl{border-radius:1rem}
+.bg-white{background:var(--color-white)}.border{border:1px solid #e5e7eb}
+.shadow-sm{box-shadow:0 1px 2px rgba(0,0,0,.05)}.shadow-lg{box-shadow:0 10px 15px rgba(0,0,0,.08)}
+.hidden{display:none}.md\:flex{display:flex}.md\:hidden{display:none}
+.flex{display:flex}.items-center{align-items:center}.justify-between{justify-content:space-between}
+.h-16{height:4rem}.w-full{width:100%}
+.text-center{text-align:center}.mx-auto{margin-left:auto;margin-right:auto}
+.px-6{padding-inline:1.5rem}.py-3{padding-block:.75rem}
+.container{max-width:var(--container-7xl);margin:0 auto;padding:0 1rem}
+nav.site-nav{position:fixed;inset-inline:0;top:0;background:var(--color-white);box-shadow:0 1px 2px rgba(0,0,0,.04);z-index:50}
+.nav-row{display:flex;align-items:center;justify-content:space-between;height:64px;max-width:1200px;margin:0 auto;padding:0 16px}
+.logo{font-weight:700;color:var(--color-blue-600);font-size:1.25rem}
+.nav-links{display:flex;gap:20px;align-items:center}
+.nav-links a{color:var(--color-gray-600);text-decoration:none}
+.auth a{padding:8px 16px;border-radius:9999px;text-decoration:none}
+.auth .primary{background:var(--color-blue-600);color:var(--color-white)}
+.hero{padding-top:120px;padding-bottom:80px;background:linear-gradient(180deg,#f8fafc 0,#eef2ff 100%);text-align:center}
+.card{max-width:700px;margin:0 auto;background:var(--color-white);padding:32px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.06)}
+footer.site-footer{background:#0f172a;color:#cbd5e1;padding:48px 16px}
+.site-footer a{color:inherit;text-decoration:none}
+
+</style>
+<style>
+/* Nav appearance fixes to match merged.html (remove boxed buttons) */
+nav.site-nav .nav-row a,
+nav.site-nav .nav-row button,
+nav.site-nav .nav-row .logo {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+nav.site-nav .nav-row a:focus,
+nav.site-nav .nav-row button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+/* Ensure spacing matches merged layout */
+nav.site-nav .nav-row a,
+nav.site-nav .nav-row button { padding: 0.5rem 0.75rem; }
+</style>
+<style>
+/* Additional nav fixes targeting the actual nav used in these pages */
+nav.fixed button{ background:transparent !important; border:0 !important; box-shadow:none !important; }
+nav.fixed button:focus, nav.fixed a:focus{ outline: none !important; box-shadow: none !important; }
+nav.fixed .text-gray-700, nav.fixed .text-blue-600{ padding:0.5rem 0.75rem; }
+</style>
+  </head>
+  <body>
+    <nav class="fixed top-0 left-0 right-0 bg-white shadow-sm z-50" style="font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif;font-size:16px;">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex-shrink-0"><span class="text-2xl font-bold text-blue-600" style="font-size:1.5rem;line-height:1">TYM</span></div>
+
+          <div class="hidden md:flex items-center space-x-8">
+            <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='merged.html#home'">Home</button>
+            <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='merged.html#about'">About</button>
+            <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='merged.html#solutions'">Solutions</button>
+            <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='merged.html#contact'">Contact</button>
+          </div>
+
+          <div class="hidden md:flex items-center space-x-4">
+            <div class="relative">
+              <button id="navLoginBtnCreate" class="px-4 py-2 text-blue-600 hover:text-blue-700 transition-colors" style="padding:8px 12px;font-size:1rem;">Login ▾</button>
+              <div id="navLoginMenuCreate" class="hidden absolute right-0 mt-2 w-44 bg-white border rounded shadow-lg">
+                <a class="block px-4 py-2 text-gray-700 hover:bg-blue-50" href="patient-login.html">Patient Login</a>
+                <a class="block px-4 py-2 text-gray-700 hover:bg-blue-50" href="doctor-login.html">Doctor Login</a>
+              </div>
+            </div>
+            <a class="px-6 py-2 bg-blue-600 text-white rounded-full" href="create-account.html" style="padding:8px 18px;font-size:1rem;">Sign Up</a>
+          </div>
+
+          <div class="md:hidden">
+            <button id="toggleBtnCreate" class="text-gray-700 hover:text-blue-600">☰</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="mobileMenuCreate" class="md:hidden bg-white border-t" style="display:none;">
+        <div class="px-4 pt-2 pb-4 space-y-2">
+          <button onclick="location.href='merged.html#home'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">Home</button>
+          <button onclick="location.href='merged.html#about'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">About</button>
+          <button onclick="location.href='merged.html#solutions'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">Solutions</button>
+          <button onclick="location.href='merged.html#contact'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">Contact</button>
+          <div class="pt-4 space-y-2">
+            <a href="patient-login.html" class="block w-full px-4 py-2 text-blue-600 border border-blue-600 rounded-full hover:bg-blue-50">Patient Login</a>
+            <a href="doctor-login.html" class="block w-full px-4 py-2 text-gray-700 border rounded-full hover:bg-blue-50">Doctor Login</a>
+            <a href="create-account.html" class="block w-full px-4 py-2 bg-blue-600 text-white rounded-full">Sign Up</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+<script>
+;(function(){
+  const btn = document.getElementById('navLoginBtnCreate');
+  const menu = document.getElementById('navLoginMenuCreate');
+  if(btn && menu){
+    btn.addEventListener('click', (e)=>{ e.stopPropagation(); menu.classList.toggle('hidden'); });
+    document.addEventListener('click', ()=>{ if(!menu.classList.contains('hidden')) menu.classList.add('hidden'); });
+  }
+  const toggleBtn = document.getElementById('toggleBtnCreate');
+  const mobileMenu = document.getElementById('mobileMenuCreate');
+  if(toggleBtn && mobileMenu){
+    toggleBtn.addEventListener('click', ()=>{
+      if(mobileMenu.style.display === 'none'){ mobileMenu.style.display = ''; toggleBtn.textContent = '✕'; }
+      else { mobileMenu.style.display = 'none'; toggleBtn.textContent = '☰'; }
+    });
+  }
+})();
+</script>
+
+    <main>
+      <section class="hero">
+        <div class="container">
+          <h1 class="text-4xl font-bold">Create your account</h1>
+          <p class="text-gray-600" style="margin-top:12px;">Join Take Your Medicine Innovations to manage medications and improve outcomes.</p>
+        </div>
+      </section>
+
+      <section style="padding:40px 16px;">
+        <div class="container">
+          <div class="card">
+            <h3 class="text-2xl font-bold">Create Account</h3>
+
+            <form id="createForm" style="margin-top:18px;display:flex;flex-direction:column;gap:12px;">
+              <div>
+                <label class="text-sm font-semibold text-gray-700">Role</label>
+                <select id="role" class="w-full px-4 py-3 border rounded-2xl">
+                  <option value="patient">Patient</option>
+                  <option value="doctor">Doctor</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="text-sm font-semibold text-gray-700">Username</label>
+                <input id="username" class="w-full px-4 py-3 border rounded-2xl" placeholder="Enter username" />
+              </div>
+
+              <div>
+                <label class="text-sm font-semibold text-gray-700">Password</label>
+                <input id="password" type="password" class="w-full px-4 py-3 border rounded-2xl" placeholder="Enter password" />
+              </div>
+
+              <div id="prefDoctorWrap" style="display:block">
+                <label class="text-sm font-semibold text-gray-700">Preferred Doctor (optional)</label>
+                <select id="preferredDoctor" class="w-full px-4 py-3 border rounded-2xl">
+                  <option value="">-- no preference --</option>
+                </select>
+                <div class="text-gray-400" style="margin-top:8px">Patient accounts require doctor approval before login.</div>
+              </div>
+
+              <div style="display:flex;gap:12px;margin-top:8px;">
+                <button id="createBtn" class="px-6 py-3 bg-blue-600 text-white rounded-full shadow-sm">Create Account</button>
+                <a href="merged.html" class="px-6 py-3 border rounded-2xl text-gray-700" style="display:inline-flex;align-items:center;justify-content:center;">Cancel</a>
+              </div>
+
+              <div id="msg" class="text-gray-400"></div>
+              <p class="text-gray-400" style="margin-top:6px">After creating a patient account it is marked <strong>Pending</strong>. A doctor can approve and assign the patient.</p>
+              <p class="text-gray-400"><a href="merged.html" class="text-blue-600">← Back to Home</a></p>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container" style="max-width:1200px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;">
+        <div>
+          <h3 style="color:#7dd3fc;font-size:1.25rem;margin-bottom:8px;">TYM</h3>
+          <p style="color:#9ca3af;font-size:0.9rem;">Empowering better health through innovative medication adherence solutions.</p>
+        </div>
+        <div>
+          <h4 style="font-weight:600;margin-bottom:8px;">Quick Links</h4>
+            <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
+            <li><a href="merged.html#home">Home</a></li>
+            <li><a href="merged.html#about">About</a></li>
+            <li><a href="merged.html#solutions">Solutions</a></li>
+            <li><a href="merged.html#contact">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 style="font-weight:600;margin-bottom:8px;">Resources</h4>
+          <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Research</a></li>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Support</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 style="font-weight:600;margin-bottom:8px;">Contact Us</h4>
+          <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
+            <li>✉️ info@tym.health</li>
+            <li>📞 (555) 123-4567</li>
+            <li>📍 San Francisco, CA</li>
+          </ul>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:24px;color:#94a3b8;">© 2026 Take Your Medicine Innovations. All rights reserved.</div>
+    </footer>
+
+<script>
+/******** User "spreadsheet" in localStorage *********
+ * users: array of {username,password,role,approved,preferredDoctor,assignedDoctor}
+ ***************************************************/
+function loadUsers(){ try{ return JSON.parse(localStorage.getItem('users')||'[]'); }catch(e){ return []; } }
+function saveUsers(u){ localStorage.setItem('users', JSON.stringify(u)); }
+
+// seed demo doctors if none exist
+(function seed(){
+  const u = loadUsers();
+  if(!u.find(x=>x.role==='doctor')){
+    u.push({username:'doctor1',password:'docpass',role:'doctor',approved:true});
+    u.push({username:'doctor2',password:'doc2',role:'doctor',approved:true});
+    saveUsers(u);
+  }
+})();
+
+// fill preferredDoctor dropdown
+function refreshDoctors(){
+  const sel = document.getElementById('preferredDoctor');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">-- no preference --</option>';
+  loadUsers().filter(x=>x.role==='doctor').forEach(d=>{
+    const opt=document.createElement('option');
+    opt.value=d.username;
+    opt.textContent=d.username;
+    sel.appendChild(opt);
+  });
+}
+refreshDoctors();
+
+document.getElementById('role').addEventListener('change', (e)=>{
+  const wrap = document.getElementById('prefDoctorWrap');
+  if(wrap) wrap.style.display = e.target.value==='patient' ? 'block' : 'none';
+});
+
+document.getElementById('createBtn').addEventListener('click', ()=>{
+  const user=document.getElementById('username').value.trim();
+  const pass=document.getElementById('password').value.trim();
+  const role=document.getElementById('role').value;
+  const pref=document.getElementById('preferredDoctor').value || null;
+  const msg=document.getElementById('msg');
+  if(!user || !pass){ if(msg) msg.textContent='Enter username and password'; return; }
+  const users=loadUsers();
+  if(users.find(u=>u.username===user)){ if(msg) msg.textContent='Username exists'; return; }
+  const entry = { username:user, password:pass, role:role, approved: role==='doctor', preferredDoctor: pref, assignedDoctor: null };
+  if(role==='patient'){ entry.approved=false; }
+  users.push(entry);
+  saveUsers(users);
+  if(msg) msg.textContent = role==='patient' ? 'Patient created and marked Pending approval.' : 'Doctor account created.';
+  refreshDoctors();
+});
+</script>
+  </body>
+</html>
