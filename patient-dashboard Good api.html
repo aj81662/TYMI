@@ -9,41 +9,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Glacial+Indifference&family=Hanken+Grotesk:wght@300;400;700&display=swap" rel="stylesheet"/>
 
 <style>
-/* ===== inlined: src/index.css (partial copy to match merged.html styles) ===== */
-:root{--color-blue-600:#2563eb;--color-blue-500:#3b82f6;--color-gray-900:#111827;--color-gray-600:#4b5563;--color-gray-400:#9ca3af;--color-white:#fff;--radius:.625rem;--spacing:.25rem;--container-7xl:80rem}
-html{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;}
-body{margin:0;background:var(--color-white);color:var(--color-gray-900);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
-.max-w-7xl{max-width:var(--container-7xl);margin-inline:auto;padding-inline:1rem}
-.px-4{padding-inline:1rem}.sm\:px-6{padding-inline:1.5rem}.lg\:px-8{padding-inline:2rem}
-.py-16{padding-block:4rem}.py-20{padding-block:5rem}
-.text-2xl{font-size:1.5rem}.text-3xl{font-size:1.875rem}.text-4xl{font-size:2.25rem}.text-5xl{font-size:3rem}
-.font-bold{font-weight:700}.font-semibold{font-weight:600}
-.text-gray-600{color:var(--color-gray-600)}.text-gray-400{color:var(--color-gray-400)}
-.text-blue-600{color:var(--color-blue-600)}.bg-blue-600{background:var(--color-blue-600)}.bg-blue-500{background:var(--color-blue-500)}
-.rounded-full{border-radius:9999px}.rounded-2xl{border-radius:1rem}
-.bg-white{background:var(--color-white)}.border{border:1px solid #e5e7eb}
-.shadow-sm{box-shadow:0 1px 2px rgba(0,0,0,.05)}.shadow-lg{box-shadow:0 10px 15px rgba(0,0,0,.08)}
-.hidden{display:none}.md\:flex{display:flex}.md\:hidden{display:none}
-.flex{display:flex}.items-center{align-items:center}.justify-between{justify-content:space-between}
-.h-16{height:4rem}.w-full{width:100%}
-.text-center{text-align:center}.mx-auto{margin-left:auto;margin-right:auto}
-.px-6{padding-inline:1.5rem}.py-3{padding-block:.75rem}
-.container{max-width:var(--container-7xl);margin:0 auto;padding:0 1rem}
-nav.site-nav{position:fixed;inset-inline:0;top:0;background:var(--color-white);box-shadow:0 1px 2px rgba(0,0,0,.04);z-index:50}
-.nav-row{display:flex;align-items:center;justify-content:space-between;height:64px;max-width:1200px;margin:0 auto;padding:0 16px}
-.logo{font-weight:700;color:var(--color-blue-600);font-size:1.25rem}
-.nav-links{display:flex;gap:20px;align-items:center}
-.nav-links a{color:var(--color-gray-600);text-decoration:none}
-.auth a{padding:8px 16px;border-radius:9999px;text-decoration:none}
-.auth .primary{background:var(--color-blue-600);color:var(--color-white)}
-.hero{padding-top:120px;padding-bottom:80px;background:linear-gradient(180deg,#f8fafc 0,#eef2ff 100%);text-align:center}
-.card{max-width:700px;margin:0 auto;background:var(--color-white);padding:32px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.06)}
-footer.site-footer{background:#0f172a;color:#cbd5e1;padding:48px 16px}
-.site-footer a{color:inherit;text-decoration:none}
-
-</style>
-
-<style>
 
 /* ------------------------------------------------ */
 /* --- START ESSENTIAL STYLES --- */
@@ -68,9 +33,8 @@ body {
   font-family: var(--font-secondary);
   background: var(--sky);
   color: #222;
-    margin: 0;
-        padding: 0;
-        padding-top: 72px; /* account for fixed header height so tabs are clickable */
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -386,154 +350,20 @@ input,select,textarea{padding:8px;border-radius:6px;border:1px solid #ccc;backgr
 .chat-meta{font-size:0.82rem;color:#777}
 
 </style>
-<style>
-/* Exact nav appearance overrides to match merged.html */
-nav.fixed{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif}
-nav.fixed .text-2xl{font-size:1.5rem;line-height:1;font-weight:700}
-nav.fixed a, nav.fixed button{background:transparent!important;border:0!important;box-shadow:none!important;text-decoration:none!important;color:inherit!important;padding:0.5rem 0.75rem;font-size:1rem}
-nav.fixed a:hover, nav.fixed button:hover{color:#2563eb!important}
-nav.fixed a:focus, nav.fixed button:focus{outline:none!important;box-shadow:none!important}
-
-/* Force dropdown vertical */
-#navLoginMenuPatient{position:absolute;right:0;top:100%;margin-top:0.5rem;width:11rem;background:#fff;border:1px solid #e5e7eb;border-radius:0.5rem;box-shadow:0 10px 15px rgba(0,0,0,.08);display:flex;flex-direction:column}
-#navLoginMenuPatient.hidden{display:none}
-#navLoginMenuPatient a{display:block;width:100%;padding:.5rem 1rem;text-align:left;color:var(--color-gray-700);text-decoration:none}
-#navLoginMenuPatient a:hover{background:#eff6ff;color:var(--color-blue-600)}
-</style>
-<style>
-/* Charts layout for better readability */
-.chart-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start;margin-top:12px;max-width:1040px;margin-left:auto;margin-right:auto}
-.chart-card{background:#fff;padding:14px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.04);min-height:260px;display:flex;flex-direction:column}
-.chart-card h4{margin:0 0 8px 0;font-size:1rem}
-.chart-card canvas{width:100%;height:260px !important;max-height:420px;display:block}
-.chart-card .chart-note{margin-top:8px;color:var(--color-gray-600);font-size:0.9rem}
-@media (max-width:900px){.chart-grid{grid-template-columns:1fr}.chart-card{min-height:300px}.chart-card canvas{height:300px !important}}
-.chart-card.feature-wide{grid-column:1/-1}
-</style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
-  <script src="supabase-init.js"></script>
-  <script src="site-sync.js"></script>
 </head>
 
 <body>
-                <nav class="fixed top-0 left-0 right-0 bg-white shadow-sm z-50">
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div class="flex items-center justify-between h-16">
-                            <div class="flex-shrink-0"><span class="text-2xl font-bold text-blue-600">TYM</span></div>
-
-                            <div class="flex items-center space-x-8">
-                                <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='index.html#home'">Home</button>
-                                <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='index.html#about'">About</button>
-                                <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='index.html#solutions'">Solutions</button>
-                                <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='index.html#contact'">Contact</button>
-                            </div>
-
-                            <div class="flex items-center space-x-4">
-                                <div class="relative">
-                                    <button id="navLoginBtnPatient" class="px-4 py-2 text-blue-600 hover:text-blue-700 transition-colors">Login ▾</button>
-                                    <div id="navLoginMenuPatient" class="hidden absolute right-0 mt-2 w-44 bg-white border rounded shadow-lg">
-                                        <a class="block px-4 py-2 text-gray-700 hover:bg-blue-50" href="patient-login.html">Patient Login</a>
-                                        <a class="block px-4 py-2 text-gray-700 hover:bg-blue-50" href="doctor-login.html">Doctor Login</a>
-                                    </div>
-                                </div>
-                                <a class="px-6 py-2 bg-blue-600 text-white rounded-full" href="create-account.html">Sign Up</a>
-                            </div>
-
-                            <div class="md:hidden">
-                                <button id="toggleBtnPatient" class="text-gray-700 hover:text-blue-600">☰</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="mobileMenuPatient" class="md:hidden bg-white border-t" style="display:none;">
-                        <div class="px-4 pt-2 pb-4 space-y-2">
-                            <button onclick="location.href='index.html#home'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">Home</button>
-                            <button onclick="location.href='index.html#about'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">About</button>
-                            <button onclick="location.href='index.html#solutions'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">Solutions</button>
-                            <button onclick="location.href='index.html#contact'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">Contact</button>
-                            <div class="pt-4 space-y-2">
-                                <a href="patient-login.html" class="block w-full px-4 py-2 text-blue-600 border border-blue-600 rounded-full hover:bg-blue-50">Patient Login</a>
-                                <a href="doctor-login.html" class="block w-full px-4 py-2 text-gray-700 border rounded-full hover:bg-blue-50">Doctor Login</a>
-                                <a href="create-account.html" class="block w-full px-4 py-2 bg-blue-600 text-white rounded-full">Sign Up</a>
-                            </div>
-                        </div>
-                    </div>
-                </nav>
-<script>
-;(function(){
-    const btn = document.getElementById('navLoginBtnPatient');
-    const menu = document.getElementById('navLoginMenuPatient');
-    let _close = null;
-    if (btn && menu) {
-        btn.setAttribute('aria-haspopup','true');
-        btn.setAttribute('aria-expanded','false');
-
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const isHidden = menu.classList.contains('hidden');
-            if (isHidden) {
-                // make measurable and place using button coordinates
-                menu.classList.remove('hidden');
-                btn.setAttribute('aria-expanded','true');
-                menu.style.position = 'fixed';
-                menu.style.display = 'block';
-                menu.style.visibility = 'hidden';
-                menu.style.zIndex = '9999';
-                menu.style.background = '#fff';
-                menu.style.border = '1px solid #e5e7eb';
-                menu.style.boxShadow = '0 10px 15px rgba(0,0,0,.08)';
-                menu.style.padding = '0.25rem 0';
-                menu.style.minWidth = '11rem';
-                menu.style.flexDirection = 'column';
-
-                const btnRect = btn.getBoundingClientRect();
-                const measuredWidth = menu.offsetWidth || 176;
-                const left = Math.max(8, Math.min(window.innerWidth - measuredWidth - 8, btnRect.right - measuredWidth));
-                const top = btnRect.bottom + 6;
-                menu.style.left = left + 'px';
-                menu.style.top = top + 'px';
-                menu.style.visibility = 'visible';
-
-                // add outside click handler on next tick
-                _close = function outsideClickListener(ev) {
-                    if (!menu.contains(ev.target) && ev.target !== btn) {
-                        menu.classList.add('hidden');
-                        menu.style.display = 'none';
-                        menu.style.position = 'absolute';
-                        btn.setAttribute('aria-expanded','false');
-                        document.removeEventListener('click', _close);
-                        _close = null;
-                    }
-                };
-                setTimeout(() => document.addEventListener('click', _close));
-
-            } else {
-                menu.classList.add('hidden');
-                menu.style.display = 'none';
-                menu.style.position = 'absolute';
-                btn.setAttribute('aria-expanded','false');
-                if (_close) { document.removeEventListener('click', _close); _close = null; }
-            }
-            console.log('[nav] Patient toggle — open:', !isHidden, 'btnRect:', btn.getBoundingClientRect(), 'menuRect:', menu.getBoundingClientRect());
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !menu.classList.contains('hidden')) {
-                menu.classList.add('hidden');
-                menu.style.display = 'none';
-                menu.style.position = 'absolute';
-                btn.setAttribute('aria-expanded','false');
-                if (_close) { document.removeEventListener('click', _close); _close = null; }
-                console.log('[nav] Patient menu closed by Escape');
-            }
-        });
-    }
-    const toggleBtn = document.getElementById('toggleBtnPatient');
-    const mobile = document.getElementById('mobileMenuPatient');
-    if(toggleBtn && mobile){ toggleBtn.addEventListener('click', ()=>{ if(mobile.style.display==='none'){ mobile.style.display=''; toggleBtn.textContent='✕'; } else { mobile.style.display='none'; toggleBtn.textContent='☰'; }}); }
-})();
-</script>
+  <header>
+    <h1>Take Your Medicine Innovations: Patient Dashboard</h1>
+    <nav>
+      <a href="./index.html">Home</a>
+      <a href="./doctor-login.html">Doctor Portal</a>
+      <a href="./patient-login.html">Patient Portal</a>
+      <a href="./change-password.html">Change Password</a>
+      <a href="./create-account.html">Create Account</a>
+    </nav>
+  </header>
 
   <div class="container">
     <div class="box">
@@ -638,7 +468,7 @@ nav.fixed a:focus, nav.fixed button:focus{outline:none!important;box-shadow:none
         <div id="tabContent_data" class="tab-content">
             <h3>📈 Adherence Data & Trends (Last 7 Days)</h3>
             <div class="chart-grid">
-                <div class="chart-card feature-wide"><h4>Daily Trend (Assigned vs. Taken)</h4><canvas id="dailyTrendChart"></canvas></div>
+                <div class="chart-card"><h4>Daily Trend (Assigned vs. Taken)</h4><canvas id="dailyTrendChart"></canvas></div>
                 <div class="chart-card"><h4>Total Taken vs Missed</h4><canvas id="takenMissedChart"></canvas></div>
                 <div class="chart-card"><h4>Adherence by Medication (%)</h4><canvas id="medBarChart"></canvas></div>
                 <div class="chart-card"><h4>AM vs PM Adherence (%)</h4><canvas id="amPmChart"></canvas></div>
@@ -686,8 +516,8 @@ nav.fixed a:focus, nav.fixed button:focus{outline:none!important;box-shadow:none
         <textarea id="symptomText" class="symptom-text" rows="3" placeholder="Describe any other symptoms or notes..."></textarea>
         <div class="symptom-row" style="align-items:center;margin-top:8px">
             <label style="flex:1;display:flex;align-items:center;gap:8px">Severity:
-                <input id="symptomSeverity" type="range" min="0" max="10" value="0" style="flex:1" />
-                <span id="symptomSeverityValue" style="min-width:28px;text-align:center;display:inline-block">0</span>
+                <input id="symptomSeverity" type="range" min="1" max="10" value="5" style="flex:1" />
+                <span id="symptomSeverityValue" style="min-width:28px;text-align:center;display:inline-block">5</span>
             </label>
         </div>
         <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px">
@@ -702,7 +532,6 @@ nav.fixed a:focus, nav.fixed button:focus{outline:none!important;box-shadow:none
 /* --- GLOBAL VARIABLES --- */
 /* ------------------------------------------------ */
 let current = null;
-let currentUserKey = null;
 let currentLogEntry = null; 
 let selectedSymptoms = new Set(); 
 let symptomCallback = null; 
@@ -715,17 +544,6 @@ function loadLogs(){ try{ return JSON.parse(localStorage.getItem('adherenceLogs'
 function saveLogs(l){ localStorage.setItem('adherenceLogs', JSON.stringify(l)); }
 function loadMeds(){ try{ return JSON.parse(localStorage.getItem('medications')||'{}'); } catch(e){ console.error(e); return {}; } }
 function saveMeds(m){ localStorage.setItem('medications', JSON.stringify(m)); }
-function getUserMedsFromStore(meds) {
-    if (!meds || typeof meds !== 'object') return [];
-    if (current && Array.isArray(meds[current])) return meds[current];
-    if (currentUserKey && Array.isArray(meds[currentUserKey])) return meds[currentUserKey];
-    return [];
-}
-function setUserMedsInStore(meds, userMeds) {
-    if (!meds || typeof meds !== 'object') return;
-    if (current) meds[current] = userMeds;
-    if (currentUserKey) meds[currentUserKey] = userMeds;
-}
 function loadAllPetStatus(){ try{ return JSON.parse(localStorage.getItem('petStatus')||'{}'); } catch(e){ return {}; } }
 function savePetStatus(s){ 
     const petStore = loadAllPetStatus();
@@ -733,262 +551,8 @@ function savePetStatus(s){
     localStorage.setItem('petStatus', JSON.stringify(petStore));
 }
 
-async function getSupabaseAuthUser() {
-    try {
-        if (!window.supabaseClient) return null;
-        const { data } = await window.supabaseClient.auth.getUser();
-        return data?.user || null;
-    } catch (_) {
-        return null;
-    }
-}
-
-function inferDoseTimeFromEvent(eventTime, metadata) {
-    const explicit = metadata?.dose_time || metadata?.schedule || metadata?.doseTime || null;
-    if (explicit === 'am' || explicit === 'pm') return explicit;
-    const d = new Date(eventTime);
-    const h = d.getHours();
-    return h < 12 ? 'am' : 'pm';
-}
-
-async function syncFromSupabase() {
-    const user = await getSupabaseAuthUser();
-    if (!user || !current) return;
-    currentUserKey = user.id;
-
-    try {
-        // Pull medications
-        const { data: medRows, error: medErr } = await window.supabaseClient
-            .from('medications')
-            .select('id,medication_key,drug_name,strength,route,instruction,frequency_text,added_by_role,is_active')
-            .eq('user_key', user.id)
-            .eq('is_active', true)
-            .order('created_at', { ascending: false });
-        if (medErr) throw medErr;
-
-        const localMeds = (medRows || []).map((m) => ({
-            id: m.medication_key || `db-${m.id}`,
-            name: m.drug_name || 'Medication',
-            type: m.route || 'pill',
-            dosage: m.strength || '',
-            schedule: m.frequency_text || 'both',
-            instructions: m.instruction || '',
-            assignedBy: (m.added_by_role || 'doctor') === 'doctor' ? 'doctor' : 'patient',
-            dbMedicationId: m.id,
-            medication_key: m.medication_key || null,
-        }));
-
-        const medStore = loadMeds();
-        setUserMedsInStore(medStore, localMeds);
-        saveMeds(medStore);
-
-        // Pull med events -> local adherence logs
-        const { data: evRows, error: evErr } = await window.supabaseClient
-            .from('med_events')
-            .select('medication_id,event_time,event_type,metadata')
-            .eq('user_key', user.id)
-            .order('event_time', { ascending: false })
-            .limit(1000);
-        if (evErr) throw evErr;
-
-        const medIdToLocalKey = {};
-        localMeds.forEach((m) => {
-            if (m.dbMedicationId != null) medIdToLocalKey[m.dbMedicationId] = m.id;
-        });
-
-        const allLogs = loadLogs();
-        allLogs[current] = allLogs[current] || {};
-        (evRows || []).forEach((ev) => {
-            if (String(ev.event_type || '').toLowerCase() !== 'taken') return;
-            const localMedId = medIdToLocalKey[ev.medication_id] || `db-${ev.medication_id}`;
-            const day = String(ev.event_time).slice(0, 10);
-            const doseTime = inferDoseTimeFromEvent(ev.event_time, ev.metadata || {});
-            const key = `${day}_${localMedId}_${doseTime}`;
-            allLogs[current][key] = {
-                medId: localMedId,
-                time: new Date(ev.event_time).getTime(),
-                doseTime: doseTime,
-                taken: true,
-                symptoms: ev.metadata?.symptoms || null,
-            };
-        });
-        saveLogs(allLogs);
-    } catch (e) {
-        console.warn('Supabase sync (patient dashboard) failed, using local data:', e);
-    }
-}
-
-async function syncMedicationToSupabase(newMed) {
-    const user = await getSupabaseAuthUser();
-    if (!user || !window.siteSync) return;
-    currentUserKey = user.id;
-    try {
-        await window.siteSync.createMedication(user.id, {
-            medication_key: newMed.id,
-            drug_name: newMed.name,
-            strength: newMed.dosage,
-            route: newMed.type,
-            instruction: newMed.instructions,
-            frequency_text: newMed.schedule,
-            is_active: true,
-            added_by_role: 'patient',
-            added_by_user_key: user.id,
-        });
-    } catch (e) {
-        console.warn('Failed to sync medication to Supabase:', e);
-    }
-}
-
-async function syncMedEventToSupabase(medId, doseTime, symptomData = null) {
-    const user = await getSupabaseAuthUser();
-    if (!user || !window.supabaseClient) return;
-    currentUserKey = user.id;
-    try {
-        // Resolve FK medication_id via medication_key
-        let dbMedId = null;
-        const { data: medRow } = await window.supabaseClient
-            .from('medications')
-            .select('id')
-            .eq('user_key', user.id)
-            .eq('medication_key', medId)
-            .maybeSingle();
-        dbMedId = medRow?.id || null;
-        if (!dbMedId) return;
-
-        const payload = {
-            user_key: user.id,
-            medication_id: dbMedId,
-            event_time: new Date().toISOString(),
-            event_type: 'taken',
-            source: 'patient-dashboard',
-            metadata: {
-                dose_time: doseTime,
-                symptoms: symptomData || null,
-            },
-        };
-        const { error } = await window.supabaseClient.from('med_events').insert(payload);
-        if (error) throw error;
-    } catch (e) {
-        console.warn('Failed to sync med event to Supabase:', e);
-    }
-}
-
 // --- REAL API INTEGRATION (FDA) ---
 const CACHE_LIFESPAN_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
-
-function cleanFdaText(raw) {
-    return String(raw || '')
-        .replace(/\[[^\]]*\]/g, ' ')
-        .replace(/\(\s*\d+(\.\d+)?\s*\)/g, ' ')
-        .replace(/\s+/g, ' ')
-        .replace(/^\s*\d+\s+/, '')
-        .trim();
-}
-
-function splitIntoSentences(raw) {
-    return cleanFdaText(raw)
-        .split(/\.|\;|\n/)
-        .map(s => s.trim())
-        .filter(s => s.length >= 8);
-}
-
-function titleCasePhrase(s) {
-    return String(s || '')
-        .toLowerCase()
-        .split(' ')
-        .map(w => w ? (w[0].toUpperCase() + w.slice(1)) : w)
-        .join(' ');
-}
-
-function extractDelimitedTerms(segment, opts = {}) {
-    const minLen = opts.minLen || 3;
-    const maxLen = opts.maxLen || 40;
-    const dedupe = new Set();
-    const out = [];
-    String(segment || '')
-        .split(/,|\band\b|\bor\b|\//i)
-        .map(t => t.trim())
-        .map(t => t.replace(/^[\-:\s]+|[\-:\s]+$/g, ''))
-        .map(t => t.replace(/^(the|other|including)\s+/i, ''))
-        .forEach((term) => {
-            const cleaned = term.replace(/\s+/g, ' ').trim();
-            if (!cleaned) return;
-            if (cleaned.length < minLen || cleaned.length > maxLen) return;
-            if (/^(clinical impact|intervention|warnings?|precautions?)$/i.test(cleaned)) return;
-            const key = cleaned.toLowerCase();
-            if (dedupe.has(key)) return;
-            dedupe.add(key);
-            out.push(titleCasePhrase(cleaned));
-        });
-    return out;
-}
-
-function summarizeFdaSection(field, rawText) {
-    const text = cleanFdaText(rawText);
-    const sentences = splitIntoSentences(text);
-    const results = [];
-    const pushUnique = (item) => {
-        const s = String(item || '').trim();
-        if (!s) return;
-        const key = s.toLowerCase();
-        if (results.find(x => x.toLowerCase() === key)) return;
-        results.push(s.endsWith('.') ? s : `${s}.`);
-    };
-
-    if (field === 'adverse_reactions') {
-        const listPatterns = [
-            /most common adverse reactions(?:[^:]{0,80})[:\s]+([^\.]{10,280})/i,
-            /common adverse reactions(?:[^:]{0,80})[:\s]+([^\.]{10,280})/i,
-            /adverse reactions include[:\s]+([^\.]{10,280})/i,
-        ];
-        for (const re of listPatterns) {
-            const m = text.match(re);
-            if (m && m[1]) {
-                extractDelimitedTerms(m[1], { minLen: 4, maxLen: 36 }).forEach(t => pushUnique(t));
-            }
-        }
-        if (results.length === 0) {
-            const symptomWords = /(nausea|vomiting|diarrhea|fatigue|headache|dizziness|somnolence|insomnia|dry mouth|rash|hypoglycemia)/i;
-            sentences.forEach((s) => {
-                if (symptomWords.test(s)) pushUnique(s.replace(/^the most common adverse reactions (are|include)\s*/i, ''));
-            });
-        }
-        return results.slice(0, 5);
-    }
-
-    if (field === 'drug_interactions') {
-        const interactionSignals = /(concomitant use|interaction|may increase|avoid|contraindicated|serotonin syndrome|qt prolongation|bleeding risk)/i;
-        sentences.forEach((s) => {
-            if (!interactionSignals.test(s)) return;
-            let c = s
-                .replace(/^clinical impact:\s*/i, '')
-                .replace(/^intervention:\s*/i, '')
-                .replace(/^concomitant use of\s*/i, 'Use with ')
-                .replace(/\s+/g, ' ')
-                .trim();
-            if (c.length > 140) c = `${c.slice(0, 137)}...`;
-            pushUnique(c);
-        });
-        return results.slice(0, 5);
-    }
-
-    if (field === 'indications_and_usage') {
-        const recSignals = /(indicated|recommended|not recommended|limitations of use|contraindicated|for treatment of|for the treatment of)/i;
-        sentences.forEach((s) => {
-            if (!recSignals.test(s)) return;
-            let c = s
-                .replace(/^indications and usage\s*/i, '')
-                .replace(/^limitations of use:\s*/i, 'Limitations: ')
-                .replace(/\s+/g, ' ')
-                .trim();
-            if (c.length > 140) c = `${c.slice(0, 137)}...`;
-            pushUnique(c);
-        });
-        return results.slice(0, 4);
-    }
-
-    return [];
-}
 
 // This helper function cleans the text
 const getCleanedSection = (field, label, medicationName) => {
@@ -997,37 +561,11 @@ const getCleanedSection = (field, label, medicationName) => {
 
     let text = rawText;
     let extractedItems = [];
-    const medNameLc = String(medicationName || '').toLowerCase();
-    const isLexaproFamily = medNameLc.includes('lexapro') || medNameLc.includes('escitalopram');
-
-    const sentenceCleanup = (s) => String(s || '')
-        .replace(/\[[^\]]*\]/g, ' ')
-        .replace(/\(\s*\d+(\.\d+)?\s*\)/g, ' ')
-        .replace(/\s+/g, ' ')
-        .replace(/^\s*(\d+\s+)?(ADVERSE REACTIONS|DRUG INTERACTIONS|INDICATIONS AND USAGE|WARNINGS AND PRECAUTIONS)\s*/i, '')
-        .trim();
 
     // --- AGGRESSIVE CLEANING & PARSING RULES ---
 
     // 1. SIDE EFFECTS (ADVERSE REACTIONS) 
     if (field === 'adverse_reactions') {
-        // --- Specific Rule for Lexapro / Escitalopram ---
-        if (isLexaproFamily) {
-            const keyEffects = [
-                'Nausea',
-                'Insomnia',
-                'Somnolence',
-                'Fatigue',
-                'Headache',
-                'Dry mouth',
-                'Sexual dysfunction'
-            ];
-            keyEffects.forEach((effect) => {
-                const re = new RegExp(effect.replace(' ', '\\s*'), 'i');
-                if (re.test(text) && !extractedItems.includes(effect)) extractedItems.push(effect);
-            });
-            if (extractedItems.length > 0) return extractedItems.slice(0, 5);
-        }
         
         // --- Specific Rule for Metformin (Combination Drug Data) ---
         if (medicationName === 'Metformin') {
@@ -1084,27 +622,10 @@ const getCleanedSection = (field, label, medicationName) => {
              return ["Common adverse effects include hypoglycemia, weight gain, and injection site reactions."];
         }
 
-        const genericEffects = summarizeFdaSection('adverse_reactions', text);
-        if (genericEffects.length > 0) return genericEffects;
-        
     }
 
     // 2. INTERACTIONS (DRUG INTERACTIONS) 
     if (field === 'drug_interactions') {
-        // --- Specific Rule for Lexapro / Escitalopram ---
-        if (isLexaproFamily) {
-            const lexaproInteractions = [
-                { label: 'MAOIs (risk of serotonin syndrome)', re: /\bMAOI|monoamine oxidase\b/i },
-                { label: 'Other serotonergic drugs (serotonin syndrome risk)', re: /\bserotonergic|SSRI|SNRI|triptan|tricyclic|lithium|buspirone|st\.?\s*john/i },
-                { label: 'Pimozide / QT-prolonging drugs', re: /\bpimozide|QT prolong/i },
-                { label: 'Antiplatelets or anticoagulants (bleeding risk)', re: /\bantiplatelet|anticoagulant|bleed/i },
-            ];
-            lexaproInteractions.forEach((it) => {
-                if (it.re.test(text) && !extractedItems.includes(it.label)) extractedItems.push(it.label);
-            });
-            if (extractedItems.length > 0) return extractedItems.slice(0, 5);
-        }
-
         // Rule 1: Extract drugs listed after "Examples:" 
         const exampleMatch = text.match(/Examples:\s*([A-Za-z0-9\s-,\/]+)\./g);
         if (exampleMatch) {
@@ -1140,30 +661,11 @@ const getCleanedSection = (field, label, medicationName) => {
             extractedItems.push('Corticosteroids (may increase blood glucose)');
         }
         
-        if (extractedItems.length === 0) {
-            const genericInteractions = summarizeFdaSection('drug_interactions', text);
-            if (genericInteractions.length > 0) return genericInteractions;
-        }
         return extractedItems.slice(0, 5); 
     }
 
     // 3. RECOMMENDATIONS (INDICATIONS AND USAGE)
     if (field === 'indications_and_usage') {
-        // --- Specific Rule for Lexapro / Escitalopram ---
-        if (isLexaproFamily) {
-            if (/major depressive disorder|depression/i.test(text)) {
-                extractedItems.push('Indicated for major depressive disorder (MDD).');
-            }
-            if (/generalized anxiety disorder|GAD/i.test(text)) {
-                extractedItems.push('Indicated for generalized anxiety disorder (GAD).');
-            }
-            const limitationMatch = text.match(/Limitations of Use:\s*([^\.]{10,200})/i);
-            if (limitationMatch) {
-                const lim = sentenceCleanup(limitationMatch[1]);
-                if (lim && lim.length > 10) extractedItems.push(`${lim.replace(/\.*$/, '')}.`);
-            }
-            if (extractedItems.length > 0) return extractedItems.slice(0, 3);
-        }
         
         // --- Specific Rule for Insulin ---
         if (medicationName === 'Insulin') {
@@ -1210,11 +712,6 @@ const getCleanedSection = (field, label, medicationName) => {
             });
         }
 
-        if (extractedItems.length === 0) {
-            const genericRecs = summarizeFdaSection('indications_and_usage', text);
-            if (genericRecs.length > 0) return genericRecs;
-        }
-
         // If no recommendations were extracted, return a clear message.
         if (extractedItems.length === 0) {
             return ["No recommendations or limitations found in this section."];
@@ -1223,35 +720,17 @@ const getCleanedSection = (field, label, medicationName) => {
         return extractedItems.slice(0, 4);
     }
     
-    // Fallback: short clean sentences instead of long label blocks.
-    const fallbackParts = sentenceCleanup(text)
-        .split(/\.|\;|\n/)
-        .map(s => sentenceCleanup(s))
-        .filter(s => s.length >= 8)
-        .filter(s => !/^(the following adverse reactions|clinical impact|intervention)$/i.test(s));
-    if (fallbackParts.length > 0) {
-        return fallbackParts.slice(0, 4).map(s => s.endsWith('.') ? s : `${s}.`);
-    }
-    return ["No concise details available for this section."];
+    // Fallback if the field-specific rules fail (should be rare now)
+    return [text.replace(/\s\s+/g, ' ').substring(0, 200) + '...'];
 };
 
 
 async function fetchDrugDetails(medicationName) {
     // 1. SAFETY CHECK: Get User ID safely
-    let userId = null;
-    try {
-        const sessionUserRaw = localStorage.getItem('TYMI_currentUser');
-        const sessionUser = sessionUserRaw ? JSON.parse(sessionUserRaw) : null;
-        userId = sessionUser?.user_key || null;
-    } catch (_) {}
-    if (!userId) {
-        const legacyRaw = localStorage.getItem('loggedInUser');
-        if (legacyRaw) {
-            try { userId = JSON.parse(legacyRaw)?.id || null; } catch (_) {}
-        }
-    }
-    if (!userId) return { name: medicationName, error: "User not logged in" };
-
+    const userStr = localStorage.getItem('loggedInUser');
+    if (!userStr) return { name: medicationName, error: "User not logged in" };
+    
+    const userId = JSON.parse(userStr).id;
     const cacheKey = `drugDetailsCache_${userId}`;
     let cache = JSON.parse(localStorage.getItem(cacheKey) || '{}');
     
@@ -1264,52 +743,26 @@ async function fetchDrugDetails(medicationName) {
         return cachedEntry.data;
     }
 
-    // 3. FETCH FROM API (multi-query fallback for brand/generic recognition)
+    // 3. FETCH FROM API (Refined Query)
     console.log(`[Cache Miss] Fetching details for ${medicationName} from FDA API...`);
-
-    const cleanedName = String(medicationName || '')
-        .replace(/\([^)]*\)/g, ' ')
-        .replace(/\b\d+(\.\d+)?\s*(mg|mcg|g|ml|units?)\b/gi, ' ')
-        .replace(/\b(am|pm|both|daily|bid|tid|qid|prn)\b/gi, ' ')
-        .replace(/[^a-z0-9\s-]/gi, ' ')
-        .replace(/\s+/g, ' ')
-        .trim()
-        .toLowerCase();
-    const firstToken = cleanedName.split(' ')[0] || cleanedName;
-    const candidateNames = Array.from(new Set([cleanedName, firstToken].filter(Boolean)));
-
-    const searchQueries = [];
-    candidateNames.forEach((n) => {
-        searchQueries.push(`openfda.brand_name:"${n}"`);
-        searchQueries.push(`openfda.generic_name:"${n}"`);
-        searchQueries.push(`openfda.substance_name:"${n}"`);
-        searchQueries.push(`openfda.brand_name:${n}`);
-        searchQueries.push(`openfda.generic_name:${n}`);
-    });
+    
+    const searchName = medicationName.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const apiUrl = `https://api.fda.gov/drug/label.json?search=openfda.generic_name:"${searchName}"&limit=1`;
     
     try {
-        let label = null;
-        let lastStatus = null;
-
-        for (const query of searchQueries) {
-            const apiUrl = `https://api.fda.gov/drug/label.json?search=${encodeURIComponent(query)}&limit=1`;
-            const response = await fetch(apiUrl);
-            if (!response.ok) {
-                lastStatus = response.status;
-                continue;
-            }
-            const data = await response.json();
-            if (data && Array.isArray(data.results) && data.results.length > 0) {
-                label = data.results[0];
-                break;
-            }
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+            if (cachedEntry) return cachedEntry.data; 
+            return { name: medicationName, error: `Details not found (Status ${response.status})` };
         }
 
-        if (!label) {
-            if (cachedEntry) return cachedEntry.data;
-            if (lastStatus) return { name: medicationName, error: `Details not found (Status ${lastStatus})` };
+        const data = await response.json();
+        
+        if (!data.results || data.results.length === 0) {
             return { name: medicationName, error: "Details not available in the API database." };
         }
+
+        const label = data.results[0];
 
         // 4. CAPTURE RAW DATA AND CLEANED DATA
         const getRaw = (field) => label[field] && label[field].length > 0 ? label[field][0] : `No raw data available for the FDA field: ${field}`;
@@ -1582,15 +1035,16 @@ function showSymptomModal(medId, time, callback) {
     document.querySelectorAll('#symptomButtons .symptom-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-    // init severity display
+    // attach toggle handler and init severity display
     try {
         document.querySelectorAll('#symptomButtons .symptom-btn').forEach(btn => {
             btn.classList.remove('active');
+            btn.onclick = toggleSymptom;
         });
         const sevEl = document.getElementById('symptomSeverity');
         const sevVal = document.getElementById('symptomSeverityValue');
         if (sevEl) {
-            sevEl.value = 0;
+            sevEl.value = 5;
             if (sevVal) sevVal.textContent = sevEl.value;
             sevEl.oninput = (e) => { if (sevVal) sevVal.textContent = e.target.value; };
         }
@@ -1601,17 +1055,13 @@ function showSymptomModal(medId, time, callback) {
 }
 
 function toggleSymptom(event) {
-    const btn = event.target.closest('.symptom-btn');
-    if (!btn) return;
-    event.preventDefault();
-    const symptom = btn.dataset.symptom;
-    if (!symptom) return;
+    const symptom = event.target.dataset.symptom;
     if (selectedSymptoms.has(symptom)) {
         selectedSymptoms.delete(symptom);
-        btn.classList.remove('active');
+        event.target.classList.remove('active');
     } else {
         selectedSymptoms.add(symptom);
-        btn.classList.add('active');
+        event.target.classList.add('active');
     }
 }
 
@@ -1620,11 +1070,8 @@ function submitSymptoms() {
     let finalSymptoms = Array.from(selectedSymptoms);
     if (customText) finalSymptoms.push(`Note: ${customText}`);
     const textData = finalSymptoms.length > 0 ? finalSymptoms.join('; ') : null;
-    const severity = Number(document.getElementById('symptomSeverity')?.value ?? 0);
-    const symptomPayload = {
-        text: textData,
-        severity: Number.isFinite(severity) ? severity : 0
-    };
+    const severity = Number(document.getElementById('symptomSeverity')?.value || 0);
+    const symptomPayload = (textData === null && (!severity || severity === 0)) ? null : { text: textData, severity: severity || null };
     if (symptomCallback && currentLogEntry) {
         symptomCallback(currentLogEntry.medId, currentLogEntry.time, symptomPayload);
     }
@@ -1636,7 +1083,7 @@ function submitSymptoms() {
 
 function cancelSymptoms() {
     if (symptomCallback && currentLogEntry) {
-        symptomCallback(currentLogEntry.medId, currentLogEntry.time, { text: null, severity: 0 });
+        symptomCallback(currentLogEntry.medId, currentLogEntry.time, null);
     }
     document.getElementById('symptomOverlay').classList.add('hidden');
     currentLogEntry = null;
@@ -1657,25 +1104,19 @@ function closeSymptomModal() {
 /* --- MAIN DASHBOARD LOGIC --- */
 /* ------------------------------------------------ */
 async function loadData() {
-    const sessionUser = localStorage.getItem('TYMI_currentUser');
-    const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser') || 'null');
-    let activeUser = null;
-    try { activeUser = JSON.parse(sessionUser || 'null'); } catch (_) {}
-
-    if (!activeUser && !loggedInUser) {
+    const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    if (!loggedInUser) {
         document.getElementById('heading').textContent = 'Please Log In';
         document.getElementById('info').textContent = 'You are not authenticated.';
         document.getElementById('logout').classList.add('hidden');
         return;
     }
-    current = activeUser?.username || loggedInUser?.id;
-    currentUserKey = activeUser?.user_key || null;
-    const userName = activeUser?.username || loggedInUser?.firstName || 'Patient';
+    current = loggedInUser.id;
+    const userName = loggedInUser.firstName || 'Patient';
     document.getElementById('heading').textContent = `${userName}'s Dashboard`;
     document.getElementById('info').textContent = `Welcome back, ${userName}!`;
     document.getElementById('logout').classList.remove('hidden');
 
-    await syncFromSupabase();
     const activeTab = document.querySelector('.tab-nav button.active').dataset.tab;
     await handleTabRendering(activeTab);
 }
@@ -1694,14 +1135,13 @@ function handleTabClick(event) {
 }
 
 async function handleTabRendering(tab) {
+    const meds = loadMeds();
     switch (tab) {
         case 'medications':
-            await syncFromSupabase();
-            await renderMedicationList(loadMeds());
+            await renderMedicationList(meds);
             break;
         case 'log':
-            await syncFromSupabase();
-            renderLogList(loadMeds());
+            renderLogList(meds);
             break;
         case 'pet':
             renderPetStatus();
@@ -1711,7 +1151,7 @@ async function handleTabRendering(tab) {
             renderChat();
             break;
         case 'data':
-            await renderCharts(); 
+            renderCharts(); 
             break;
     }
 }
@@ -1766,7 +1206,7 @@ function renderChat() {
 /* --- MEDICATION TAB FUNCTIONS --- */
 async function renderMedicationList(meds) {
     const medsWrap = document.getElementById('medsWrap');
-    const userMeds = getUserMedsFromStore(meds);
+    const userMeds = meds[current] || [];
     
     // Add try/catch block to ensure we catch errors and clear "Loading..."
     try {
@@ -1867,12 +1307,12 @@ async function renderMedicationList(meds) {
 function handleDeleteMedication(event) {
     const medIdToDelete = event.target.dataset.id;
     let meds = loadMeds();
-    const userMeds = getUserMedsFromStore(meds);
-    const updated = userMeds.filter(med => med.id !== medIdToDelete);
-    setUserMedsInStore(meds, updated);
-    saveMeds(meds);
-    renderMedicationList(meds);
-    renderLogList(meds);
+    if (meds[current]) {
+        meds[current] = meds[current].filter(med => med.id !== medIdToDelete);
+        saveMeds(meds);
+        renderMedicationList(meds);
+        renderLogList(meds);
+    }
 }
 
 function handleAddMedication() {
@@ -1888,16 +1328,14 @@ function handleAddMedication() {
     }
     const newMed = { id: uid(), name, type, dosage: dose, schedule, instructions, assignedBy: 'patient' };
     let meds = loadMeds();
-    const userMeds = getUserMedsFromStore(meds);
-    userMeds.push(newMed);
-    setUserMedsInStore(meds, userMeds);
+    if (!meds[current]) meds[current] = [];
+    meds[current].push(newMed);
     saveMeds(meds);
     document.getElementById('medName').value = '';
     document.getElementById('medDose').value = '';
     document.getElementById('medInstr').value = '';
     renderMedicationList(meds);
     renderLogList(meds);
-    syncMedicationToSupabase(newMed);
 }
 
 /* --- LOG TAB FUNCTIONS --- */
@@ -1918,13 +1356,12 @@ function logMedicationTaken(medId, time, symptomData = null) {
     saveLogs(logs);
     renderLogList(loadMeds()); 
     updateAdherencePoints(1); 
-    syncMedEventToSupabase(medId, time, symptomData);
 }
 
 function renderLogList(meds) {
     const logMedList = document.getElementById('logMedList');
     logMedList.innerHTML = '';
-    const userMeds = getUserMedsFromStore(meds);
+    const userMeds = meds[current] || [];
     const logs = loadLogs()[current] || {};
     const today = new Date().toISOString().slice(0, 10);
     // Helper to format symptom display (handles legacy string and new {text,severity} payloads)
@@ -2021,240 +1458,131 @@ function isDoseLogged(medId, time) {
 }
 
 /* --- CHART FUNCTIONS --- */
-function dosesPerDayFromSchedule(s) {
-    const schedule = String(s || '').toLowerCase();
-    if (schedule.includes('both')) return 2;
-    if (schedule.includes('am') || schedule.includes('pm')) return 1;
-    return 1;
-}
-
-function scheduleHasAM(s) {
-    const schedule = String(s || '').toLowerCase();
-    return schedule.includes('both') || schedule.includes('am');
-}
-
-function scheduleHasPM(s) {
-    const schedule = String(s || '').toLowerCase();
-    return schedule.includes('both') || schedule.includes('pm');
-}
-
-function buildLast7DayMeta() {
+function getAdherenceDataForCharts() {
     const today = new Date();
-    const labels = [];
-    const dayKeys = [];
+    const labels = [], assigned = [], taken = [];
+    const meds = loadMeds()[current] || [];
+    const medNames = meds.map(m => m.name);
+    
+    // Mock data for visualization
+    const medAdherenceData = medNames.map(() => Math.floor(Math.random() * 40) + 60); 
+    const amAdherence = Math.floor(Math.random() * 40) + 60; 
+    const pmAdherence = Math.floor(Math.random() * 40) + 60; 
+
     for (let i = 6; i >= 0; i--) {
         const d = new Date(today);
         d.setDate(today.getDate() - i);
         labels.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
-        dayKeys.push(d.toISOString().slice(0, 10));
-    }
-    return { labels, dayKeys, startIso: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 6).toISOString() };
-}
-
-async function getAdherenceDataForCharts() {
-    const { labels, dayKeys, startIso } = buildLast7DayMeta();
-    const dailyAssigned = Array(7).fill(0);
-    const dailyTaken = Array(7).fill(0);
-    const dayKeyToIndex = {};
-    dayKeys.forEach((k, i) => { dayKeyToIndex[k] = i; });
-
-    const symptomKeys = ['Nausea','Dizziness','Drowsiness','Dry Mouth','Headache','Fatigue','Unspecified'];
-    const perSym = {};
-    symptomKeys.forEach(k => perSym[k] = Array.from({length:7}, () => []));
-
-    let meds = getUserMedsFromStore(loadMeds()) || [];
-    let medEvents = [];
-
-    try {
-        const user = await getSupabaseAuthUser();
-        if (window.supabaseClient && user) {
-            const { data: medRows, error: medErr } = await window.supabaseClient
-                .from('medications')
-                .select('id,medication_key,drug_name,frequency_text,is_active')
-                .eq('user_key', user.id)
-                .eq('is_active', true);
-            if (medErr) throw medErr;
-
-            meds = (medRows || []).map((m) => ({
-                id: m.medication_key || `db-${m.id}`,
-                dbMedicationId: m.id,
-                name: m.drug_name || 'Medication',
-                schedule: m.frequency_text || 'both',
-            }));
-
-            const { data: evRows, error: evErr } = await window.supabaseClient
-                .from('med_events')
-                .select('medication_id,event_time,event_type,metadata')
-                .eq('user_key', user.id)
-                .gte('event_time', startIso);
-            if (evErr) throw evErr;
-            medEvents = evRows || [];
-        }
-    } catch (e) {
-        console.warn('Chart Supabase query failed, using local cache:', e);
-        const logs = loadLogs()[current] || {};
-        medEvents = Object.keys(logs).map((k) => {
-            const entry = logs[k];
-            return {
-                medication_id: null,
-                event_time: new Date(entry.time || Date.now()).toISOString(),
-                event_type: entry.taken ? 'taken' : 'missed',
-                metadata: { dose_time: entry.doseTime, symptoms: entry.symptoms },
-                localMedId: entry.medId,
-            };
-        });
+        
+        const totalAssigned = meds.length * (meds.filter(m => m.schedule === 'both').length > 0 ? 2 : 1);
+        assigned.push(totalAssigned || 5); 
+        taken.push(Math.floor(Math.random() * (totalAssigned || 5) * 0.8)); 
     }
 
-    const medNames = meds.map(m => m.name);
-    const medAdherence = [];
-    const medTakenCount = {};
-    meds.forEach(m => { medTakenCount[m.dbMedicationId ?? m.id] = 0; });
+    const totalTaken = taken.reduce((a, b) => a + b, 0);
+    const totalMissed = assigned.reduce((a, b) => a + b, 0) - totalTaken;
 
-    let amAssigned = 0;
-    let pmAssigned = 0;
-    meds.forEach(m => {
-        const d = dosesPerDayFromSchedule(m.schedule);
-        for (let i = 0; i < 7; i++) dailyAssigned[i] += d;
-        if (scheduleHasAM(m.schedule)) amAssigned += 7;
-        if (scheduleHasPM(m.schedule)) pmAssigned += 7;
-    });
-
-    let amTaken = 0;
-    let pmTaken = 0;
-    medEvents.forEach((ev) => {
-        if (String(ev.event_type || '').toLowerCase() !== 'taken') return;
-        const dayKey = String(ev.event_time || '').slice(0, 10);
-        const idx = dayKeyToIndex[dayKey];
-        if (idx == null) return;
-        dailyTaken[idx] += 1;
-
-        const key = ev.medication_id ?? ev.localMedId;
-        if (key != null && medTakenCount[key] != null) medTakenCount[key] += 1;
-
-        const doseTime = inferDoseTimeFromEvent(ev.event_time, ev.metadata || {});
-        if (doseTime === 'am') amTaken += 1;
-        else if (doseTime === 'pm') pmTaken += 1;
-
-        const s = ev.metadata?.symptoms;
-        if (!s) return;
-        let severity = null;
-        if (typeof s === 'object' && typeof s.severity === 'number') severity = s.severity;
-        else if (typeof s === 'string') {
-            const m = s.match(/Severity[:\s]*?(\d{1,2})\/?10?/i);
-            if (m && m[1]) severity = Number(m[1]);
-        }
-        if (severity === null || !Number.isFinite(severity)) return;
-
-        let tokens = [];
-        if (typeof s === 'object' && s.text) tokens = String(s.text).split(';').map(t => t.trim()).filter(Boolean);
-        else if (typeof s === 'string') tokens = s.split(';').map(t => t.trim()).filter(Boolean);
-
-        if (tokens.length === 0) {
-            perSym['Unspecified'][idx].push(severity);
-            return;
-        }
-        tokens.forEach((tok) => {
-            if (/^Note:/i.test(tok)) {
-                perSym['Unspecified'][idx].push(severity);
-                return;
-            }
-            const normalized = tok.replace(/^Note:\s*/i, '').trim();
-            if (symptomKeys.includes(normalized)) perSym[normalized][idx].push(severity);
-            else perSym['Unspecified'][idx].push(severity);
-        });
-    });
-
-    meds.forEach((m) => {
-        const assigned = 7 * dosesPerDayFromSchedule(m.schedule);
-        const key = m.dbMedicationId ?? m.id;
-        const taken = medTakenCount[key] || 0;
-        medAdherence.push(assigned > 0 ? Math.round((taken / assigned) * 100) : 0);
-    });
-
-    const totalTaken = dailyTaken.reduce((a, b) => a + b, 0);
-    const totalAssigned = dailyAssigned.reduce((a, b) => a + b, 0);
-    const totalMissed = Math.max(0, totalAssigned - totalTaken);
-    const amAdherence = amAssigned > 0 ? Math.round((amTaken / amAssigned) * 100) : 0;
-    const pmAdherence = pmAssigned > 0 ? Math.round((pmTaken / pmAssigned) * 100) : 0;
-
-    const symptomAverages = {};
-    symptomKeys.forEach(k => {
-        symptomAverages[k] = perSym[k].map(arr => arr.length === 0 ? null : Math.round((arr.reduce((a,b)=>a+b,0)/arr.length)*10)/10);
-    });
-
-    return {
-        dailyLabels: labels,
-        dailyAssigned,
-        dailyTaken,
-        totalTaken,
-        totalMissed,
-        medNames,
-        medAdherence,
-        amAdherence,
-        pmAdherence,
-        symptomLabels: labels,
-        symptomKeys,
-        symptomAverages
-    };
+    return { dailyLabels: labels, dailyAssigned: assigned, dailyTaken: taken, totalTaken, totalMissed, medNames, medAdherence: medAdherenceData, amAdherence, pmAdherence };
 }
 
 let charts = {};
-async function renderCharts() {
-    const data = await getAdherenceDataForCharts();
+function renderCharts() {
+    const data = getAdherenceDataForCharts();
     const destroyChart = (id) => { if (charts[id]) { charts[id].destroy(); delete charts[id]; } };
     
     destroyChart('dailyTrendChart');
     charts.dailyTrendChart = new Chart(document.getElementById('dailyTrendChart').getContext('2d'), {
         type: 'line',
-        data: { labels: data.dailyLabels, datasets: [{ label: 'Taken', data: data.dailyTaken, borderColor: '#4BC0C0', fill: true }, { label: 'Assigned', data: data.dailyAssigned, borderColor: '#FF6384', borderDash: [5,5] }] },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { position: 'top', labels: { font: { size: 12 } } } },
-            scales: { x: { ticks: { font: { size: 12 } } }, y: { ticks: { font: { size: 12 } } } }
-        }
+        data: { labels: data.dailyLabels, datasets: [{ label: 'Taken', data: data.dailyTaken, borderColor: '#4BC0C0', fill: true }, { label: 'Assigned', data: data.dailyAssigned, borderColor: '#FF6384', borderDash: [5,5] }] }
     });
 
     destroyChart('takenMissedChart');
     charts.takenMissedChart = new Chart(document.getElementById('takenMissedChart').getContext('2d'), {
         type: 'doughnut',
-        data: { labels: ['Taken', 'Missed'], datasets: [{ data: [data.totalTaken, data.totalMissed], backgroundColor: ['#4BC0C0', '#FF6384'] }] },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { position: 'bottom', labels: { font: { size: 12 } } } }
-        }
+        data: { labels: ['Taken', 'Missed'], datasets: [{ data: [data.totalTaken, data.totalMissed], backgroundColor: ['#4BC0C0', '#FF6384'] }] }
     });
 
     destroyChart('medBarChart');
     charts.medBarChart = new Chart(document.getElementById('medBarChart').getContext('2d'), {
         type: 'bar',
         data: { labels: data.medNames, datasets: [{ label: 'Adherence (%)', data: data.medAdherence, backgroundColor: '#36A2EB' }] },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: { y: { beginAtZero: true, max: 100, ticks: { font: { size: 12 } } }, x: { ticks: { font: { size: 12 } } } }
-        }
+        options: { scales: { y: { beginAtZero: true, max: 100 } } }
     });
 
     destroyChart('amPmChart');
     charts.amPmChart = new Chart(document.getElementById('amPmChart').getContext('2d'), {
         type: 'polarArea',
-        data: { labels: ['AM', 'PM'], datasets: [{ data: [data.amAdherence, data.pmAdherence], backgroundColor: ['#FFCD56', '#4BC0C0'] }] },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { position: 'bottom', labels: { font: { size: 12 } } } }
-        }
+        data: { labels: ['AM', 'PM'], datasets: [{ data: [data.amAdherence, data.pmAdherence], backgroundColor: ['#FFCD56', '#4BC0C0'] }] }
     });
 
     // Symptom severity chart (average severity per day for each symptom over last 7 days)
-    const symptomKeys = data.symptomKeys || ['Nausea','Dizziness','Drowsiness','Dry Mouth','Headache','Fatigue','Unspecified'];
+    const symptomKeys = ['Nausea','Dizziness','Drowsiness','Dry Mouth','Headache','Fatigue','Unspecified'];
     const symptomColors = ['#e74c3c','#f39c12','#9b59b6','#3498db','#2ecc71','#e67e22','#95a5a6'];
+
+    const getPerSymptomSeverity = () => {
+        const logs = loadLogs()[current] || {};
+        const today = new Date();
+        const labels = [];
+        // perSym[symptom] -> array of 7 arrays (one per day) collecting severity numbers
+        const perSym = {};
+        symptomKeys.forEach(k => perSym[k] = Array.from({length:7}, () => []));
+
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date(today);
+            d.setDate(today.getDate() - i);
+            const keyDate = d.toISOString().slice(0,10);
+            labels.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+            const dayIndex = 6 - i; // 0..6
+
+            Object.keys(logs).forEach(k => {
+                if (!k.startsWith(keyDate + '_')) return;
+                const entry = logs[k];
+                const s = entry && entry.symptoms;
+                if (!s) return;
+                // determine severity number if present
+                let severity = null;
+                if (typeof s === 'object' && typeof s.severity === 'number') severity = s.severity;
+                else if (typeof s === 'string') {
+                    const m = s.match(/Severity[:\s]*?(\d{1,2})\/?10?/i);
+                    if (m && m[1]) severity = Number(m[1]);
+                }
+
+                // extract symptom tokens from text portion
+                let tokens = [];
+                if (typeof s === 'object' && s.text) tokens = s.text.split(';').map(t => t.trim()).filter(Boolean);
+                else if (typeof s === 'string') tokens = s.split(';').map(t => t.trim()).filter(Boolean);
+
+                if (tokens.length === 0) {
+                    if (severity !== null) perSym['Unspecified'][dayIndex].push(severity);
+                } else {
+                    tokens.forEach(tok => {
+                        if (/^Note:/i.test(tok)) {
+                            if (severity !== null) perSym['Unspecified'][dayIndex].push(severity);
+                            return;
+                        }
+                        const normalized = tok.replace(/^Note:\s*/i, '').trim();
+                        if (symptomKeys.includes(normalized)) {
+                            if (severity !== null) perSym[normalized][dayIndex].push(severity);
+                        } else {
+                            if (severity !== null) perSym['Unspecified'][dayIndex].push(severity);
+                        }
+                    });
+                }
+            });
+        }
+
+        // compute averages
+        const datasetsValues = {};
+        symptomKeys.forEach(k => {
+            datasetsValues[k] = perSym[k].map(arr => arr.length === 0 ? null : Math.round((arr.reduce((a,b)=>a+b,0)/arr.length)*10)/10);
+        });
+        return { labels, datasetsValues };
+    };
+
+    const perSymData = getPerSymptomSeverity();
     const datasets = symptomKeys.map((sym, idx) => ({
         label: sym,
-        data: (data.symptomAverages && data.symptomAverages[sym]) ? data.symptomAverages[sym] : Array(7).fill(null),
+        data: perSymData.datasetsValues[sym],
         borderColor: symptomColors[idx],
         backgroundColor: symptomColors[idx].replace('#', '0x') ? `rgba(0,0,0,0)` : 'rgba(0,0,0,0)',
         spanGaps: true,
@@ -2264,14 +1592,13 @@ async function renderCharts() {
     destroyChart('symptomSeverityChart');
     charts.symptomSeverityChart = new Chart(document.getElementById('symptomSeverityChart').getContext('2d'), {
         type: 'line',
-        data: { labels: data.symptomLabels || data.dailyLabels, datasets: datasets },
-        options: { responsive:true, maintainAspectRatio:false, scales: { y: { beginAtZero: true, min: 0, max: 10, ticks:{ font:{ size:12 } } }, x: { ticks:{ font:{ size:12 } } } }, plugins: { legend: { position: 'bottom', labels:{ font:{ size:11 } } } } }
+        data: { labels: perSymData.labels, datasets: datasets },
+        options: { scales: { y: { beginAtZero: true, min: 0, max: 10 } }, plugins: { legend: { position: 'bottom' } } }
     });
 }
 
 /* --- INITIALIZATION --- */
 function seedData() {
-    if (window.supabaseClient) return; // DB-backed mode should not seed local demo accounts
     const patientId = "patient1";
     if (!localStorage.getItem('users')) {
         const users = [
@@ -2306,12 +1633,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadData();
 
     document.querySelectorAll('.tab-nav button').forEach(button => button.addEventListener('click', handleTabClick));
-    document.getElementById('logout').addEventListener('click', () => {
-        localStorage.removeItem('loggedInUser');
-        localStorage.removeItem('TYMI_currentUser');
-        localStorage.removeItem('TYMI_currentRole');
-        window.location.reload();
-    });
+    document.getElementById('logout').addEventListener('click', () => { localStorage.removeItem('loggedInUser'); window.location.reload(); });
     document.getElementById('refreshBtn').addEventListener('click', loadData);
     document.getElementById('addMedBtn').addEventListener('click', handleAddMedication);
     
@@ -2340,40 +1662,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.addEventListener('beforeunload', stopChatPolling);
 });
 </script>
-        <footer class="site-footer">
-            <div class="container" style="max-width:1200px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;">
-                <div>
-                    <h3 style="color:#7dd3fc;font-size:1.25rem;margin-bottom:8px;">TYM</h3>
-                    <p style="color:#9ca3af;font-size:0.9rem;">Empowering better health through innovative medication adherence solutions.</p>
-                </div>
-                <div>
-                    <h4 style="font-weight:600;margin-bottom:8px;">Quick Links</h4>
-                    <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
-                        <li><a href="index.html#home">Home</a></li>
-                        <li><a href="index.html#about">About</a></li>
-                        <li><a href="index.html#solutions">Solutions</a></li>
-                        <li><a href="index.html#contact">Contact</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 style="font-weight:600;margin-bottom:8px;">Resources</h4>
-                    <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">Research</a></li>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Support</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 style="font-weight:600;margin-bottom:8px;">Contact Us</h4>
-                    <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
-                        <li>✉️ info@tym.health</li>
-                        <li>📞 (555) 123-4567</li>
-                        <li>📍 San Francisco, CA</li>
-                    </ul>
-                </div>
-            </div>
-            <div style="text-align:center;margin-top:24px;color:#94a3b8;">© 2026 Take Your Medicine Innovations. All rights reserved.</div>
-        </footer>
 </body>
 </html>

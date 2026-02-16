@@ -390,8 +390,110 @@ if (isBrowser){ window.Storage = { getItem: getItem, setItem: setItem, removeIte
     }
 
     // --- 4. START THE PROCESS ---
-    document.addEventListener("DOMContentLoaded", initializeUsers);
+    // Disabled: local-only auth flow replaced by Supabase flow below.
+    // document.addEventListener("DOMContentLoaded", initializeUsers);
 
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+<script src="supabase-init.js"></script>
+<script>
+function usernameToEmail(username) {
+    return `${String(username || '').trim()}@local.example`;
+}
+
+async function waitForSupabaseClient() {
+    const deadline = Date.now() + 8000;
+    while (!window.supabaseClient && Date.now() < deadline) {
+        await new Promise((r) => setTimeout(r, 100));
+    }
+    if (!window.supabaseClient) throw new Error('Supabase client not initialized.');
+    return window.supabaseClient;
+}
+
+async function doPatientLoginSupabase() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const messageElement = document.getElementById('msg');
+    if (messageElement) messageElement.textContent = '';
+
+    if (!username || !password) {
+        if (messageElement) messageElement.textContent = 'Please enter both username and password.';
+        return;
+    }
+
+    try {
+        const sb = await waitForSupabaseClient();
+        const email = usernameToEmail(username);
+        const { data: authData, error: authError } = await sb.auth.signInWithPassword({ email, password });
+        if (authError) throw authError;
+        if (!authData.user) throw new Error('Login failed - no user returned');
+
+        let isPatient = false;
+        let isPending = false;
+        try {
+            const { data: row, error } = await sb
+                .from('users')
+                .select('user_key,role,account_status')
+                .eq('user_key', authData.user.id)
+                .single();
+            if (!error && row) {
+                const role = String(row.role || '').toLowerCase();
+                const status = String(row.account_status || '').toLowerCase();
+                isPatient = role === 'patient' && (!status || status === 'approved');
+                isPending = role === 'patient' && status === 'pending';
+            }
+        } catch (_) {}
+
+        if (!isPatient) {
+            const metaRole = String(authData.user.user_metadata?.role || '').toLowerCase();
+            if (metaRole === 'patient') {
+                if (isPending) {
+                    await sb.auth.signOut();
+                    if (messageElement) messageElement.textContent = 'Account pending doctor approval.';
+                    return;
+                }
+                isPatient = true;
+            }
+        }
+
+        if (!isPatient) {
+            await sb.auth.signOut();
+            if (messageElement) messageElement.textContent = 'Invalid patient credentials or role.';
+            return;
+        }
+
+        const userSession = {
+            user_key: authData.user.id,
+            username: username,
+            role: 'patient',
+        };
+        await window.Storage.setItem('currentUser', JSON.stringify(userSession));
+        await window.Storage.setItem('currentRole', 'patient');
+        window.location.href = 'patient-dashboard.html';
+    } catch (err) {
+        const text = String(err?.message || err || '');
+        if (messageElement) {
+            if (text.includes('Invalid login credentials')) messageElement.textContent = 'Invalid patient credentials.';
+            else messageElement.textContent = text;
+        }
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const loginButton = document.getElementById("login");
+    const passwordInput = document.getElementById("password");
+    if (loginButton) {
+        loginButton.addEventListener("click", doPatientLoginSupabase);
+    }
+    if (passwordInput) {
+        passwordInput.addEventListener("keydown", async function(e){
+            if (e.key === "Enter"){
+                e.preventDefault();
+                await doPatientLoginSupabase();
+            }
+        });
+    }
+});
 </script>
 </body>
 </html>

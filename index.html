@@ -3,6 +3,23 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <script src="global-polyfills.js"></script>
+    <script>
+      (function () {
+        try {
+          if (!window.crypto) window.crypto = window.msCrypto || {};
+          if (typeof window.crypto.randomUUID !== 'function') {
+            window.crypto.randomUUID = function () {
+              var bytes = (window.crypto.getRandomValues && window.crypto.getRandomValues(new Uint8Array(16))) || new Uint8Array(16);
+              bytes[6] = (bytes[6] & 0x0f) | 0x40;
+              bytes[8] = (bytes[8] & 0x3f) | 0x80;
+              var hex = Array.from(bytes).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+              return hex.substr(0, 8) + '-' + hex.substr(8, 4) + '-' + hex.substr(12, 4) + '-' + hex.substr(16, 4) + '-' + hex.substr(20, 12);
+            };
+          }
+        } catch (e) {}
+      })();
+    </script>
     <title>Take Your Medicine Innovations</title>
     <!-- Supabase config: set these to your project's values -->
     <meta name="supabase-url" content="https://sxucfwshtvskoqvisbeu.supabase.co">
@@ -1677,6 +1694,18 @@ html {
       })();
     </script>
     <!-- Supabase SDK + initializer -->
+    <script>
+      if (!window.crypto) window.crypto = window.msCrypto || {};
+      if (typeof window.crypto.randomUUID !== 'function') {
+        window.crypto.randomUUID = function() {
+          var bytes = (window.crypto.getRandomValues && window.crypto.getRandomValues(new Uint8Array(16))) || new Uint8Array(16);
+          bytes[6] = (bytes[6] & 0x0f) | 0x40;
+          bytes[8] = (bytes[8] & 0x3f) | 0x80;
+          var hex = Array.from(bytes).map(function(b){ return b.toString(16).padStart(2, '0'); }).join('');
+          return hex.substr(0,8) + '-' + hex.substr(8,4) + '-' + hex.substr(12,4) + '-' + hex.substr(16,4) + '-' + hex.substr(20,12);
+        };
+      }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
     <script src="supabase-init.js"></script>
   </body>

@@ -3,6 +3,23 @@
 <head>
 <meta charset="utf-8"/>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <script src="global-polyfills.js"></script>
+    <script>
+        (function () {
+            try {
+                if (!window.crypto) window.crypto = window.msCrypto || {};
+                if (typeof window.crypto.randomUUID !== 'function') {
+                    window.crypto.randomUUID = function () {
+                        var bytes = (window.crypto.getRandomValues && window.crypto.getRandomValues(new Uint8Array(16))) || new Uint8Array(16);
+                        bytes[6] = (bytes[6] & 0x0f) | 0x40;
+                        bytes[8] = (bytes[8] & 0x3f) | 0x80;
+                        var hex = Array.from(bytes).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+                        return hex.substr(0, 8) + '-' + hex.substr(8, 4) + '-' + hex.substr(12, 4) + '-' + hex.substr(16, 4) + '-' + hex.substr(20, 12);
+                    };
+                }
+            } catch (e) {}
+        })();
+    </script>
     <script>
         (function(){
             try {
@@ -227,9 +244,21 @@ footer {
  
 </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        if (!window.crypto) window.crypto = window.msCrypto || {};
+        if (typeof window.crypto.randomUUID !== 'function') {
+            window.crypto.randomUUID = function() {
+                var bytes = (window.crypto.getRandomValues && window.crypto.getRandomValues(new Uint8Array(16))) || new Uint8Array(16);
+                bytes[6] = (bytes[6] & 0x0f) | 0x40;
+                bytes[8] = (bytes[8] & 0x3f) | 0x80;
+                var hex = Array.from(bytes).map(function(b){ return b.toString(16).padStart(2, '0'); }).join('');
+                return hex.substr(0,8) + '-' + hex.substr(8,4) + '-' + hex.substr(12,4) + '-' + hex.substr(16,4) + '-' + hex.substr(20,12);
+            };
+        }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
-    <script src="/supabase-init.js"></script>
-    <script src="/site-sync.js"></script>
+    <script src="supabase-init.js"></script>
+    <script src="site-sync.js?v=20260216e"></script>
 </head>
 
 <body>
@@ -539,6 +568,62 @@ function uid(){ return Math.random().toString(36).slice(2,9); }
 
 // All storage functions are now ASYNCHRONOUS and use window.Storage
 async function loadUsers(){ 
+    // Prefer DB-backed users when Supabase client is available.
+    try {
+        if (window.supabaseClient) {
+            const sb = window.supabaseClient;
+            let rows = null;
+            let error = null;
+
+            ({ data: rows, error } = await sb
+                .from('users')
+                .select('user_key,email,display_name,role,account_status,preferred_doctor_user_key,assigned_doctor_user_key')
+                .order('created_at', { ascending: true }));
+
+            if (error) {
+                // Fallback for minimal schema projects.
+                ({ data: rows, error } = await sb
+                    .from('users')
+                    .select('user_key,email,display_name')
+                    .order('created_at', { ascending: true }));
+            }
+
+            if (!error && Array.isArray(rows)) {
+                const keyToName = {};
+                rows.forEach((r) => {
+                    const name = r.display_name || (r.email ? String(r.email).split('@')[0] : r.user_key);
+                    if ((r.role || '').toLowerCase() === 'doctor') keyToName[r.user_key] = name;
+                });
+                try {
+                    const { data: docs } = await sb.from('doctors').select('user_key,display_name,email');
+                    (docs || []).forEach((d) => {
+                        keyToName[d.user_key] = d.display_name || (d.email ? String(d.email).split('@')[0] : d.user_key);
+                    });
+                } catch (_) {}
+
+                return rows.map((r) => {
+                    const username = r.display_name || (r.email ? String(r.email).split('@')[0] : r.user_key);
+                    const userRole = (r.role || 'patient').toLowerCase();
+                    const approved = (r.account_status || '') ? r.account_status === 'approved' : userRole === 'doctor';
+                    return {
+                        user_key: r.user_key,
+                        username,
+                        role: userRole,
+                        accountStatus: (r.account_status || '').toLowerCase(),
+                        approved,
+                        preferredDoctorUserKey: r.preferred_doctor_user_key || null,
+                        assignedDoctorUserKey: r.assigned_doctor_user_key || null,
+                        preferredDoctor: keyToName[r.preferred_doctor_user_key] || null,
+                        assignedDoctor: keyToName[r.assigned_doctor_user_key] || null,
+                    };
+                });
+            }
+        }
+    } catch (e) {
+        console.warn('DB loadUsers failed, using local fallback:', e);
+    }
+
+    // Local fallback
     try{
         const json = await window.Storage.getItem('users');
         return JSON.parse(json || '[]');
@@ -568,10 +653,44 @@ async function saveMeds(m){
     await window.Storage.setItem('medications', JSON.stringify(m)); 
 }
 
+async function syncMedsFromSupabaseForDoctor(){ // ASYNC
+    if (!window.supabaseClient) return;
+    try {
+        const users = await loadUsers();
+        const assignedPatients = users.filter(u => u.role === 'patient' && u.approved && isAssignedToCurrentDoctor(u) && u.user_key);
+        if (assignedPatients.length === 0) return;
+
+        const medsStore = await loadMeds();
+        await Promise.all(assignedPatients.map(async (p) => {
+            const { data, error } = await window.supabaseClient
+                .from('medications')
+                .select('id,medication_key,drug_name,strength,route,instruction,frequency_text,added_by_role,added_by_user_key,created_at')
+                .eq('user_key', p.user_key)
+                .order('created_at', { ascending: false });
+            if (error) throw error;
+            medsStore[p.username] = (data || []).map((m) => ({
+                id: m.medication_key || `db-${m.id}`,
+                medication_key: m.medication_key || null,
+                name: m.drug_name || '',
+                type: m.route || '',
+                dosage: m.strength || '',
+                schedule: m.frequency_text || '',
+                instructions: m.instruction || '',
+                addedBy: m.added_by_role ? `${m.added_by_role}:${m.added_by_user_key || ''}` : '',
+                createdAt: m.created_at || null
+            }));
+        }));
+        await saveMeds(medsStore);
+    } catch (e) {
+        console.warn('syncMedsFromSupabaseForDoctor failed', e);
+    }
+}
+
 /* -------------------------
     Global State & Auth Check
     ------------------------- */
 let current = null; // Current logged-in username
+let currentUserKey = null; // Current logged-in user_key
 let role = null;    // Current logged-in role
 
 // --- Sample Data Definitions ---
@@ -624,6 +743,7 @@ async function generateAdherenceData(patientId, medsList) {
     Seed demo 
     ------------------------- */
 async function seedDemo(){ // ASYNC
+    if (window.supabaseClient) return; // No local demo seeding in DB-backed mode
     let users = await loadUsers(); // AWAIT
     let medsStore = await loadMeds(); // AWAIT
     
@@ -661,9 +781,12 @@ async function checkAuthAndInit() {
 
     // Parse current user from the stringified JSON stored in the login step
     try {
-        current = JSON.parse(currentJSON)?.username || null;
+        const parsed = JSON.parse(currentJSON || '{}');
+        current = parsed?.username || null;
+        currentUserKey = parsed?.user_key || null;
     } catch (e) {
         current = null;
+        currentUserKey = null;
     }
     role = roleString;
 
@@ -679,13 +802,9 @@ async function checkAuthAndInit() {
         whoElement.textContent = 'Logged in as: ' + current;
     }
 
-    // Run seeding and then the main dashboard UI refresh
-    await seedDemo();
-    await refreshUI(); 
-    
-    // Auto-select and open patient1 for demonstration
-    document.getElementById('patientSelector').value = 'patient1';
-    await openPatientPanel('patient1');
+    // Wait for Supabase init so loadUsers can use DB instead of local fallback.
+    await waitForSupabaseClient();
+    await refreshUI();
 }
 
 // ----------------------------------------------------
@@ -886,11 +1005,35 @@ async function buildPatientCharts(username){ // ASYNC
 /* -------------------------
     Compute overall adherence & update UI
     ------------------------- */
+function isAssignedToCurrentDoctor(u){
+    return u.assignedDoctor === current || (currentUserKey && u.assignedDoctorUserKey === currentUserKey);
+}
+
+async function waitForSupabaseClient(timeoutMs = 8000) {
+    const started = Date.now();
+    while (!window.supabaseClient && (Date.now() - started) < timeoutMs) {
+        await new Promise((r) => setTimeout(r, 100));
+    }
+    return window.supabaseClient || null;
+}
+
+function isPendingForCurrentDoctor(u){
+    if (u.role !== 'patient') return false;
+    const noAssignedDoctor = !u.assignedDoctor && !u.assignedDoctorUserKey;
+    if (!noAssignedDoctor) return false;
+
+    // Strict behavior: only patients whose preferred doctor matches current doctor.
+    const preferredMatchesCurrent =
+        (u.preferredDoctor && u.preferredDoctor === current) ||
+        (currentUserKey && u.preferredDoctorUserKey === currentUserKey);
+    return preferredMatchesCurrent;
+}
+
 async function computeOverall(){ // ASYNC
     const users = await loadUsers(); // AWAIT
     const logs = await loadLogs(); // AWAIT
 
-    const assignedPatients = users.filter(u=>u.role==='patient' && u.approved && u.assignedDoctor === current); 
+    const assignedPatients = users.filter(u=>u.role==='patient' && u.approved && isAssignedToCurrentDoctor(u)); 
     let overallTaken = 0, overallEvents = 0;
     
     assignedPatients.forEach(p=>{
@@ -915,7 +1058,7 @@ async function computeOverall(){ // ASYNC
     ------------------------- */
 async function renderPending(){ // ASYNC
     const users = await loadUsers(); // AWAIT
-    const pending = users.filter(u=>u.role==='patient' && !u.approved && u.preferredDoctor === current);
+    const pending = users.filter(isPendingForCurrentDoctor);
     const container = document.getElementById('pendingWrap');
     if(pending.length===0){ container.innerHTML = '<div class="muted">No pending requests for you</div>'; return; }
     container.innerHTML = '<table><tr><th>Username</th><th>Action</th></tr>' + pending.map(p=>{
@@ -926,7 +1069,17 @@ async function renderPending(){ // ASYNC
 async function approve(username){ // ASYNC
     const users = await loadUsers(); const u = users.find(x=>x.username===username); // AWAIT
     if(!u) return alert('User missing');
+    if (window.supabaseClient && u.user_key) {
+        const payload = { account_status: 'approved', updated_at: new Date().toISOString() };
+        if (currentUserKey) payload.assigned_doctor_user_key = currentUserKey;
+        const { error } = await window.supabaseClient.from('users').update(payload).eq('user_key', u.user_key);
+        if (error) {
+            alert('Failed to approve in database: ' + (error.message || error));
+            return;
+        }
+    }
     u.approved = true; u.assignedDoctor = current; 
+    if (currentUserKey) u.assignedDoctorUserKey = currentUserKey;
     
     // Update doctor's pending list (if stored, though not explicitly used here)
     users.forEach(doc=>{
@@ -974,7 +1127,7 @@ async function populatePatientSelector(){ // ASYNC
     const users = await loadUsers(); // AWAIT
     const sel = document.getElementById('patientSelector'); 
     sel.innerHTML = '<option value="">-- select patient --</option>';
-    users.filter(u=>u.role==='patient' && u.approved && u.assignedDoctor === current).forEach(p=>{
+    users.filter(u=>u.role==='patient' && u.approved && isAssignedToCurrentDoctor(u)).forEach(p=>{
         const opt = document.createElement('option'); opt.value = p.username; opt.textContent = p.username; sel.appendChild(opt);
     });
 }
@@ -983,8 +1136,12 @@ async function fillDoctorPatientSelect(){ // ASYNC
     const users = await loadUsers(); // AWAIT
     const sel = document.getElementById('selectPatient'); 
     sel.innerHTML = '<option value="">-- select patient --</option>';
-    users.filter(u=>u.role==='patient' && u.approved && u.assignedDoctor === current).forEach(p=>{
-        const opt = document.createElement('option'); opt.value = p.username; opt.textContent = p.username; sel.appendChild(opt);
+    users.filter(u=>u.role==='patient' && u.approved && isAssignedToCurrentDoctor(u)).forEach(p=>{
+        const opt = document.createElement('option');
+        opt.value = p.user_key || p.username;
+        opt.textContent = p.username;
+        opt.dataset.username = p.username;
+        sel.appendChild(opt);
     });
 }
 
@@ -1054,34 +1211,60 @@ async function renderPatientEvents(username){ // ASYNC
     Add medication (doctor)
     ------------------------- */
 document.getElementById('d_addMedBtn').addEventListener('click', async ()=>{ // ASYNC
-    const patient = document.getElementById('selectPatient').value;
+    const patientSel = document.getElementById('selectPatient');
+    const patientIdentifier = patientSel.value;
+    const patient = patientSel.options[patientSel.selectedIndex]?.dataset?.username || patientIdentifier;
     const name = document.getElementById('d_medName').value.trim();
     const type = document.getElementById('d_medType').value;
     const dosage = document.getElementById('d_medDose').value.trim();
     const schedule = document.getElementById('d_medSchedule').value;
     const instr = document.getElementById('d_medInstr').value.trim();
-    if(!patient){ alert('Select patient'); return; }
+    if(!patientIdentifier){ alert('Select patient'); return; }
     if(!name){ alert('Enter medication name'); return; }
-    
+
+    // Write to Supabase first so UI success reflects database success.
+    let dbMedicationKey = 'med_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+    if (window.supabaseClient && (!window.siteSync || typeof window.siteSync.createMedicationForPatient !== 'function')) {
+        alert('Medication sync module is not loaded. Hard refresh the page (Ctrl+F5) and try again.');
+        return;
+    }
+    if (window.siteSync && typeof window.siteSync.createMedicationForPatient === 'function'){
+        try{
+            const payload = {
+                drug_name: name,
+                strength: dosage,
+                route: type,
+                instruction: instr,
+                frequency_text: schedule,
+                medication_key: dbMedicationKey,
+                added_by_role: 'doctor',
+                added_by_user_key: currentUserKey || null
+            };
+            const res = await window.siteSync.createMedicationForPatient(patientIdentifier, payload);
+            dbMedicationKey = res?.medication_key || dbMedicationKey;
+            console.log('Supabase med created', res);
+        }catch(e){
+            const msg = (e && e.message) ? e.message : String(e || 'Unknown error');
+            alert('Failed to save medication to database: ' + msg);
+            return;
+        }
+    }
+
     const meds = await loadMeds(); // AWAIT
     if(!meds[patient]) meds[patient]=[];
-    
-    const entry = { id: 'med-'+uid(), name, type, dosage, schedule, instructions: instr, addedBy: 'doctor:' + current, createdAt: new Date().toISOString() };
-    meds[patient].push(entry); 
+    const entry = {
+        id: dbMedicationKey,
+        medication_key: dbMedicationKey,
+        name,
+        type,
+        dosage,
+        schedule,
+        instructions: instr,
+        addedBy: 'doctor:' + current,
+        createdAt: new Date().toISOString()
+    };
+    meds[patient].push(entry);
     await saveMeds(meds); // AWAIT
-
-        // Push to Supabase (quick-dev: uses service role if available)
-        (async function(){
-            try{
-                if (window.siteSync && typeof window.siteSync.createMedicationForPatient === 'function'){
-                    const payload = { drug_name: name, strength: dosage, route: type, instruction: instr, frequency_text: schedule, medication_key: 'med_'+Date.now() };
-                    const res = await window.siteSync.createMedicationForPatient(patient, payload);
-                    console.log('Supabase med created', res);
-                } else {
-                    console.warn('siteSync.createMedicationForPatient not available');
-                }
-            }catch(e){ console.error('Error creating medication in Supabase', e); }
-        })();
     
     if (document.getElementById('pd_name').textContent === patient) {
         await renderPatientMeds(patient); // AWAIT
@@ -1099,7 +1282,7 @@ async function renderSummary(){ // ASYNC
     const users = await loadUsers(); // AWAIT
     const meds = await loadMeds(); // AWAIT
 
-    const patients = users.filter(u=>u.role==='patient' && u.approved && u.assignedDoctor === current); 
+    const patients = users.filter(u=>u.role==='patient' && u.approved && isAssignedToCurrentDoctor(u)); 
     
     // 🔑 FIX: 
     // 1. Create a variable (patientRows) to hold the array of strings.
@@ -1128,7 +1311,7 @@ async function renderMedManagement(){ // ASYNC
     const meds = await loadMeds(); // AWAIT
     const users = await loadUsers(); // AWAIT
 
-    const approvedPatients = users.filter(u=>u.role==='patient' && u.approved && u.assignedDoctor === current);
+    const approvedPatients = users.filter(u=>u.role==='patient' && u.approved && isAssignedToCurrentDoctor(u));
     const wrap = document.getElementById('medManagement');
     if(approvedPatients.length===0){ wrap.innerHTML = '<div class="muted">No approved patients assigned to you</div>'; return; }
     let html = '';
@@ -1140,8 +1323,8 @@ async function renderMedManagement(){ // ASYNC
             html += '<table><tr><th>Med</th><th>Schedule</th><th>Instr</th><th>AddedBy</th><th>Actions</th></tr>';
             list.forEach(m=>{
                 html += `<tr><td>${m.name} ${m.dosage?('— '+m.dosage):''}</td><td>${m.schedule}</td><td>${m.instructions||''}</td><td>${m.addedBy||''}</td><td>
-                         <button onclick="editMed('${p.username}','${m.id}')">Edit</button>
-                         <button onclick="deleteMedDoctor('${p.username}','${m.id}')" style="margin-left:6px" class="ghost">Delete</button>
+                         <button onclick="editMed('${p.username}','${m.medication_key || m.id}','${p.user_key || p.username}')">Edit</button>
+                         <button onclick="deleteMedDoctor('${p.username}','${m.medication_key || m.id}','${p.user_key || p.username}')" style="margin-left:6px" class="ghost">Delete</button>
                          </td></tr>`;
             });
             html += '</table>';
@@ -1150,13 +1333,52 @@ async function renderMedManagement(){ // ASYNC
     wrap.innerHTML = html;
 }
 
-async function editMed(patientUser, medId){ // ASYNC
-    const meds = await loadMeds(); const list = meds[patientUser] || []; const m = list.find(x=>x.id===medId); // AWAIT
+async function editMed(patientUser, medId, patientIdentifier){ // ASYNC
+    const patientRef = patientIdentifier || patientUser;
+    const meds = await loadMeds(); const list = meds[patientUser] || []; const m = list.find(x=>x.id===medId || x.medication_key===medId); // AWAIT
     if(!m) return alert('Missing med');
+    const prev = { name: m.name, dosage: m.dosage, schedule: m.schedule, instructions: m.instructions };
     const name = prompt('Medication name', m.name); if(name===null) return;
     const dosage = prompt('Dosage', m.dosage||''); if(dosage===null) return;
     const schedule = prompt('Schedule (am/pm/both/custom)', m.schedule||''); if(schedule===null) return;
     const instr = prompt('Instructions', m.instructions||''); if(instr===null) return;
+
+    if (!m.medication_key && m.id && String(m.id).startsWith('med_')) m.medication_key = m.id;
+    if (!m.medication_key && window.siteSync && typeof window.siteSync.resolveMedicationKeyForPatient === 'function') {
+        try {
+            const resolvedKey = await window.siteSync.resolveMedicationKeyForPatient(patientRef, {
+                name: m.name, dosage: m.dosage, schedule: m.schedule, instructions: m.instructions
+            });
+            if (resolvedKey) {
+                m.medication_key = resolvedKey;
+                m.id = resolvedKey;
+                await saveMeds(meds);
+            }
+        } catch (e) {
+            console.warn('resolveMedicationKeyForPatient failed', e);
+        }
+    }
+    if (!m.medication_key) {
+        alert('This medication has no database key yet. Re-add it so edit/delete can sync to database.');
+        return;
+    }
+
+    if (window.supabaseClient && (!window.siteSync || typeof window.siteSync.updateMedicationForPatient !== 'function')) {
+        alert('Medication update sync module is missing. Hard refresh the page (Ctrl+F5) and try again.');
+        return;
+    }
+    if (window.siteSync && typeof window.siteSync.updateMedicationForPatient === 'function') {
+        try {
+            await window.siteSync.updateMedicationForPatient(patientRef, m.medication_key, {
+                name, dosage, schedule, instructions: instr, type: m.type, match: prev
+            });
+        } catch (e) {
+            const msg = (e && e.message) ? e.message : String(e || 'Unknown error');
+            alert('Failed to update medication in database: ' + msg);
+            return;
+        }
+    }
+
     m.name = name; m.dosage = dosage; m.schedule = schedule; m.instructions = instr;
     await saveMeds(meds); // AWAIT
     await renderMedManagement(); await renderSummary(); // AWAIT
@@ -1166,10 +1388,49 @@ async function editMed(patientUser, medId){ // ASYNC
     }
 }
 
-async function deleteMedDoctor(patientUser, medId){ // ASYNC
+async function deleteMedDoctor(patientUser, medId, patientIdentifier){ // ASYNC
+    const patientRef = patientIdentifier || patientUser;
     if(!confirm('Delete medication?')) return;
     const meds = await loadMeds(); // AWAIT
-    meds[patientUser] = (meds[patientUser]||[]).filter(m=>m.id!==medId); 
+    const list = meds[patientUser] || [];
+    const m = list.find(x=>x.id===medId || x.medication_key===medId);
+    if (!m) return alert('Medication not found');
+
+    if (!m.medication_key && m.id && String(m.id).startsWith('med_')) m.medication_key = m.id;
+    if (!m.medication_key && window.siteSync && typeof window.siteSync.resolveMedicationKeyForPatient === 'function') {
+        try {
+            const resolvedKey = await window.siteSync.resolveMedicationKeyForPatient(patientRef, {
+                name: m.name, dosage: m.dosage, schedule: m.schedule, instructions: m.instructions
+            });
+            if (resolvedKey) {
+                m.medication_key = resolvedKey;
+                m.id = resolvedKey;
+                await saveMeds(meds);
+            }
+        } catch (e) {
+            console.warn('resolveMedicationKeyForPatient failed', e);
+        }
+    }
+    if (!m.medication_key) {
+        alert('This medication has no database key yet. Re-add it so edit/delete can sync to database.');
+        return;
+    }
+
+    if (window.supabaseClient && (!window.siteSync || typeof window.siteSync.deleteMedicationForPatient !== 'function')) {
+        alert('Medication delete sync module is missing. Hard refresh the page (Ctrl+F5) and try again.');
+        return;
+    }
+    if (window.siteSync && typeof window.siteSync.deleteMedicationForPatient === 'function') {
+        try {
+            await window.siteSync.deleteMedicationForPatient(patientRef, m.medication_key);
+        } catch (e) {
+            const msg = (e && e.message) ? e.message : String(e || 'Unknown error');
+            alert('Failed to delete medication from database: ' + msg);
+            return;
+        }
+    }
+
+    meds[patientUser] = list.filter(x => (x.id!==medId && x.medication_key!==medId));
     await saveMeds(meds); // AWAIT
     await renderMedManagement(); await renderSummary(); // AWAIT
     if (document.getElementById('pd_name').textContent === patientUser) {
@@ -1185,7 +1446,7 @@ async function renderLogs(){ // ASYNC
     const logs = await loadLogs(); // AWAIT
     const users = await loadUsers(); // AWAIT
     
-    const assignedPatients = users.filter(u => u.role === 'patient' && u.approved && u.assignedDoctor === current).map(u => u.username);
+    const assignedPatients = users.filter(u => u.role === 'patient' && u.approved && isAssignedToCurrentDoctor(u)).map(u => u.username);
     const wrap = document.getElementById('logs');
     
     if(assignedPatients.length === 0){ wrap.innerHTML = '<div class="muted">No logs from your assigned patients yet</div>'; return; }
@@ -1269,6 +1530,7 @@ function setupResizablePatientPanel() {
     Initialization / Event Handlers
     ------------------------- */
 async function refreshUI(){ // ASYNC
+    await syncMedsFromSupabaseForDoctor();
     await computeOverall();
     await renderPending();
     await populatePatientSelector();
@@ -1287,38 +1549,8 @@ document.getElementById('logout').addEventListener('click', async ()=>{ // ASYNC
     window.location.href='doctor-login.html';
 });
 
-// Final initialization call (Starts the entire process)
+// Final initialization call
 document.addEventListener("DOMContentLoaded", checkAuthAndInit);
-</script>
-
-<script>
-    // Moved the auto-select logic into a new function to ensure it runs after 
-    // the main initialization. This is a robust way to ensure the elements are ready.
-    async function postInitAutoDisplay() {
-        // Wait for the full UI refresh to complete
-        await new Promise(resolve => setTimeout(resolve, 100)); // Small delay for rendering
-
-        // ----------------------------------------------------
-        // Auto-select and open patient1 for demonstration
-        // ----------------------------------------------------
-        const selector = document.getElementById('patientSelector');
-        if (selector) {
-            selector.value = 'patient1';
-        }
-        
-        // This function must be awaited since it loads and displays data
-        await openPatientPanel('patient1');
-        
-        console.log("Auto-display of patient1 completed.");
-    }
-
-    // Replace the final block from the previous response with this structure:
-    document.addEventListener("DOMContentLoaded", async () => {
-        await checkAuthAndInit(); // This runs seedDemo() and refreshUI()
-        if (current && role === 'doctor') {
-            await postInitAutoDisplay();
-        }
-    });
 </script>
 </body>
 </html>

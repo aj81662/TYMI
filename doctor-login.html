@@ -93,9 +93,9 @@ nav.fixed a:focus, nav.fixed button:focus{outline:none!important;box-shadow:none
                             <button onclick="location.href='index.html#solutions'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">Solutions</button>
                             <button onclick="location.href='index.html#contact'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">Contact</button>
                             <div class="pt-4 space-y-2">
-                                <a href="New_Index/patient-login.html" class="block w-full px-4 py-2 text-blue-600 border border-blue-600 rounded-full hover:bg-blue-50">Patient Login</a>
-                                <a href="New_Index/doctor-login.html" class="block w-full px-4 py-2 text-gray-700 border rounded-full hover:bg-blue-50">Doctor Login</a>
-                                <a href="New_Index/create-account.html" class="block w-full px-4 py-2 bg-blue-600 text-white rounded-full">Sign Up</a>
+                                <a href="patient-login.html" class="block w-full px-4 py-2 text-blue-600 border border-blue-600 rounded-full hover:bg-blue-50">Patient Login</a>
+                                <a href="doctor-login.html" class="block w-full px-4 py-2 text-gray-700 border rounded-full hover:bg-blue-50">Doctor Login</a>
+                                <a href="create-account.html" class="block w-full px-4 py-2 bg-blue-600 text-white rounded-full">Sign Up</a>
                             </div>
                         </div>
                     </div>
@@ -262,145 +262,96 @@ async function removeItem(key){ const fullKey = STORAGE_KEY_PREFIX + key; if (!i
 if (isBrowser){ window.Storage = { getItem: getItem, setItem: setItem, removeItem: removeItem, }; if (isReactNativeWebView){ window.addEventListener('message', (event) => { try { let data = event.data; if (typeof data === 'string') { data = JSON.parse(data); } if (data && data.type === 'STORAGE_RESPONSE') { resolveNativeStorageResponse(data); } } catch (e) { console.error("Error parsing native response in listener:", e); } }); } }
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+<script src="supabase-init.js"></script>
 <script>
-// --- CORE STORAGE HELPERS (Inlined from the first <script> block) ---
-// The global window.Storage object is defined in the previous inlined <script> tag.
-// We only need to define the simple data helpers here.
-
-// Global variable to hold all users once loaded by initializeUsers
-let ALL_USERS = []; 
-const DEFAULT_DOCTOR_USERNAME = "doctor1";
-const DEFAULT_DOCTOR_PASSWORD = "docpass";
-
-async function loadUsers() {
-    try {
-        // Uses the window.Storage.getItem defined in the first script block
-        const rawData = await window.Storage.getItem('users');
-        const users = JSON.parse(rawData || '[]');
-        return Array.isArray(users) ? users : [];
-    } catch (e) {
-        console.error("Error loading or parsing users:", e);
-        return [];
-    }
+function usernameToEmail(username) {
+    return `${String(username || '').trim().toLowerCase()}@local.example`;
 }
 
-async function saveUsers(usersArray) {
-    try {
-        await window.Storage.setItem('users', JSON.stringify(usersArray));
-    } catch (e) {
-        console.error("Error saving users:", e);
+async function waitForSupabaseClient() {
+    const deadline = Date.now() + 8000;
+    while (!window.supabaseClient && Date.now() < deadline) {
+        await new Promise((r) => setTimeout(r, 100));
     }
+    if (!window.supabaseClient) throw new Error('Supabase client not initialized.');
+    return window.supabaseClient;
 }
-
-// --- AUTHENTICATION LOGIC ---
 
 async function doLogin() {
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value.trim();
-    
-    // 🔑 FIX 1: Change 'message' to 'msg' to match the HTML ID
-    const messageElement = document.getElementById('message'); 
-    
-    // Ensure the message element is present before trying to use it
-    if (!messageElement) {
-        console.error("CRITICAL UI ERROR: Login message element with ID 'msg' not found.");
-        return;
-    }
-
-    messageElement.textContent = ''; // Clear previous message
+    const messageElement = document.getElementById('message');
+    if (messageElement) messageElement.textContent = '';
 
     if (!username || !password) {
-        messageElement.textContent = 'Please enter both username and password.';
+        if (messageElement) messageElement.textContent = 'Please enter both username and password.';
         return;
     }
 
-    // Use the global ALL_USERS loaded during initialization
-    const users = ALL_USERS; 
-    const user = users.find(u => u.username === username);
+    try {
+        const sb = await waitForSupabaseClient();
+        const email = usernameToEmail(username);
+        const { data: authData, error: authError } = await sb.auth.signInWithPassword({ email, password });
+        if (authError) throw authError;
+        if (!authData.user) throw new Error('Login failed - no user returned');
 
-    if (user && user.password === password && user.role === 'doctor') {
-        // SUCCESS: Save current user session and redirect
+        let isDoctor = false;
+        try {
+            const { data: row, error } = await sb
+                .from('users')
+                .select('user_key,username,role,account_status,display_name,email')
+                .eq('user_key', authData.user.id)
+                .single();
+            if (!error && row) {
+                const role = (row.role || '').toLowerCase();
+                const status = (row.account_status || '').toLowerCase();
+                isDoctor = role === 'doctor' && (!status || status === 'approved');
+            }
+        } catch (_) {}
+
+        // Fallback to auth metadata for older/mixed schemas.
+        if (!isDoctor) {
+            const metaRole = String(authData.user.user_metadata?.role || '').toLowerCase();
+            if (metaRole === 'doctor') isDoctor = true;
+        }
+
+        if (!isDoctor) {
+            await sb.auth.signOut();
+            if (messageElement) messageElement.textContent = 'Invalid doctor credentials or role.';
+            return;
+        }
+
         const userSession = {
-            username: user.username,
-            role: user.role,
+            user_key: authData.user.id,
+            username: username,
+            role: 'doctor',
         };
-        
-        // Save the session data using the async Storage proxy
         await window.Storage.setItem('currentUser', JSON.stringify(userSession));
-        await window.Storage.setItem('currentRole', user.role); // Save role separately for simplicity
-        
-        // Redirect to the dashboard
+        await window.Storage.setItem('currentRole', 'doctor');
         window.location.href = 'doctor-dashboard.html';
-
-    } else {
-        // FAILURE
-        messageElement.textContent = 'Invalid doctor credentials or role.';
-        console.warn(`Login failed for user: ${username}`);
+    } catch (err) {
+        const text = String(err?.message || err || '');
+        if (messageElement) {
+            if (text.includes('Invalid login credentials')) messageElement.textContent = 'Invalid doctor credentials or role.';
+            else messageElement.textContent = text;
+        }
     }
 }
 
-// --- INITIALIZATION AND SEEDING ---
-
-async function initializeUsers() {
-    console.log("Starting user initialization...");
-    let users = await loadUsers(); 
-
-    const DEFAULT_USER = {
-        username: DEFAULT_DOCTOR_USERNAME,
-        password: DEFAULT_DOCTOR_PASSWORD,
-        role: "doctor",
-        approved: true,
-    };
-    
-    let changed = false;
-    const idx = users.findIndex(u => u.username === DEFAULT_USER.username && u.role === "doctor");
-    
-    if (idx === -1) {
-        users.push(DEFAULT_USER);
-        changed = true;
-        console.log(`Default doctor '${DEFAULT_DOCTOR_USERNAME}' added.`);
-    } else {
-        // Minor check to ensure the existing default user has the doctor role
-        if (users[idx].role !== 'doctor') {
-            users[idx].role = 'doctor';
-            changed = true;
-            console.log(`Default user '${DEFAULT_DOCTOR_USERNAME}' role corrected to doctor.`);
-        } else {
-            console.log(`Default doctor '${DEFAULT_DOCTOR_USERNAME}' already present.`);
-        }
-    }
-
-    if (changed) {
-        await saveUsers(users); 
-    }
-    
-    // CRITICAL FIX: Assign the loaded/seeded users to the global variable
-    ALL_USERS = users; 
-    console.log(`Initialization complete. Total users: ${ALL_USERS.length}.`);
-    
-    // Attach event listeners only after ASYNC initialization is complete
+document.addEventListener("DOMContentLoaded", () => {
     const loginButton = document.getElementById("login");
     const passwordInput = document.getElementById("password");
-
-    if (loginButton) {
-        loginButton.addEventListener("click", doLogin);
-    }
-    
-    // ASYNC keydown handler for "Enter" key on password field
+    if (loginButton) loginButton.addEventListener("click", doLogin);
     if (passwordInput) {
-        passwordInput.addEventListener("keydown", async function(e){ 
+        passwordInput.addEventListener("keydown", async function(e){
             if (e.key === "Enter"){
-                e.preventDefault(); 
+                e.preventDefault();
                 await doLogin();
             }
         });
     }
-}
-
-// --- START THE PROCESS ---
-// 🔑 FIX 2: Ensure we wait for the DOMContentLoaded event before starting
-// the ASYNC process to ensure input elements are available.
-document.addEventListener("DOMContentLoaded", initializeUsers);
+});
 
 </script>
 </body>

@@ -3,6 +3,23 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <script src="global-polyfills.js"></script>
+    <script>
+      (function () {
+        try {
+          if (!window.crypto) window.crypto = window.msCrypto || {};
+          if (typeof window.crypto.randomUUID !== 'function') {
+            window.crypto.randomUUID = function () {
+              var bytes = (window.crypto.getRandomValues && window.crypto.getRandomValues(new Uint8Array(16))) || new Uint8Array(16);
+              bytes[6] = (bytes[6] & 0x0f) | 0x40;
+              bytes[8] = (bytes[8] & 0x3f) | 0x80;
+              var hex = Array.from(bytes).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+              return hex.substr(0, 8) + '-' + hex.substr(8, 4) + '-' + hex.substr(12, 4) + '-' + hex.substr(16, 4) + '-' + hex.substr(20, 12);
+            };
+          }
+        } catch (e) {}
+      })();
+    </script>
     <title>Create Account</title>
     <style>
 /* ===== inlined: src/index.css (partial copy to match merged.html styles) ===== */
@@ -161,11 +178,11 @@ nav.fixed .text-gray-700, nav.fixed .text-blue-600{ padding:0.5rem 0.75rem; }
               </div>
 
               <div id="prefDoctorWrap" style="display:block">
-                <label class="text-sm font-semibold text-gray-700">Preferred Doctor (optional)</label>
+                <label class="text-sm font-semibold text-gray-700">Preferred Doctor</label>
                 <select id="preferredDoctor" class="w-full px-4 py-3 border rounded-2xl">
-                  <option value="">-- no preference --</option>
+                  <option value="">-- select doctor --</option>
                 </select>
-                <div class="text-gray-400" style="margin-top:8px">Patient accounts require doctor approval before login.</div>
+                <div class="text-gray-400" style="margin-top:8px">Patient accounts must choose a doctor and require doctor approval before login.</div>
               </div>
 
               <div style="display:flex;gap:12px;margin-top:8px;">
@@ -235,11 +252,46 @@ function saveUsers(u){ localStorage.setItem('users', JSON.stringify(u)); }
   }
 })();
 
-// fill preferredDoctor dropdown
-function refreshDoctors(){
+async function waitForSupabaseClient(){
+  const deadline = Date.now() + 8000;
+  while (!window.supabaseClient && Date.now() < deadline) {
+    await new Promise((r) => setTimeout(r, 100));
+  }
+  return window.supabaseClient || null;
+}
+
+// fill preferredDoctor dropdown (prefer DB user_key values)
+async function refreshDoctors(){
   const sel = document.getElementById('preferredDoctor');
   if(!sel) return;
-  sel.innerHTML = '<option value="">-- no preference --</option>';
+  sel.innerHTML = '<option value="">-- select doctor --</option>';
+
+  // 1) Preferred: doctors from DB with value=user_key.
+  try {
+    const sb = await waitForSupabaseClient();
+    if (sb) {
+      let rows = [];
+      let err = null;
+      ({ data: rows, error: err } = await sb.from('users').select('user_key,display_name,email,role').eq('role', 'doctor'));
+      if (err) {
+        ({ data: rows, error: err } = await sb.from('doctors').select('user_key,display_name,email'));
+      }
+      if (!err && Array.isArray(rows) && rows.length) {
+        rows.forEach((d) => {
+          const label = d.display_name || (d.email ? String(d.email).split('@')[0] : d.user_key);
+          const opt = document.createElement('option');
+          opt.value = d.user_key; // IMPORTANT: pass user_key, not username
+          opt.textContent = label;
+          sel.appendChild(opt);
+        });
+        return;
+      }
+    }
+  } catch (e) {
+    console.warn('Could not load doctors from DB for dropdown:', e);
+  }
+
+  // 2) Fallback: local doctors
   loadUsers().filter(x=>x.role==='doctor').forEach(d=>{
     const opt=document.createElement('option');
     opt.value=d.username;
@@ -254,43 +306,77 @@ document.getElementById('role').addEventListener('change', (e)=>{
   if(wrap) wrap.style.display = e.target.value==='patient' ? 'block' : 'none';
 });
 
-document.getElementById('createBtn').addEventListener('click', ()=>{
+document.getElementById('createBtn').addEventListener('click', async (e)=>{
+  e.preventDefault();
   const user=document.getElementById('username').value.trim();
   const pass=document.getElementById('password').value.trim();
   const role=document.getElementById('role').value;
   const pref=document.getElementById('preferredDoctor').value || null;
   const msg=document.getElementById('msg');
   if(!user || !pass){ if(msg) msg.textContent='Enter username and password'; return; }
-  const users=loadUsers();
-  if(users.find(u=>u.username===user)){ if(msg) msg.textContent='Username exists'; return; }
-  const entry = { username:user, password:pass, role:role, approved: role==='doctor', preferredDoctor: pref, assignedDoctor: null };
-  if(role==='patient'){ entry.approved=false; }
-  users.push(entry);
-  saveUsers(users);
+  if(role==='patient' && !pref){ if(msg) msg.textContent='Please choose a doctor for patient accounts'; return; }
   if(msg) msg.textContent = 'Creating account...';
-  refreshDoctors();
 
   // Also attempt to create user in Supabase (signup + users upsert).
-  (async function(){
-    try{
-      if (window.siteSync && typeof window.siteSync.signupAndCreateUser === 'function'){
-        const res = await window.siteSync.signupAndCreateUser(user, pass, role, pref);
-        console.log('siteSync signup result', res);
-        if(msg) msg.textContent = role==='patient' ? 'Patient created and marked Pending approval.' : 'Doctor account created.';
-      } else {
-        console.warn('siteSync not available - ensure supabase-init.js and site-sync.js are loaded');
+  try{
+    const sb = await waitForSupabaseClient();
+    if (sb) {
+      // DB-first uniqueness check (authoritative source).
+      const email = `${user}@local.example`;
+      const { data: existingRows, error: existingErr } = await sb
+        .from('users')
+        .select('user_key')
+        .or(`display_name.eq.${user},email.eq.${email}`)
+        .limit(1);
+      if (!existingErr && Array.isArray(existingRows) && existingRows.length > 0) {
+        if (msg) msg.textContent = 'Username exists';
+        return;
       }
-    }catch(e){
-      console.error('Supabase signup error', e);
-      if(msg) msg.textContent = 'Account created locally; Supabase error (check console)';
     }
-  })();
+
+    if (window.siteSync && typeof window.siteSync.signupAndCreateUser === 'function'){
+      const res = await window.siteSync.signupAndCreateUser(user, pass, role, pref);
+      console.log('siteSync signup result', res);
+
+      // Keep local cache in sync only after successful DB signup.
+      const users=loadUsers();
+      if(!users.find(u=>u.username===user)){
+        const entry = { username:user, password:pass, role:role, approved: role==='doctor', preferredDoctor: pref, assignedDoctor: null };
+        if(role==='patient'){ entry.approved=false; }
+        users.push(entry);
+        saveUsers(users);
+      }
+      await refreshDoctors();
+
+      if(msg) msg.textContent = role==='patient' ? 'Patient created and marked Pending approval.' : 'Doctor account created.';
+    } else {
+      const text = 'siteSync not available - ensure supabase-init.js and site-sync.js are loaded';
+      console.warn(text);
+      if (msg) msg.textContent = text;
+    }
+  }catch(err){
+    console.error('Supabase signup error', err);
+    const text = err && err.message ? err.message : String(err || 'Unknown error');
+    if(msg) msg.textContent = `Supabase error: ${text}`;
+  }
 });
 </script>
 
 <!-- Load Supabase client and site sync (ensure these are after page JS) -->
+<script>
+if (!window.crypto) window.crypto = window.msCrypto || {};
+if (typeof window.crypto.randomUUID !== 'function') {
+  window.crypto.randomUUID = function() {
+    var bytes = (window.crypto.getRandomValues && window.crypto.getRandomValues(new Uint8Array(16))) || new Uint8Array(16);
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    var hex = Array.from(bytes).map(function(b){ return b.toString(16).padStart(2, '0'); }).join('');
+    return hex.substr(0,8) + '-' + hex.substr(8,4) + '-' + hex.substr(12,4) + '-' + hex.substr(16,4) + '-' + hex.substr(20,12);
+  };
+}
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
-<script src="/supabase-init.js"></script>
-<script src="/site-sync.js"></script>
+<script src="supabase-init.js"></script>
+<script src="site-sync.js"></script>
   </body>
 </html>
