@@ -1,0 +1,20 @@
+version: '3'
+services:
+  website:
+    container_name: capstone-website
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    volumes:
+      - ./site:/usr/share/nginx/html
+```
+
+And your file structure in the repo should look like:
+```
+your-repo/
+├── docker-compose.yml
+└── site/
+    ├── index.html
+    ├── app.js
+    └── style.css

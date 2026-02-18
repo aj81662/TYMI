@@ -16,7 +16,9 @@
     "@supabase/supabase-js": "^2.93.3",
     "expo-constants": "^18.0.13",
     "expo-secure-store": "^15.0.8",
+    "react-dom": "19.1.0",
     "react-native": "^0.83.1",
-    "react-native-vector-icons": "^10.3.0"
+    "react-native-vector-icons": "^10.3.0",
+    "react-native-web": "^0.21.0"
   }
 }

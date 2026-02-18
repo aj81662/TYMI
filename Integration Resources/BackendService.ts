@@ -477,6 +477,9 @@ export async function createMedication(payload: MedicationCreate): Promise<Backe
       qty_text: payload.qty_text,
       refills_text: payload.refills_text,
       is_active: true,
+      // Audit fields: if caller provided added_by info, allow it; otherwise derive
+      added_by_role: (payload as any).added_by_role || null,
+      added_by_user_key: (payload as any).added_by_user_key || null,
     })
     .select()
     .single();
