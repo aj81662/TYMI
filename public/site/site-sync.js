@@ -1,25 +1,3 @@
-<<<<<<< HEAD
-/* Minimal browser sync helpers for the static site
- * Exposes `siteSync.signupAndCreateUser(username,password,role,preferredDoctor)`
- * and basic helpers `createMedication` and `logMedEvent` using window.supabaseClient.
- */
-// Diagnostic: indicate the file was requested
-console.log('site-sync.js: loading');
-(function(){
-  try {
-    if (!window) return;
-    const ns = {};
-
-  function ensureClient(){
-    if (!window.supabaseClient) throw new Error('Supabase client not initialized. Include supabase-init.js');
-    return window.supabaseClient;
-  }
-
-  /**
-   * Create an auth user (email synthesized from username) and upsert into `users` table.
-   */
-  ns.signupAndCreateUser = async function(username, password, role, preferredDoctor) {
-=======
 /* Minimal browser sync helpers for the static site
  * Exposes `siteSync.signupAndCreateUser(username,password,role,preferredDoctor)`
  * and basic helpers `createMedication` and `logMedEvent` using window.supabaseClient.
@@ -40,7 +18,6 @@ console.log('site-sync.js: loading');
    * Create an auth user (email synthesized from username) and upsert into `users` table.
    */
   ns.signupAndCreateUser = async function(username, password, role, preferredDoctor, doctorSpecialties) {
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
     const supabase = ensureClient();
     const email = `${username}@local.example`;
 
@@ -180,7 +157,6 @@ console.log('site-sync.js: loading');
       console.error('signupAndCreateUser exception', err);
       throw err;
     }
-<<<<<<< HEAD
   };
 
   ns.createMedication = async function(user_key, medPayload) {
@@ -210,37 +186,6 @@ console.log('site-sync.js: loading');
    * Create a medication for a patient identified by username (display_name) or email.
    * Uses `window.supabaseService` (service role) when available to bypass RLS for quick dev.
    */
-=======
-  };
-
-  ns.createMedication = async function(user_key, medPayload) {
-    const supabase = ensureClient();
-    try {
-      // Set audit fields for who added the medication
-      let added_by_role = medPayload.added_by_role || 'patient';
-      let added_by_user_key = medPayload.added_by_user_key || null;
-      try {
-        if (!added_by_user_key && window.supabaseClient?.auth) {
-          const s = await window.supabaseClient.auth.getUser();
-          added_by_user_key = s?.data?.user?.id || added_by_user_key;
-        }
-      } catch (e) {}
-
-      const body = Object.assign({}, medPayload, { user_key, added_by_role, added_by_user_key });
-      const { data, error } = await supabase.from('medications').insert(body).select().single();
-      if (error) throw error;
-      return data;
-    } catch (e) {
-      console.error('createMedication error', e);
-      throw e;
-    }
-  };
-
-  /**
-   * Create a medication for a patient identified by username (display_name) or email.
-   * Uses `window.supabaseService` (service role) when available to bypass RLS for quick dev.
-   */
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
   ns.createMedicationForPatient = async function(patientIdentifier, medPayload = {}) {
     const svc = window.supabaseService || window.supabaseClient;
     if (!svc) throw new Error('Supabase client not initialized');
@@ -337,209 +282,6 @@ console.log('site-sync.js: loading');
       console.error('logMedEvent error', e);
       throw e;
     }
-  };
-
-  ns.updateMedicationForPatient = async function(patientIdentifier, medicationIdentifier, updates = {}) {
-    const svc = window.supabaseService || window.supabaseClient;
-    if (!svc) throw new Error('Supabase client not initialized');
-    const pid = String(patientIdentifier || '').trim();
-    const mid = String(medicationIdentifier || '').trim();
-    if (!pid) throw new Error('Patient identifier is required');
-    if (!mid) throw new Error('Medication identifier is required');
-
-    const looksLikeUserKey = pid.indexOf('-') > -1 && pid.length > 20;
-    const patientEmail = `${pid}@local.example`;
-    let userRow = null;
-    if (looksLikeUserKey) {
-      const { data, error } = await svc.from('users').select('user_key').eq('user_key', pid).limit(1).maybeSingle();
-      if (error) throw error;
-      userRow = data;
-    } else {
-      const { data, error } = await svc
-        .from('users')
-        .select('user_key,email,display_name')
-        .or(`display_name.eq.${pid},email.eq.${patientEmail}`)
-        .limit(1)
-        .maybeSingle();
-      if (error) throw error;
-      userRow = data;
-    }
-    if (!userRow?.user_key) throw new Error(`User not found for '${pid}'`);
-
-    const body = {};
-    if (updates.name != null || updates.drug_name != null) body.drug_name = updates.drug_name || updates.name;
-    if (updates.dosage != null || updates.strength != null) body.strength = updates.strength || updates.dosage;
-    if (updates.type != null || updates.route != null) body.route = updates.route || updates.type;
-    if (updates.instructions != null || updates.instruction != null) body.instruction = updates.instruction || updates.instructions;
-    if (updates.schedule != null || updates.frequency_text != null) body.frequency_text = updates.frequency_text || updates.schedule;
-    body.updated_at = new Date().toISOString();
-
-    let { data, error } = await svc
-      .from('medications')
-      .update(body)
-      .eq('user_key', userRow.user_key)
-      .eq('medication_key', mid)
-      .select()
-      .maybeSingle();
-    if (error) throw error;
-    if (!data) {
-      const dbIdMatch = String(mid).match(/^db-(\d+)$/) || String(mid).match(/^(\d+)$/);
-      if (dbIdMatch) {
-        ({ data, error } = await svc
-          .from('medications')
-          .update(body)
-          .eq('user_key', userRow.user_key)
-          .eq('id', Number(dbIdMatch[1]))
-          .select()
-          .maybeSingle());
-        if (error) throw error;
-      }
-    }
-    if (!data && updates && updates.match) {
-      const norm = (v) => String(v || '').trim().toLowerCase();
-      const mName = norm(updates.match.name);
-      const mDose = norm(updates.match.dosage);
-      const mFreq = norm(updates.match.schedule);
-      const mInstr = norm(updates.match.instructions);
-      const { data: rows, error: rowsErr } = await svc
-        .from('medications')
-        .select('id,medication_key,drug_name,strength,frequency_text,instruction,created_at')
-        .eq('user_key', userRow.user_key)
-        .order('created_at', { ascending: false })
-        .limit(200);
-      if (rowsErr) throw rowsErr;
-      const matchRow = (rows || []).find(r =>
-        norm(r.drug_name) === mName &&
-        (!mDose || norm(r.strength) === mDose) &&
-        (!mFreq || norm(r.frequency_text) === mFreq) &&
-        (!mInstr || norm(r.instruction) === mInstr)
-      ) || (rows || []).find(r => norm(r.drug_name) === mName);
-      if (matchRow?.id) {
-        ({ data, error } = await svc
-          .from('medications')
-          .update(body)
-          .eq('user_key', userRow.user_key)
-          .eq('id', matchRow.id)
-          .select()
-          .maybeSingle());
-        if (error) throw error;
-      }
-    }
-    if (!data) {
-      // Legacy local-only medication: create a DB row so future edits/deletes stay in sync.
-      const createPayload = {
-        medication_key: mid,
-        drug_name: body.drug_name || updates.name || updates.drug_name || null,
-        strength: body.strength || updates.dosage || updates.strength || null,
-        route: body.route || updates.type || updates.route || null,
-        instruction: body.instruction || updates.instructions || updates.instruction || null,
-        frequency_text: body.frequency_text || updates.schedule || updates.frequency_text || null,
-        is_active: true,
-        added_by_role: 'doctor',
-        added_by_user_key: null
-      };
-      ({ data, error } = await svc
-        .from('medications')
-        .insert(Object.assign({ user_key: userRow.user_key }, createPayload))
-        .select()
-        .maybeSingle());
-      if (error) throw error;
-    }
-    if (!data) throw new Error('Medication not found in database for update');
-    return data;
-  };
-
-  ns.deleteMedicationForPatient = async function(patientIdentifier, medicationIdentifier) {
-    const svc = window.supabaseService || window.supabaseClient;
-    if (!svc) throw new Error('Supabase client not initialized');
-    const pid = String(patientIdentifier || '').trim();
-    const mid = String(medicationIdentifier || '').trim();
-    if (!pid) throw new Error('Patient identifier is required');
-    if (!mid) throw new Error('Medication identifier is required');
-
-    const looksLikeUserKey = pid.indexOf('-') > -1 && pid.length > 20;
-    const patientEmail = `${pid}@local.example`;
-    let userRow = null;
-    if (looksLikeUserKey) {
-      const { data, error } = await svc.from('users').select('user_key').eq('user_key', pid).limit(1).maybeSingle();
-      if (error) throw error;
-      userRow = data;
-    } else {
-      const { data, error } = await svc
-        .from('users')
-        .select('user_key,email,display_name')
-        .or(`display_name.eq.${pid},email.eq.${patientEmail}`)
-        .limit(1)
-        .maybeSingle();
-      if (error) throw error;
-      userRow = data;
-    }
-    if (!userRow?.user_key) throw new Error(`User not found for '${pid}'`);
-
-    const { data, error } = await svc
-      .from('medications')
-      .delete()
-      .eq('user_key', userRow.user_key)
-      .eq('medication_key', mid)
-      .select()
-      .maybeSingle();
-    if (error) throw error;
-    if (!data) throw new Error('Medication not found in database for delete');
-    return data;
-  };
-
-  ns.resolveMedicationKeyForPatient = async function(patientIdentifier, medHint = {}) {
-    const svc = window.supabaseService || window.supabaseClient;
-    if (!svc) throw new Error('Supabase client not initialized');
-    const pid = String(patientIdentifier || '').trim();
-    if (!pid) throw new Error('Patient identifier is required');
-
-    const looksLikeUserKey = pid.indexOf('-') > -1 && pid.length > 20;
-    const patientEmail = `${pid}@local.example`;
-    let userRow = null;
-    if (looksLikeUserKey) {
-      const { data, error } = await svc.from('users').select('user_key').eq('user_key', pid).limit(1).maybeSingle();
-      if (error) throw error;
-      userRow = data;
-    } else {
-      const { data, error } = await svc
-        .from('users')
-        .select('user_key,email,display_name')
-        .or(`display_name.eq.${pid},email.eq.${patientEmail}`)
-        .limit(1)
-        .maybeSingle();
-      if (error) throw error;
-      userRow = data;
-    }
-    if (!userRow?.user_key) throw new Error(`User not found for '${pid}'`);
-
-    const { data: rows, error: qErr } = await svc
-      .from('medications')
-      .select('medication_key,drug_name,strength,frequency_text,instruction,created_at')
-      .eq('user_key', userRow.user_key)
-      .order('created_at', { ascending: false })
-      .limit(200);
-    if (qErr) throw qErr;
-    if (!rows || rows.length === 0) return null;
-
-    const norm = (v) => String(v || '').trim().toLowerCase();
-    const nName = norm(medHint.name);
-    const nDose = norm(medHint.dosage);
-    const nFreq = norm(medHint.schedule);
-    const nInstr = norm(medHint.instructions);
-
-    const exact = rows.find(r =>
-      norm(r.drug_name) === nName &&
-      (!nDose || norm(r.strength) === nDose) &&
-      (!nFreq || norm(r.frequency_text) === nFreq) &&
-      (!nInstr || norm(r.instruction) === nInstr)
-    );
-    if (exact?.medication_key) return exact.medication_key;
-
-    const byName = rows.find(r => norm(r.drug_name) === nName && r.medication_key);
-    if (byName?.medication_key) return byName.medication_key;
-
-    return rows[0]?.medication_key || null;
   };
 
   ns.updateMedicationForPatient = async function(patientIdentifier, medicationIdentifier, updates = {}) {
