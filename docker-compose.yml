@@ -7,14 +7,10 @@ services:
     ports:
       - "3000:80"
     volumes:
-      - ./site:/usr/share/nginx/html
-```
+      - .:/usr/share/nginx/html
+    networks:
+      - shared-network
 
-And your file structure in the repo should look like:
-```
-your-repo/
-├── docker-compose.yml
-└── site/
-    ├── index.html
-    ├── app.js
-    └── style.css
+networks:
+  shared-network:
+    external: true
