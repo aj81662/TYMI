@@ -29,23 +29,6 @@
       // keep trying candidates
     }
   }
-<<<<<<< HEAD
-
-  // Fallback to meta tags
-  if (!SUPABASE_URL) SUPABASE_URL = getMeta('supabase-url');
-  if (!SUPABASE_KEY) SUPABASE_KEY = getMeta('supabase-key');
-
-  if (!SUPABASE_URL || !SUPABASE_KEY) {
-    console.warn('Supabase configuration not found. Add /env.json or <meta name="supabase-url"> and <meta name="supabase-key"> to index.html.');
-    return;
-  }
-
-  if (!window.supabase) {
-    console.warn('Supabase SDK not found on window. Ensure the CDN script is loaded before this script.');
-  }
-
-  try {
-=======
 
   // Fallback to meta tags
   if (!SUPABASE_URL) SUPABASE_URL = getMeta('supabase-url');
@@ -67,7 +50,6 @@
   }
 
   try {
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
     window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
     });

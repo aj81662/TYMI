@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-// Minimal Expo app entry that delegates to expo-router
-import 'expo-router/entry';
-=======
 import React from 'react';
 import { Platform, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
@@ -56,4 +52,3 @@ const styles = StyleSheet.create({
     borderWidth: 0,
   },
 });
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)

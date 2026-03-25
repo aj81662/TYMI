@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <script src="global-polyfills.js"></script>
     <script>
         (function () {
             try {
@@ -23,13 +24,13 @@
         (function(){
             try {
                 if (!window.crypto) window.crypto = window.msCrypto || {};
-                if (!crypto.randomUUID) {
-                    crypto.randomUUID = function() {
-                        var bytes = (crypto.getRandomValues && crypto.getRandomValues(new Uint8Array(16))) || new Uint8Array(16);
+                if (typeof window.crypto.randomUUID !== 'function') {
+                    window.crypto.randomUUID = function () {
+                        var bytes = (window.crypto.getRandomValues && window.crypto.getRandomValues(new Uint8Array(16))) || new Uint8Array(16);
                         bytes[6] = (bytes[6] & 0x0f) | 0x40;
                         bytes[8] = (bytes[8] & 0x3f) | 0x80;
-                        var hex = Array.from(bytes).map(function(b){return b.toString(16).padStart(2,'0')}).join('');
-                        return hex.substr(0,8) + '-' + hex.substr(8,4) + '-' + hex.substr(12,4) + '-' + hex.substr(16,4) + '-' + hex.substr(20,12);
+                        var hex = Array.from(bytes).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+                        return hex.substr(0, 8) + '-' + hex.substr(8, 4) + '-' + hex.substr(12, 4) + '-' + hex.substr(16, 4) + '-' + hex.substr(20, 12);
                     };
                 }
             } catch (e) {}
@@ -1384,6 +1385,15 @@ async function approve(username){ // ASYNC
         if (error) {
             alert('Failed to approve in database: ' + (error.message || error));
             return;
+        }
+    }
+    u.approved = true; u.assignedDoctor = current; 
+    if (currentUserKey) u.assignedDoctorUserKey = currentUserKey;
+    
+    // Update doctor's pending list (if stored, though not explicitly used here)
+    users.forEach(doc=>{
+        if(doc.role==='doctor' && Array.isArray(doc.pendingPatients)){
+            doc.pendingPatients = doc.pendingPatients.filter(p=>p !== username);
         }
     }
     u.approved = true; u.assignedDoctor = current; 

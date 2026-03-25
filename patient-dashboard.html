@@ -218,6 +218,177 @@ input,select,textarea{padding:8px;border-radius:6px;border:1px solid #ccc;backgr
     font-weight: 500;
 }
 
+/* Schedule Tab */
+.schedule-topbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+.schedule-view-switch {
+    display: inline-flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.schedule-view-switch button {
+    background: #fff;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 999px;
+    padding: 6px 12px;
+}
+.schedule-view-switch button.active {
+    background: var(--deep-green);
+    border-color: var(--deep-green);
+    color: #fff;
+}
+.schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+    margin-bottom: 16px;
+}
+.schedule-panel {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 12px;
+}
+.schedule-panel h4 {
+    margin: 0 0 10px 0;
+}
+.schedule-timeline {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #fff;
+    overflow: hidden;
+}
+.schedule-day {
+    border-bottom: 1px solid #eef2f7;
+}
+.schedule-day:last-child {
+    border-bottom: 0;
+}
+.schedule-day-label {
+    padding: 10px 12px;
+    font-weight: 700;
+    background: #f8fafc;
+}
+.schedule-item {
+    display: grid;
+    grid-template-columns: 88px 1fr auto;
+    gap: 10px;
+    align-items: start;
+    padding: 10px 12px;
+    border-top: 1px solid #f1f5f9;
+}
+.schedule-item:first-child {
+    border-top: 0;
+}
+.schedule-item.medication .schedule-time {
+    color: var(--deep-green);
+}
+.schedule-item.meal .schedule-time {
+    color: #0f766e;
+}
+.schedule-time {
+    font-weight: 700;
+    font-family: var(--font-primary);
+}
+.schedule-meta {
+    margin-top: 4px;
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+.schedule-calendar {
+    padding: 10px;
+}
+.schedule-calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.schedule-weekday-label {
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.schedule-calendar-grid {
+    display: grid;
+    gap: 8px;
+}
+.schedule-cell {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    min-height: 120px;
+    padding: 8px;
+    background: #ffffff;
+}
+.schedule-cell.out-month {
+    background: #f8fafc;
+    opacity: 0.75;
+}
+.schedule-cell-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    margin-bottom: 6px;
+    font-size: 0.82rem;
+    color: #475569;
+}
+.schedule-day-number {
+    font-weight: 700;
+    color: #1e293b;
+}
+.schedule-chip {
+    border-radius: 8px;
+    padding: 6px 7px;
+    margin-bottom: 6px;
+    border: 1px solid #dbeafe;
+    background: #eff6ff;
+}
+.schedule-chip:last-child {
+    margin-bottom: 0;
+}
+.schedule-chip.medication {
+    border-color: #c7d2fe;
+    background: #eef2ff;
+}
+.schedule-chip.meal {
+    border-color: #a7f3d0;
+    background: #ecfdf5;
+}
+.schedule-chip-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+.schedule-chip-title {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.25;
+}
+.schedule-chip-sub {
+    margin-top: 2px;
+    font-size: 0.76rem;
+    color: #475569;
+    line-height: 1.25;
+}
+.schedule-chip .schedule-delete-btn {
+    padding: 0 6px;
+    min-width: auto;
+    line-height: 1.2;
+}
+
 /* Pet Status Styles (Pet Tab) */
 .pet-card {
     display: flex;
@@ -414,7 +585,6 @@ nav.fixed a:focus, nav.fixed button:focus{outline:none!important;box-shadow:none
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
   <script src="supabase-init.js"></script>
   <script src="site-sync.js"></script>
-<<<<<<< HEAD
 </head>
 
 <body>
@@ -548,9 +718,11 @@ nav.fixed a:focus, nav.fixed button:focus{outline:none!important;box-shadow:none
         <div class="tab-nav" style="margin-top:20px;">
             <button id="tabMedications" data-tab="medications" class="active">Medications</button>
             <button id="tabLog" data-tab="log">Log</button>
+            <button id="tabSchedule" data-tab="schedule">Schedule</button>
             <button id="tabPet" data-tab="pet">Pet 🌟</button>
             <button id="tabData" data-tab="data">Data & Trends</button>
             <button id="tabChat" data-tab="chat">Chat</button>
+            <button id="tabSettings" data-tab="settings">Settings</button>
             <button id="refreshBtn" class="ghost smallbtn" style="margin-left:auto;">Refresh</button>
         </div>
 
@@ -603,296 +775,94 @@ nav.fixed a:focus, nav.fixed button:focus{outline:none!important;box-shadow:none
             <div id="history" class="muted"></div>
         </div>
 
-        <div id="tabContent_pet" class="tab-content">
-            <h3>💊 Your Adherence Pet</h3>
-            
-            <div id="petStatus" class="pet-card">
-                <div id="petVisualSvg" class="pet-visual"></div>
-                <div id="petInfo" class="pet-info"></div>
-            </div>
-            
-            <div class="pet-customization-section">
-                <h4>Customize Pet: Body Shape</h4>
-                <div id="petBodyShapeOptions" class="pet-options"></div>
+        <div id="tabContent_schedule" class="tab-content">
+            <h3>Medication & Meal Schedule</h3>
 
-                <h4>Customize Pet: Ears</h4>
-                <div id="petEarOptions" class="pet-options"></div>
-
-                <h4>Customize Pet: Colors</h4>
-                <div id="petColorOptions" class="pet-options"></div>
-
-                <h4>Customize Pet: Eyes</h4>
-                <div id="petEyeOptions" class="pet-options"></div>
-
-                <h4>Customize Pet: Mouth</h4>
-                <div id="petMouthOptions" class="pet-options"></div>
-            </div>
-
-            <h4 style="margin-top:20px">Pet Notes</h4>
-            <div class="muted">
-                <p>Earn **1 Adherence Point (AP)** for every scheduled medication dose you log as taken in the **Log** tab.</p>
-                <p>Spend AP to **feed** your pet and keep its health up. Health decays slowly over time, rewarding consistent logging!</p>
-            </div>
-        </div>
-
-
-        <div id="tabContent_data" class="tab-content">
-            <h3>📈 Adherence Data & Trends (Last 7 Days)</h3>
-            <div class="chart-grid">
-                <div class="chart-card feature-wide"><h4>Daily Trend (Assigned vs. Taken)</h4><canvas id="dailyTrendChart"></canvas></div>
-                <div class="chart-card"><h4>Total Taken vs Missed</h4><canvas id="takenMissedChart"></canvas></div>
-                <div class="chart-card"><h4>Adherence by Medication (%)</h4><canvas id="medBarChart"></canvas></div>
-                <div class="chart-card"><h4>AM vs PM Adherence (%)</h4><canvas id="amPmChart"></canvas></div>
-                <div class="chart-card"><h4>Avg Symptom Severity (Last 7 Days)</h4><canvas id="symptomSeverityChart"></canvas></div>
-            </div>
-
-            <h4 style="margin-top:12px">Dashboard Notes</h4>
-            <div class="muted">
-                <p>Medications added by doctors are labeled <strong>(Doctor)</strong>. Data reflects adherence over the last 7 days.</p>
-            </div>
-        </div>
-
-        <div id="tabContent_chat" class="tab-content">
-            <h3>Chat with Your Doctor</h3>
-            <div class="chat-wrapper">
-                <div class="chat-header">
-                    <div>
-                        <label class="chat-meta">Doctor: <strong id="chatDoctorName">Dr. Care</strong></label>
-                    </div>
-                    <div>
-                        <button id="clearChat" class="ghost smallbtn">Clear</button>
-                    </div>
+            <div class="schedule-topbar">
+                <div id="scheduleViewSwitch" class="schedule-view-switch" aria-label="Schedule range view">
+                    <button type="button" data-schedule-view="day" class="active">Day</button>
+                    <button type="button" data-schedule-view="week">Week</button>
+                    <button type="button" data-schedule-view="month">Month</button>
                 </div>
-                <div id="chatMessages" class="chat-messages" aria-live="polite"></div>
-                <div class="chat-input-row">
-                    <input id="chatInput" class="chat-input" placeholder="Type a message..." />
-                    <button id="chatSend" class="chat-send">Send</button>
-                </div>
+                <label style="display:flex;align-items:center;gap:8px">
+                    <span>Anchor date</span>
+                    <input id="scheduleAnchorDate" type="date" style="margin:0;min-width:170px" />
+                </label>
             </div>
-        </div>
-    </div>
-  </div>
 
-<div id="symptomOverlay" class="modal-overlay hidden" aria-hidden="true">
-  <div class="symptom-modal" role="dialog" aria-modal="true" aria-labelledby="symptomTitle">
-    <h4 id="symptomTitle" style="margin:0 0 8px 0">Log symptoms (optional)</h4>
-    <div class="symptom-row" id="symptomButtons">
-      <button type="button" class="symptom-btn" data-symptom="Nausea">Nausea</button>
-      <button type="button" class="symptom-btn" data-symptom="Dizziness">Dizziness</button>
-      <button type="button" class="symptom-btn" data-symptom="Drowsiness">Drowsiness</button>
-      <button type="button" class="symptom-btn" data-symptom="Dry Mouth">Dry Mouth</button>
-      <button type="button" class="symptom-btn" data-symptom="Headache">Headache</button>
-      <button type="button" class="symptom-btn" data-symptom="Fatigue">Fatigue</button>
-    </div>
-        <textarea id="symptomText" class="symptom-text" rows="3" placeholder="Describe any other symptoms or notes..."></textarea>
-        <div class="symptom-row" style="align-items:center;margin-top:8px">
-            <label style="flex:1;display:flex;align-items:center;gap:8px">Severity:
-                <input id="symptomSeverity" type="range" min="0" max="10" value="0" style="flex:1" />
-                <span id="symptomSeverityValue" style="min-width:28px;text-align:center;display:inline-block">0</span>
-            </label>
-        </div>
-        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px">
-            <button type="button" id="symptomClose" class="ghost">Cancel</button>
-            <button type="button" id="symptomCancel" class="ghost">Skip & Log</button>
-            <button type="button" id="symptomSubmit" class="">Submit</button>
-        </div>
-  </div>
-</div>
-<script>
-/* ------------------------------------------------ */
-/* --- GLOBAL VARIABLES --- */
-/* ------------------------------------------------ */
-=======
-</head>
-
-<body>
-                <nav class="fixed top-0 left-0 right-0 bg-white shadow-sm z-50">
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div class="flex items-center justify-between h-16">
-                            <div class="flex-shrink-0"><span class="text-2xl font-bold text-blue-600">TYM</span></div>
-
-                            <div class="flex items-center space-x-8">
-                                <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='index.html#home'">Home</button>
-                                <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='index.html#about'">About</button>
-                                <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='index.html#solutions'">Solutions</button>
-                                <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='index.html#contact'">Contact</button>
-                            </div>
-
-                            <div class="flex items-center space-x-4">
-                                <div class="relative">
-                                    <button id="navLoginBtnPatient" class="px-4 py-2 text-blue-600 hover:text-blue-700 transition-colors">Login ▾</button>
-                                    <div id="navLoginMenuPatient" class="hidden absolute right-0 mt-2 w-44 bg-white border rounded shadow-lg">
-                                        <a class="block px-4 py-2 text-gray-700 hover:bg-blue-50" href="patient-login.html">Patient Login</a>
-                                        <a class="block px-4 py-2 text-gray-700 hover:bg-blue-50" href="doctor-login.html">Doctor Login</a>
-                                    </div>
-                                </div>
-                                <a class="px-6 py-2 bg-blue-600 text-white rounded-full" href="create-account.html">Sign Up</a>
-                            </div>
-
-                            <div class="md:hidden">
-                                <button id="toggleBtnPatient" class="text-gray-700 hover:text-blue-600">☰</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="mobileMenuPatient" class="md:hidden bg-white border-t" style="display:none;">
-                        <div class="px-4 pt-2 pb-4 space-y-2">
-                            <button onclick="location.href='index.html#home'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">Home</button>
-                            <button onclick="location.href='index.html#about'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">About</button>
-                            <button onclick="location.href='index.html#solutions'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">Solutions</button>
-                            <button onclick="location.href='index.html#contact'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">Contact</button>
-                            <div class="pt-4 space-y-2">
-                                <a href="patient-login.html" class="block w-full px-4 py-2 text-blue-600 border border-blue-600 rounded-full hover:bg-blue-50">Patient Login</a>
-                                <a href="doctor-login.html" class="block w-full px-4 py-2 text-gray-700 border rounded-full hover:bg-blue-50">Doctor Login</a>
-                                <a href="create-account.html" class="block w-full px-4 py-2 bg-blue-600 text-white rounded-full">Sign Up</a>
-                            </div>
-                        </div>
-                    </div>
-                </nav>
-<script>
-;(function(){
-    const btn = document.getElementById('navLoginBtnPatient');
-    const menu = document.getElementById('navLoginMenuPatient');
-    let _close = null;
-    if (btn && menu) {
-        btn.setAttribute('aria-haspopup','true');
-        btn.setAttribute('aria-expanded','false');
-
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const isHidden = menu.classList.contains('hidden');
-            if (isHidden) {
-                // make measurable and place using button coordinates
-                menu.classList.remove('hidden');
-                btn.setAttribute('aria-expanded','true');
-                menu.style.position = 'fixed';
-                menu.style.display = 'block';
-                menu.style.visibility = 'hidden';
-                menu.style.zIndex = '9999';
-                menu.style.background = '#fff';
-                menu.style.border = '1px solid #e5e7eb';
-                menu.style.boxShadow = '0 10px 15px rgba(0,0,0,.08)';
-                menu.style.padding = '0.25rem 0';
-                menu.style.minWidth = '11rem';
-                menu.style.flexDirection = 'column';
-
-                const btnRect = btn.getBoundingClientRect();
-                const measuredWidth = menu.offsetWidth || 176;
-                const left = Math.max(8, Math.min(window.innerWidth - measuredWidth - 8, btnRect.right - measuredWidth));
-                const top = btnRect.bottom + 6;
-                menu.style.left = left + 'px';
-                menu.style.top = top + 'px';
-                menu.style.visibility = 'visible';
-
-                // add outside click handler on next tick
-                _close = function outsideClickListener(ev) {
-                    if (!menu.contains(ev.target) && ev.target !== btn) {
-                        menu.classList.add('hidden');
-                        menu.style.display = 'none';
-                        menu.style.position = 'absolute';
-                        btn.setAttribute('aria-expanded','false');
-                        document.removeEventListener('click', _close);
-                        _close = null;
-                    }
-                };
-                setTimeout(() => document.addEventListener('click', _close));
-
-            } else {
-                menu.classList.add('hidden');
-                menu.style.display = 'none';
-                menu.style.position = 'absolute';
-                btn.setAttribute('aria-expanded','false');
-                if (_close) { document.removeEventListener('click', _close); _close = null; }
-            }
-            console.log('[nav] Patient toggle — open:', !isHidden, 'btnRect:', btn.getBoundingClientRect(), 'menuRect:', menu.getBoundingClientRect());
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !menu.classList.contains('hidden')) {
-                menu.classList.add('hidden');
-                menu.style.display = 'none';
-                menu.style.position = 'absolute';
-                btn.setAttribute('aria-expanded','false');
-                if (_close) { document.removeEventListener('click', _close); _close = null; }
-                console.log('[nav] Patient menu closed by Escape');
-            }
-        });
-    }
-    const toggleBtn = document.getElementById('toggleBtnPatient');
-    const mobile = document.getElementById('mobileMenuPatient');
-    if(toggleBtn && mobile){ toggleBtn.addEventListener('click', ()=>{ if(mobile.style.display==='none'){ mobile.style.display=''; toggleBtn.textContent='✕'; } else { mobile.style.display='none'; toggleBtn.textContent='☰'; }}); }
-})();
-</script>
-
-  <div class="container">
-    <div class="box">
-        <h2 id="heading">Patient Dashboard</h2>
-        <div id="info" class="muted"></div>
-        
-        <div style="margin-top:16px">
-            <button id="logout" class="danger smallbtn">Logout</button>
-        </div>
-
-        <div class="tab-nav" style="margin-top:20px;">
-            <button id="tabMedications" data-tab="medications" class="active">Medications</button>
-            <button id="tabLog" data-tab="log">Log</button>
-            <button id="tabPet" data-tab="pet">Pet 🌟</button>
-            <button id="tabData" data-tab="data">Data & Trends</button>
-            <button id="tabChat" data-tab="chat">Chat</button>
-            <button id="refreshBtn" class="ghost smallbtn" style="margin-left:auto;">Refresh</button>
-        </div>
-
-        <div id="tabContent_medications" class="tab-content active">
-            <h3>Current Medications</h3>
-            <div id="medsWrap" class="med-list">
-                <p class="muted">Loading medications and drug details...</p>
-            </div>
-            
-            <h4 style="margin-top:20px">Add a medication</h4>
-            <div style="margin-top:8px">
-              <label>Medication name
-                <input id="medName" placeholder="e.g., Metformin" />
-              </label>
-              <label>Type
-                <select id="medType">
-                  <option value="pill">Pill</option><option value="liquid">Liquid</option><option value="injection">Injection</option><option value="other">Other</option>
-                </select>
-              </label>
-              <label>Dosage
-                <input id="medDose" placeholder="e.g., 500 mg" />
-              </label>
-              <label>Schedule
-                <select id="medSchedule">
-                  <option value="am">AM</option><option value="pm">PM</option><option value="both">Both</option><option value="custom">Custom</option>
-                </select>
-              </label>
-              <label>Instructions
-                <textarea id="medInstr" placeholder="Take with meal / empty stomach / etc." rows="2"></textarea>
-              </label>
-              <div style="margin-top:8px">
-                <button id="addMedBtn" class="smallbtn">Add Medication</button>
-              </div>
-            </div>
-        </div>
-
-        <div id="tabContent_log" class="tab-content">
-            <h3>Log Daily Intake & Symptoms</h3>
-
-            <div style="margin-bottom:15px">
-              <button id="markAmBtn" class="smallbtn">Mark All AM</button>
-              <button id="markPmBtn" class="smallbtn" style="margin-left:8px">Mark All PM</button>
-              <button id="markAllBtn" class="smallbtn" style="margin-left:8px">Mark All Assigned as Taken</button>
-            </div>
-            
-            <div id="logMedList">
+            <div class="schedule-grid">
+                <div class="schedule-panel">
+                    <h4>Add medication time</h4>
+                    <label>Medication
+                        <select id="scheduleMedicationSelect"></select>
+                    </label>
+                    <label>Date
+                        <input id="scheduleMedicationDate" type="date" />
+                    </label>
+                    <label>Time
+                        <input id="scheduleMedicationTime" type="time" />
+                    </label>
+                    <label>Repeats
+                        <select id="scheduleMedicationRepeat">
+                            <option value="once">One time</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </label>
+                    <label>Meal timing
+                        <select id="scheduleMedicationMealTiming">
+                            <option value="none">No meal requirement</option>
+                            <option value="with">Take with meal</option>
+                            <option value="before">Take before meal</option>
+                            <option value="after">Take after meal</option>
+                        </select>
+                    </label>
+                    <label>Notes
+                        <textarea id="scheduleMedicationNotes" rows="2" placeholder="e.g., with breakfast and water"></textarea>
+                    </label>
+                    <button id="addScheduleMedicationBtn" type="button" class="smallbtn">Add Medication Time</button>
                 </div>
 
-            <h4 style="margin-top:20px">Adherence History</h4>
-            <div id="history" class="muted"></div>
+                <div class="schedule-panel">
+                    <h4>Add meal time</h4>
+                    <label>Meal
+                        <select id="scheduleMealType">
+                            <option value="Breakfast">Breakfast</option>
+                            <option value="Lunch">Lunch</option>
+                            <option value="Dinner">Dinner</option>
+                            <option value="Snack">Snack</option>
+                        </select>
+                    </label>
+                    <label>Date
+                        <input id="scheduleMealDate" type="date" />
+                    </label>
+                    <label>Time
+                        <input id="scheduleMealTime" type="time" />
+                    </label>
+                    <label>Repeats
+                        <select id="scheduleMealRepeat">
+                            <option value="once">One time</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </label>
+                    <label>Notes
+                        <textarea id="scheduleMealNotes" rows="2" placeholder="e.g., high-protein meal"></textarea>
+                    </label>
+                    <button id="addScheduleMealBtn" type="button" class="smallbtn">Add Meal Time</button>
+                </div>
+            </div>
+
+            <h4 id="scheduleRangeLabel">Schedule</h4>
+            <div id="scheduleTimeline" class="schedule-timeline">
+                <div style="padding:12px" class="muted">No schedule entries yet. Add medication and meal times above.</div>
+            </div>
         </div>
 
         <div id="tabContent_pet" class="tab-content">
-            <h3>💊 Your Adherence Pet</h3>
+            <h3>Your Adherence Pet</h3>
             
             <div id="petStatus" class="pet-card">
                 <div id="petVisualSvg" class="pet-visual"></div>
@@ -964,6 +934,66 @@ nav.fixed a:focus, nav.fixed button:focus{outline:none!important;box-shadow:none
                 </div>
             </div>
         </div>
+        <div id="tabContent_settings" class="tab-content">
+            <h3>Settings</h3>
+            <div class="schedule-grid">
+                <div class="schedule-panel">
+                    <h4>Account Email</h4>
+                    <label>Email
+                        <input id="settingsEmail" type="email" placeholder="you@example.com" />
+                    </label>
+                    <button id="settingsSaveEmailBtn" class="smallbtn" type="button">Update Email</button>
+                    <div id="settingsAccountMsg" class="muted" style="margin-top:8px"></div>
+                </div>
+
+                <div class="schedule-panel">
+                    <h4>Change Password</h4>
+                    <label>Current password
+                        <input id="settingsCurrentPassword" type="password" placeholder="Current password" />
+                    </label>
+                    <label>New password
+                        <input id="settingsNewPassword" type="password" placeholder="New password" />
+                    </label>
+                    <label>Confirm new password
+                        <input id="settingsConfirmPassword" type="password" placeholder="Confirm new password" />
+                    </label>
+                    <button id="settingsChangePasswordBtn" class="smallbtn" type="button">Change Password</button>
+                    <div id="settingsPasswordMsg" class="muted" style="margin-top:8px"></div>
+                </div>
+
+                <div class="schedule-panel">
+                    <h4>Preferences</h4>
+                    <label style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+                        <input id="settingsEmailReminders" type="checkbox" style="width:auto;margin:0" />
+                        <span>Email reminders</span>
+                    </label>
+                    <label style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+                        <input id="settingsMealReminders" type="checkbox" style="width:auto;margin:0" />
+                        <span>Meal timing reminders</span>
+                    </label>
+                    <label>Reminder lead time
+                        <select id="settingsReminderLead">
+                            <option value="5">5 minutes before</option>
+                            <option value="15">15 minutes before</option>
+                            <option value="30">30 minutes before</option>
+                            <option value="60">60 minutes before</option>
+                        </select>
+                    </label>
+                    <button id="settingsSavePrefsBtn" class="smallbtn" type="button">Save Preferences</button>
+                    <div id="settingsPrefsMsg" class="muted" style="margin-top:8px"></div>
+                </div>
+
+                <div class="schedule-panel">
+                    <h4>Data Controls</h4>
+                    <p class="muted" style="margin-top:0">Export your medication, log, schedule, and preferences data or clear local dashboard data.</p>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap">
+                        <button id="settingsExportDataBtn" class="smallbtn" type="button">Export My Data</button>
+                        <button id="settingsClearLocalDataBtn" class="danger smallbtn" type="button">Clear Local Data</button>
+                    </div>
+                    <div id="settingsDataMsg" class="muted" style="margin-top:8px"></div>
+                </div>
+            </div>
+        </div>
     </div>
   </div>
 
@@ -996,7 +1026,6 @@ nav.fixed a:focus, nav.fixed button:focus{outline:none!important;box-shadow:none
 /* ------------------------------------------------ */
 /* --- GLOBAL VARIABLES --- */
 /* ------------------------------------------------ */
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
 let current = null;
 let currentUserKey = null;
 let currentLogEntry = null; 
@@ -1022,23 +1051,680 @@ function setUserMedsInStore(meds, userMeds) {
     if (current) meds[current] = userMeds;
     if (currentUserKey) meds[currentUserKey] = userMeds;
 }
-<<<<<<< HEAD
 function loadAllPetStatus(){ try{ return JSON.parse(localStorage.getItem('petStatus')||'{}'); } catch(e){ return {}; } }
-=======
-function loadAllPetStatus(){ try{ return JSON.parse(localStorage.getItem('petStatus')||'{}'); } catch(e){ return {}; } }
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
 function savePetStatus(s){ 
     const petStore = loadAllPetStatus();
     petStore[current] = s;
     localStorage.setItem('petStatus', JSON.stringify(petStore));
 }
 
+/* --- SCHEDULE TAB HELPERS --- */
+let scheduleView = 'day';
+
+function getLocalDateKey(dateObj = new Date()) {
+    const y = dateObj.getFullYear();
+    const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const d = String(dateObj.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
+function getLocalTimeKey(dateObj = new Date()) {
+    const h = String(dateObj.getHours()).padStart(2, '0');
+    const m = String(dateObj.getMinutes()).padStart(2, '0');
+    return `${h}:${m}`;
+}
+
+function parseDateKey(dateStr) {
+    const parts = String(dateStr || '').split('-').map(Number);
+    if (parts.length !== 3 || parts.some((n) => Number.isNaN(n))) return null;
+    return new Date(parts[0], parts[1] - 1, parts[2]);
+}
+
+function addDays(dateObj, amount) {
+    const d = new Date(dateObj);
+    d.setDate(d.getDate() + amount);
+    return d;
+}
+
+function formatTimeLabel(timeStr) {
+    const [hRaw, mRaw] = String(timeStr || '').split(':');
+    const h = Number(hRaw);
+    const m = Number(mRaw);
+    if (!Number.isFinite(h) || !Number.isFinite(m)) return 'Time TBD';
+    const d = new Date();
+    d.setHours(h, m, 0, 0);
+    return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+}
+
+function escapeHtml(value) {
+    return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function loadScheduleStore(){ try{ return JSON.parse(localStorage.getItem('patientSchedule')||'{}'); } catch(e){ console.error(e); return {}; } }
+function saveScheduleStore(store){ localStorage.setItem('patientSchedule', JSON.stringify(store)); }
+function getUserScheduleEntriesFromStore(store) {
+    if (!store || typeof store !== 'object') return [];
+    if (current && Array.isArray(store[current])) return store[current];
+    if (currentUserKey && Array.isArray(store[currentUserKey])) return store[currentUserKey];
+    return [];
+}
+function setUserScheduleEntriesInStore(store, entries) {
+    if (!store || typeof store !== 'object') return;
+    if (current) store[current] = entries;
+    if (currentUserKey) store[currentUserKey] = entries;
+}
+
+function buildScheduleRange(anchorDateStr, view) {
+    const anchorDate = parseDateKey(anchorDateStr) || parseDateKey(getLocalDateKey());
+    if (!anchorDate) return { keys: [getLocalDateKey()], label: 'Today' };
+    let start = new Date(anchorDate);
+    let end = new Date(anchorDate);
+    if (view === 'week') {
+        const dayIndexMondayStart = (anchorDate.getDay() + 6) % 7;
+        start = addDays(anchorDate, -dayIndexMondayStart);
+        end = addDays(start, 6);
+    } else if (view === 'month') {
+        start = new Date(anchorDate.getFullYear(), anchorDate.getMonth(), 1);
+        end = new Date(anchorDate.getFullYear(), anchorDate.getMonth() + 1, 0);
+    }
+    const keys = [];
+    let cursor = new Date(start);
+    while (cursor <= end) {
+        keys.push(getLocalDateKey(cursor));
+        cursor = addDays(cursor, 1);
+    }
+    const fmt = (d) => d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    const label = view === 'day'
+        ? `Day View: ${fmt(start)}`
+        : view === 'week'
+            ? `Week View: ${fmt(start)} - ${fmt(end)}`
+            : `Month View: ${anchorDate.toLocaleDateString([], { month: 'long', year: 'numeric' })}`;
+    return { keys, label };
+}
+
+function entryOccursOnDate(entry, dateKey, dateObj) {
+    const startDate = parseDateKey(entry?.date);
+    if (!startDate || !dateObj) return false;
+    if (dateObj < startDate) return false;
+    const repeat = String(entry.repeat || 'once');
+    if (repeat === 'once') return dateKey === entry.date;
+    if (repeat === 'daily') return true;
+    if (repeat === 'weekly') return dateObj.getDay() === startDate.getDay();
+    if (repeat === 'monthly') return dateObj.getDate() === startDate.getDate();
+    return dateKey === entry.date;
+}
+
+function getRepeatLabel(repeat) {
+    if (repeat === 'daily') return 'Repeats daily';
+    if (repeat === 'weekly') return 'Repeats weekly';
+    if (repeat === 'monthly') return 'Repeats monthly';
+    return 'One time';
+}
+
+function getMealTimingLabel(value) {
+    if (value === 'with') return 'Take with meal';
+    if (value === 'before') return 'Take before meal';
+    if (value === 'after') return 'Take after meal';
+    return 'No meal requirement';
+}
+
+function inferMealTimingFromMedication(med) {
+    const text = String(med?.instructions || '').toLowerCase();
+    if (/with meal|with meals|with food/.test(text)) return 'with';
+    if (/before meal|before meals|empty stomach/.test(text)) return 'before';
+    if (/after meal|after meals|after food/.test(text)) return 'after';
+    return 'none';
+}
+
+function parseTimeFromText(text) {
+    const input = String(text || '').toLowerCase();
+    const hhmm = input.match(/\b([01]?\d|2[0-3]):([0-5]\d)\b/);
+    if (hhmm) {
+        return `${String(Number(hhmm[1])).padStart(2, '0')}:${hhmm[2]}`;
+    }
+    const ampm = input.match(/\b(1[0-2]|0?[1-9])(?::([0-5]\d))?\s*(am|pm)\b/i);
+    if (!ampm) return null;
+    let hour = Number(ampm[1]);
+    const minute = String(ampm[2] || '00');
+    const period = String(ampm[3] || '').toLowerCase();
+    if (period === 'pm' && hour !== 12) hour += 12;
+    if (period === 'am' && hour === 12) hour = 0;
+    return `${String(hour).padStart(2, '0')}:${minute}`;
+}
+
+function getPlannedDoseSlotsForMedication(med) {
+    const schedule = String(med?.schedule || '').toLowerCase();
+    const slots = [];
+    const addSlot = (key, time, label) => {
+        if (!slots.some((s) => s.key === key)) slots.push({ key, time, label });
+    };
+
+    const hasBoth = schedule.includes('both') || schedule.includes('twice') || schedule.includes('bid');
+    const hasAM = hasBoth || schedule.includes('am') || schedule.includes('morning');
+    const hasPM = hasBoth || schedule.includes('pm') || schedule.includes('evening') || schedule.includes('night') || schedule.includes('bed');
+
+    if (hasAM) addSlot('am', '08:00', 'AM planned dose');
+    if (hasPM) addSlot('pm', '20:00', 'PM planned dose');
+
+    if (!hasAM && !hasPM) {
+        const inferred = parseTimeFromText(med?.instructions || '');
+        if (inferred) addSlot('custom', inferred, 'Planned dose');
+        else if (schedule.includes('custom')) addSlot('custom', '12:00', 'Planned custom dose');
+        else addSlot('daily', '09:00', 'Planned daily dose');
+    }
+
+    return slots;
+}
+
+function buildPlannedMedicationEntries(rangeKeys) {
+    const meds = getUserMedsFromStore(loadMeds()) || [];
+    const planned = [];
+
+    meds.forEach((med) => {
+        const slots = getPlannedDoseSlotsForMedication(med);
+        const mealTiming = inferMealTimingFromMedication(med);
+        const scheduleLabel = String(med?.schedule || 'daily');
+        const medTitle = String(med?.name || 'Medication');
+        const medDose = String(med?.dosage || '').trim();
+
+        rangeKeys.forEach((dateKey) => {
+            slots.forEach((slot) => {
+                planned.push({
+                    id: `planned-${med.id}-${slot.key}-${dateKey}`,
+                    type: 'medication',
+                    medId: med.id,
+                    medName: medDose ? `${medTitle} (${medDose})` : medTitle,
+                    date: dateKey,
+                    time: slot.time,
+                    repeat: 'once',
+                    mealTiming,
+                    notes: med?.instructions || '',
+                    isPlannedMedication: true,
+                    plannedSlotLabel: slot.label,
+                    plannedScheduleText: scheduleLabel,
+                });
+            });
+        });
+    });
+
+    return planned;
+}
+
+function setScheduleView(nextView) {
+    if (!['day', 'week', 'month'].includes(nextView)) return;
+    scheduleView = nextView;
+    document.querySelectorAll('#scheduleViewSwitch [data-schedule-view]').forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.scheduleView === scheduleView);
+    });
+}
+
+function renderScheduleMedicationOptions() {
+    const select = document.getElementById('scheduleMedicationSelect');
+    if (!select) return;
+    const meds = getUserMedsFromStore(loadMeds()) || [];
+    if (meds.length === 0) {
+        select.innerHTML = '<option value="">No medications found</option>';
+        return;
+    }
+    select.innerHTML = meds.map((m) => (
+        `<option value="${escapeHtml(m.id)}">${escapeHtml(m.name)} (${escapeHtml(m.dosage || 'dosage')})</option>`
+    )).join('');
+}
+
+function renderScheduleEntryCard(item) {
+    const isMedication = item.type === 'medication';
+    const title = isMedication
+        ? `${escapeHtml(item.medName || 'Medication')}`
+        : `${escapeHtml(item.mealName || 'Meal')}`;
+    const timeTitle = `${escapeHtml(formatTimeLabel(item.time))} - ${title}`;
+    const subText = isMedication
+        ? `${item.isPlannedMedication ? 'Planned intake' : 'Custom intake'} | ${getMealTimingLabel(item.mealTiming)}${item.notes ? ` | ${escapeHtml(item.notes)}` : ''}`
+        : `${getRepeatLabel(item.repeat)}${item.notes ? ` | ${escapeHtml(item.notes)}` : ''}`;
+    const deleteAction = item.isPlannedMedication
+        ? ''
+        : `<button class="ghost smallbtn schedule-delete-btn" data-entry-id="${escapeHtml(item.id)}" type="button">x</button>`;
+
+    return `
+        <div class="schedule-chip ${isMedication ? 'medication' : 'meal'}">
+            <div class="schedule-chip-row">
+                <div class="schedule-chip-title">${timeTitle}</div>
+                ${deleteAction}
+            </div>
+            <div class="schedule-chip-sub">${subText}</div>
+        </div>
+    `;
+}
+
+function renderScheduleTimeline() {
+    const timelineEl = document.getElementById('scheduleTimeline');
+    const rangeLabelEl = document.getElementById('scheduleRangeLabel');
+    const anchorInput = document.getElementById('scheduleAnchorDate');
+    if (!timelineEl || !rangeLabelEl || !anchorInput) return;
+
+    const anchor = anchorInput.value || getLocalDateKey();
+    const range = buildScheduleRange(anchor, scheduleView);
+    rangeLabelEl.textContent = range.label;
+
+    const manualEntries = getUserScheduleEntriesFromStore(loadScheduleStore()) || [];
+    const plannedMedicationEntries = buildPlannedMedicationEntries(range.keys);
+    const entries = [...plannedMedicationEntries, ...manualEntries];
+    if (entries.length === 0) {
+        timelineEl.innerHTML = '<div style="padding:12px" class="muted">No planned medications or meals available yet.</div>';
+        return;
+    }
+
+    const grouped = {};
+    range.keys.forEach((dateKey) => { grouped[dateKey] = []; });
+
+    entries.forEach((entry) => {
+        range.keys.forEach((dateKey) => {
+            const dateObj = parseDateKey(dateKey);
+            if (!entryOccursOnDate(entry, dateKey, dateObj)) return;
+            grouped[dateKey].push({
+                ...entry,
+                occurrenceDate: dateKey,
+            });
+        });
+    });
+
+    const activeDays = range.keys.filter((k) => grouped[k] && grouped[k].length > 0);
+    if (activeDays.length === 0) {
+        timelineEl.innerHTML = '<div style="padding:12px" class="muted">No entries in this date range yet.</div>';
+        return;
+    }
+
+    activeDays.forEach((dateKey) => {
+        grouped[dateKey].sort((a, b) => String(a.time || '').localeCompare(String(b.time || '')));
+    });
+
+    if (scheduleView === 'month') {
+        const anchorDate = parseDateKey(anchor) || new Date();
+        const monthStart = new Date(anchorDate.getFullYear(), anchorDate.getMonth(), 1);
+        const monthEnd = new Date(anchorDate.getFullYear(), anchorDate.getMonth() + 1, 0);
+        const gridStart = addDays(monthStart, -monthStart.getDay());
+        const gridEnd = addDays(monthEnd, 6 - monthEnd.getDay());
+        const displayDates = [];
+        let cursor = new Date(gridStart);
+        while (cursor <= gridEnd) {
+            displayDates.push(new Date(cursor));
+            cursor = addDays(cursor, 1);
+        }
+
+        const weekdayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const weekdayRow = `
+            <div class="schedule-calendar-weekdays">
+                ${weekdayLabels.map((w) => `<div class="schedule-weekday-label">${w}</div>`).join('')}
+            </div>
+        `;
+
+        const cells = displayDates.map((dateObj) => {
+            const dateKey = getLocalDateKey(dateObj);
+            const dayEntries = grouped[dateKey] || [];
+            const inMonth = dateObj.getMonth() === anchorDate.getMonth();
+            const dayLabel = dateObj.toLocaleDateString([], { weekday: 'short' });
+            return `
+                <div class="schedule-cell ${inMonth ? '' : 'out-month'}">
+                    <div class="schedule-cell-head">
+                        <span class="schedule-day-number">${dateObj.getDate()}</span>
+                        <span>${dayLabel}</span>
+                    </div>
+                    <div>
+                        ${dayEntries.map(renderScheduleEntryCard).join('')}
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        timelineEl.innerHTML = `
+            <div class="schedule-calendar">
+                ${weekdayRow}
+                <div class="schedule-calendar-grid" style="grid-template-columns:repeat(7,minmax(0,1fr));">
+                    ${cells}
+                </div>
+            </div>
+        `;
+    } else {
+        const displayKeys = scheduleView === 'day' ? [range.keys[0]] : range.keys;
+        const columns = Math.max(1, displayKeys.length);
+        const cells = displayKeys.map((dateKey) => {
+            const dateObj = parseDateKey(dateKey);
+            const dayEntries = grouped[dateKey] || [];
+            const dayLabel = dateObj
+                ? dateObj.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' })
+                : dateKey;
+            return `
+                <div class="schedule-cell">
+                    <div class="schedule-cell-head">
+                        <span class="schedule-day-number">${escapeHtml(dayLabel)}</span>
+                    </div>
+                    <div>
+                        ${dayEntries.map(renderScheduleEntryCard).join('')}
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        timelineEl.innerHTML = `
+            <div class="schedule-calendar">
+                <div class="schedule-calendar-grid" style="grid-template-columns:repeat(${columns},minmax(0,1fr));">
+                    ${cells}
+                </div>
+            </div>
+        `;
+    }
+
+    timelineEl.querySelectorAll('.schedule-delete-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const entryId = btn.dataset.entryId;
+            if (!entryId) return;
+            const store = loadScheduleStore();
+            const entriesForUser = getUserScheduleEntriesFromStore(store) || [];
+            const filtered = entriesForUser.filter((entry) => entry.id !== entryId);
+            setUserScheduleEntriesInStore(store, filtered);
+            saveScheduleStore(store);
+            renderScheduleTimeline();
+        });
+    });
+}
+
+function renderScheduleTab() {
+    const anchorInput = document.getElementById('scheduleAnchorDate');
+    const medDateInput = document.getElementById('scheduleMedicationDate');
+    const mealDateInput = document.getElementById('scheduleMealDate');
+    const medTimeInput = document.getElementById('scheduleMedicationTime');
+    const mealTimeInput = document.getElementById('scheduleMealTime');
+
+    const todayKey = getLocalDateKey();
+    const nowTime = getLocalTimeKey();
+    if (anchorInput && !anchorInput.value) anchorInput.value = todayKey;
+    if (medDateInput && !medDateInput.value) medDateInput.value = todayKey;
+    if (mealDateInput && !mealDateInput.value) mealDateInput.value = todayKey;
+    if (medTimeInput && !medTimeInput.value) medTimeInput.value = nowTime;
+    if (mealTimeInput && !mealTimeInput.value) mealTimeInput.value = nowTime;
+
+    renderScheduleMedicationOptions();
+    setScheduleView(scheduleView);
+    renderScheduleTimeline();
+}
+
+function handleAddMedicationScheduleEntry() {
+    const medicationSelect = document.getElementById('scheduleMedicationSelect');
+    const dateInput = document.getElementById('scheduleMedicationDate');
+    const timeInput = document.getElementById('scheduleMedicationTime');
+    const repeatSelect = document.getElementById('scheduleMedicationRepeat');
+    const mealTimingSelect = document.getElementById('scheduleMedicationMealTiming');
+    const notesInput = document.getElementById('scheduleMedicationNotes');
+    if (!medicationSelect || !dateInput || !timeInput || !repeatSelect || !mealTimingSelect || !notesInput) return;
+
+    const medId = medicationSelect.value;
+    const option = medicationSelect.options[medicationSelect.selectedIndex];
+    const medName = option ? option.textContent : '';
+    const date = dateInput.value;
+    const time = timeInput.value;
+    if (!medId || !date || !time) {
+        alert('Please select a medication, date, and time.');
+        return;
+    }
+
+    const store = loadScheduleStore();
+    const entries = getUserScheduleEntriesFromStore(store) || [];
+    entries.push({
+        id: uid(),
+        type: 'medication',
+        medId,
+        medName,
+        date,
+        time,
+        repeat: repeatSelect.value || 'once',
+        mealTiming: mealTimingSelect.value || 'none',
+        notes: notesInput.value.trim(),
+        createdAt: Date.now(),
+    });
+    setUserScheduleEntriesInStore(store, entries);
+    saveScheduleStore(store);
+    notesInput.value = '';
+    renderScheduleTimeline();
+}
+
+function handleAddMealScheduleEntry() {
+    const mealTypeSelect = document.getElementById('scheduleMealType');
+    const dateInput = document.getElementById('scheduleMealDate');
+    const timeInput = document.getElementById('scheduleMealTime');
+    const repeatSelect = document.getElementById('scheduleMealRepeat');
+    const notesInput = document.getElementById('scheduleMealNotes');
+    if (!mealTypeSelect || !dateInput || !timeInput || !repeatSelect || !notesInput) return;
+
+    const mealName = mealTypeSelect.value;
+    const date = dateInput.value;
+    const time = timeInput.value;
+    if (!mealName || !date || !time) {
+        alert('Please choose a meal, date, and time.');
+        return;
+    }
+
+    const store = loadScheduleStore();
+    const entries = getUserScheduleEntriesFromStore(store) || [];
+    entries.push({
+        id: uid(),
+        type: 'meal',
+        mealName,
+        date,
+        time,
+        repeat: repeatSelect.value || 'once',
+        notes: notesInput.value.trim(),
+        createdAt: Date.now(),
+    });
+    setUserScheduleEntriesInStore(store, entries);
+    saveScheduleStore(store);
+    notesInput.value = '';
+    renderScheduleTimeline();
+}
+
+/* --- SETTINGS TAB HELPERS --- */
+function loadPatientPrefsStore(){ try{ return JSON.parse(localStorage.getItem('patientPreferences')||'{}'); } catch(e){ console.error(e); return {}; } }
+function savePatientPrefsStore(store){ localStorage.setItem('patientPreferences', JSON.stringify(store)); }
+function getUserPrefsFromStore(store) {
+    if (!store || typeof store !== 'object') return null;
+    if (current && store[current]) return store[current];
+    if (currentUserKey && store[currentUserKey]) return store[currentUserKey];
+    return null;
+}
+function setUserPrefsInStore(store, prefs) {
+    if (!store || typeof store !== 'object') return;
+    if (current) store[current] = prefs;
+    if (currentUserKey) store[currentUserKey] = prefs;
+}
+function getDefaultPatientPrefs() {
+    return {
+        emailReminders: true,
+        mealReminders: true,
+        reminderLeadMinutes: 15,
+    };
+}
+function getUserLogsFromStore(logStore) {
+    if (!logStore || typeof logStore !== 'object') return {};
+    if (current && logStore[current]) return logStore[current];
+    if (currentUserKey && logStore[currentUserKey]) return logStore[currentUserKey];
+    return {};
+}
+function setSettingsMessage(elementId, text, isError = false) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    el.style.color = isError ? '#b91c1c' : '#065f46';
+    el.textContent = text || '';
+}
+function removeCurrentUserScopedData(storageKey) {
+    try {
+        const parsed = JSON.parse(localStorage.getItem(storageKey) || '{}');
+        if (parsed && typeof parsed === 'object') {
+            if (current && Object.prototype.hasOwnProperty.call(parsed, current)) delete parsed[current];
+            if (currentUserKey && Object.prototype.hasOwnProperty.call(parsed, currentUserKey)) delete parsed[currentUserKey];
+            localStorage.setItem(storageKey, JSON.stringify(parsed));
+        }
+    } catch (_) {}
+}
+async function renderSettingsTab() {
+    const emailInput = document.getElementById('settingsEmail');
+    const prefsStore = loadPatientPrefsStore();
+    const prefs = Object.assign(getDefaultPatientPrefs(), getUserPrefsFromStore(prefsStore) || {});
+
+    const emailReminders = document.getElementById('settingsEmailReminders');
+    const mealReminders = document.getElementById('settingsMealReminders');
+    const reminderLead = document.getElementById('settingsReminderLead');
+    if (emailReminders) emailReminders.checked = !!prefs.emailReminders;
+    if (mealReminders) mealReminders.checked = !!prefs.mealReminders;
+    if (reminderLead) reminderLead.value = String(prefs.reminderLeadMinutes || 15);
+
+    setSettingsMessage('settingsAccountMsg', '');
+    setSettingsMessage('settingsPasswordMsg', '');
+    setSettingsMessage('settingsPrefsMsg', '');
+    setSettingsMessage('settingsDataMsg', '');
+
+    if (!emailInput) return;
+    emailInput.value = '';
+    try {
+        const sb = await ensureSupabaseClient();
+        if (!sb) return;
+        const { data } = await sb.auth.getUser();
+        const authEmail = String(data?.user?.email || '').trim();
+        if (authEmail) {
+            emailInput.value = authEmail;
+            return;
+        }
+        const key = currentUserKey || data?.user?.id || null;
+        if (!key) return;
+        const { data: row } = await sb.from('users').select('email').eq('user_key', key).maybeSingle();
+        if (row?.email) emailInput.value = String(row.email);
+    } catch (_) {}
+}
+async function handleSettingsSaveEmail() {
+    const emailInput = document.getElementById('settingsEmail');
+    const nextEmail = String(emailInput?.value || '').trim().toLowerCase();
+    if (!nextEmail || !nextEmail.includes('@')) {
+        setSettingsMessage('settingsAccountMsg', 'Please enter a valid email address.', true);
+        return;
+    }
+    try {
+        const sb = await ensureSupabaseClient();
+        if (!sb) throw new Error('Supabase client not available.');
+        const { data: authData } = await sb.auth.getUser();
+        const { error } = await sb.auth.updateUser({ email: nextEmail });
+        if (error) throw error;
+        if (authData?.user?.id) {
+            try {
+                await sb.from('users').update({ email: nextEmail, updated_at: new Date().toISOString() }).eq('user_key', authData.user.id);
+            } catch (_) {}
+        }
+        setSettingsMessage('settingsAccountMsg', 'Email update requested. Please check your inbox to confirm the change.');
+    } catch (err) {
+        setSettingsMessage('settingsAccountMsg', String(err?.message || 'Failed to update email.'), true);
+    }
+}
+async function handleSettingsChangePassword() {
+    const currentPassword = String(document.getElementById('settingsCurrentPassword')?.value || '');
+    const newPassword = String(document.getElementById('settingsNewPassword')?.value || '');
+    const confirmPassword = String(document.getElementById('settingsConfirmPassword')?.value || '');
+    if (!currentPassword || !newPassword || !confirmPassword) {
+        setSettingsMessage('settingsPasswordMsg', 'Please complete all password fields.', true);
+        return;
+    }
+    if (newPassword.length < 8) {
+        setSettingsMessage('settingsPasswordMsg', 'New password must be at least 8 characters.', true);
+        return;
+    }
+    if (newPassword !== confirmPassword) {
+        setSettingsMessage('settingsPasswordMsg', 'New password and confirmation do not match.', true);
+        return;
+    }
+    try {
+        const sb = await ensureSupabaseClient();
+        if (!sb) throw new Error('Supabase client not available.');
+        const { data: userData } = await sb.auth.getUser();
+        const currentEmail = String(userData?.user?.email || '').trim();
+        if (currentEmail) {
+            const { error: reauthError } = await sb.auth.signInWithPassword({ email: currentEmail, password: currentPassword });
+            if (reauthError) throw new Error('Current password is incorrect.');
+        }
+        const { error } = await sb.auth.updateUser({ password: newPassword });
+        if (error) throw error;
+        document.getElementById('settingsCurrentPassword').value = '';
+        document.getElementById('settingsNewPassword').value = '';
+        document.getElementById('settingsConfirmPassword').value = '';
+        setSettingsMessage('settingsPasswordMsg', 'Password updated successfully.');
+    } catch (err) {
+        setSettingsMessage('settingsPasswordMsg', String(err?.message || 'Failed to update password.'), true);
+    }
+}
+async function handleSettingsSavePreferences() {
+    const prefs = {
+        emailReminders: !!document.getElementById('settingsEmailReminders')?.checked,
+        mealReminders: !!document.getElementById('settingsMealReminders')?.checked,
+        reminderLeadMinutes: Number(document.getElementById('settingsReminderLead')?.value || 15),
+    };
+    const store = loadPatientPrefsStore();
+    setUserPrefsInStore(store, prefs);
+    savePatientPrefsStore(store);
+    try {
+        const sb = await ensureSupabaseClient();
+        if (sb) {
+            await sb.auth.updateUser({ data: { patient_preferences: prefs } });
+        }
+    } catch (_) {}
+    setSettingsMessage('settingsPrefsMsg', 'Preferences saved.');
+}
+function handleSettingsExportData() {
+    const medsStore = loadMeds();
+    const logsStore = loadLogs();
+    const scheduleStore = loadScheduleStore();
+    const prefsStore = loadPatientPrefsStore();
+    const exportPayload = {
+        exportedAt: new Date().toISOString(),
+        user: { current, currentUserKey },
+        medications: getUserMedsFromStore(medsStore),
+        adherenceLogs: getUserLogsFromStore(logsStore),
+        schedule: getUserScheduleEntriesFromStore(scheduleStore),
+        preferences: Object.assign(getDefaultPatientPrefs(), getUserPrefsFromStore(prefsStore) || {}),
+    };
+    const blob = new Blob([JSON.stringify(exportPayload, null, 2)], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `patient-data-${getLocalDateKey()}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+    setSettingsMessage('settingsDataMsg', 'Data export downloaded.');
+}
+function handleSettingsClearLocalData() {
+    const confirmed = window.confirm('Clear your local medications, logs, schedule, preferences, and pet progress on this device?');
+    if (!confirmed) return;
+    removeCurrentUserScopedData('medications');
+    removeCurrentUserScopedData('adherenceLogs');
+    removeCurrentUserScopedData('patientSchedule');
+    removeCurrentUserScopedData('patientPreferences');
+    removeCurrentUserScopedData('petStatus');
+    try {
+        if (current) {
+            Object.keys(localStorage).forEach((key) => {
+                if (key.startsWith(`chat_${current}_`)) localStorage.removeItem(key);
+            });
+        }
+    } catch (_) {}
+    setSettingsMessage('settingsDataMsg', 'Local data cleared for this patient profile on this device.');
+    renderMedicationList(loadMeds());
+    renderLogList(loadMeds());
+    renderScheduleTimeline();
+    renderSettingsTab();
+}
+
 async function getSupabaseAuthUser() {
     try {
-<<<<<<< HEAD
-=======
         await ensureSupabaseClient();
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
         if (!window.supabaseClient) return null;
         const { data } = await window.supabaseClient.auth.getUser();
         return data?.user || null;
@@ -1047,8 +1733,6 @@ async function getSupabaseAuthUser() {
     }
 }
 
-<<<<<<< HEAD
-=======
 async function ensureSupabaseClient() {
     if (window.supabaseClient) return window.supabaseClient;
     if (!window.supabase || typeof window.supabase.createClient !== 'function') {
@@ -1070,7 +1754,6 @@ function getSessionUserKeyFallback() {
     return currentUserKey || null;
 }
 
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
 function inferDoseTimeFromEvent(eventTime, metadata) {
     const explicit = metadata?.dose_time || metadata?.schedule || metadata?.doseTime || null;
     if (explicit === 'am' || explicit === 'pm') return explicit;
@@ -1080,29 +1763,19 @@ function inferDoseTimeFromEvent(eventTime, metadata) {
 }
 
 async function syncFromSupabase() {
-<<<<<<< HEAD
-    const user = await getSupabaseAuthUser();
-    if (!user || !current) return;
-    currentUserKey = user.id;
-=======
     await ensureSupabaseClient();
     const user = await getSupabaseAuthUser();
     if (!current) return;
     const resolvedUserKey = user?.id || getSessionUserKeyFallback();
     if (!resolvedUserKey || !window.supabaseClient) return;
     currentUserKey = resolvedUserKey;
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
 
     try {
         // Pull medications
         const { data: medRows, error: medErr } = await window.supabaseClient
             .from('medications')
             .select('id,medication_key,drug_name,strength,route,instruction,frequency_text,added_by_role,is_active')
-<<<<<<< HEAD
-            .eq('user_key', user.id)
-=======
             .eq('user_key', resolvedUserKey)
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
             .eq('is_active', true)
             .order('created_at', { ascending: false });
         if (medErr) throw medErr;
@@ -1127,11 +1800,7 @@ async function syncFromSupabase() {
         const { data: evRows, error: evErr } = await window.supabaseClient
             .from('med_events')
             .select('medication_id,event_time,event_type,metadata')
-<<<<<<< HEAD
-            .eq('user_key', user.id)
-=======
             .eq('user_key', resolvedUserKey)
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
             .order('event_time', { ascending: false })
             .limit(1000);
         if (evErr) throw evErr;
@@ -1165,18 +1834,11 @@ async function syncFromSupabase() {
 
 async function syncMedicationToSupabase(newMed) {
     const user = await getSupabaseAuthUser();
-<<<<<<< HEAD
-    if (!user || !window.siteSync) return;
-    currentUserKey = user.id;
-    try {
-        await window.siteSync.createMedication(user.id, {
-=======
     const resolvedUserKey = user?.id || getSessionUserKeyFallback();
     if (!resolvedUserKey || !window.siteSync) return;
     currentUserKey = resolvedUserKey;
     try {
         await window.siteSync.createMedication(resolvedUserKey, {
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
             medication_key: newMed.id,
             drug_name: newMed.name,
             strength: newMed.dosage,
@@ -1185,11 +1847,7 @@ async function syncMedicationToSupabase(newMed) {
             frequency_text: newMed.schedule,
             is_active: true,
             added_by_role: 'patient',
-<<<<<<< HEAD
-            added_by_user_key: user.id,
-=======
             added_by_user_key: resolvedUserKey,
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
         });
     } catch (e) {
         console.warn('Failed to sync medication to Supabase:', e);
@@ -1197,39 +1855,25 @@ async function syncMedicationToSupabase(newMed) {
 }
 
 async function syncMedEventToSupabase(medId, doseTime, symptomData = null) {
-<<<<<<< HEAD
-    const user = await getSupabaseAuthUser();
-    if (!user || !window.supabaseClient) return;
-    currentUserKey = user.id;
-=======
     await ensureSupabaseClient();
     const user = await getSupabaseAuthUser();
     const resolvedUserKey = user?.id || getSessionUserKeyFallback();
     if (!resolvedUserKey || !window.supabaseClient) return;
     currentUserKey = resolvedUserKey;
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
     try {
         // Resolve FK medication_id via medication_key
         let dbMedId = null;
         const { data: medRow } = await window.supabaseClient
             .from('medications')
             .select('id')
-<<<<<<< HEAD
-            .eq('user_key', user.id)
-=======
             .eq('user_key', resolvedUserKey)
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
             .eq('medication_key', medId)
             .maybeSingle();
         dbMedId = medRow?.id || null;
         if (!dbMedId) return;
 
         const payload = {
-<<<<<<< HEAD
-            user_key: user.id,
-=======
             user_key: resolvedUserKey,
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
             medication_id: dbMedId,
             event_time: new Date().toISOString(),
             event_type: 'taken',
@@ -1245,18 +1889,16 @@ async function syncMedEventToSupabase(medId, doseTime, symptomData = null) {
         console.warn('Failed to sync med event to Supabase:', e);
     }
 }
-<<<<<<< HEAD
 
-=======
-
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
 // --- REAL API INTEGRATION (FDA) ---
 const CACHE_LIFESPAN_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+const DRUG_DETAILS_PARSER_VERSION = 2;
 
 function cleanFdaText(raw) {
     return String(raw || '')
         .replace(/\[[^\]]*\]/g, ' ')
         .replace(/\(\s*\d+(\.\d+)?\s*\)/g, ' ')
+        .replace(/[_*`~]/g, ' ')
         .replace(/\s+/g, ' ')
         .replace(/^\s*\d+\s+/, '')
         .trim();
@@ -1277,25 +1919,96 @@ function titleCasePhrase(s) {
         .join(' ');
 }
 
+function normalizeMedicationName(name) {
+    return String(name || '')
+        .toLowerCase()
+        .replace(/\([^)]*\)/g, ' ')
+        .replace(/\b\d+(\.\d+)?\s*(mg|mcg|g|ml|units?)\b/gi, ' ')
+        .replace(/\b(am|pm|both|daily|bid|tid|qid|prn)\b/gi, ' ')
+        .replace(/[^a-z0-9\s-]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function sanitizeMedicalListItem(rawItem, field = '') {
+    let item = cleanFdaText(rawItem)
+        .replace(/^examples?\s*:\s*/i, '')
+        .replace(/^\s*(the|other|including)\s+/i, '')
+        .replace(/^\s*(\(?\d+[a-z]?\)?[.):]?|[ivxlcdm]+\.)\s*/i, '')
+        .replace(/^most common adverse reactions?\s*(are|include)?\s*/i, '')
+        .replace(/^adverse reactions?\s*(are|include)?\s*/i, '')
+        .replace(/^drug interactions?\s*/i, '')
+        .replace(/^indications?\s*(?:and|&)\s*usage\s*/i, '')
+        .replace(/^warnings? and precautions?\s*/i, '')
+        .replace(/^boxed warning(?:s)?(?: and warnings and precautions)?\s*/i, '')
+        .replace(/^\s*[\-:;,/]+|[\-:;,/]+\s*$/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    item = item.replace(/\s*\([^)]*$/, '').replace(/\(\s*$/, '').trim();
+
+    if (!item) return '';
+    if (!/[a-z]/i.test(item)) return '';
+    if (item.length < 3 || item.length > (field === 'indications_and_usage' ? 200 : 90)) return '';
+    if (/^(clinical impact|intervention|placebo|none)$/i.test(item)) return '';
+    if (/(boxed warning|warnings? and precautions?|more common than placebo|the following adverse reactions are also discussed elsewhere)/i.test(item)) return '';
+
+    if (field === 'adverse_reactions') {
+        if (/^(in patients|in adults|in pediatric|with type \d|metformin hydrochloride tablets)/i.test(item)) return '';
+        return titleCasePhrase(item);
+    }
+
+    if (field === 'drug_interactions') {
+        if (/^[a-z0-9\s/-]+$/.test(item)) return titleCasePhrase(item);
+        return item;
+    }
+
+    return item;
+}
+
+function reparseCachedDrugDetails(cachedData, medicationName) {
+    if (!cachedData || typeof cachedData !== 'object') return null;
+    const rawSideEffects = cachedData.rawSideEffects || '';
+    const rawInteractions = cachedData.rawInteractions || '';
+    const rawRecommendations = cachedData.rawRecommendations || '';
+    if (!rawSideEffects && !rawInteractions && !rawRecommendations) return null;
+
+    const label = {
+        adverse_reactions: rawSideEffects ? [rawSideEffects] : [],
+        drug_interactions: rawInteractions ? [rawInteractions] : [],
+        indications_and_usage: rawRecommendations ? [rawRecommendations] : [],
+    };
+
+    return {
+        name: medicationName,
+        rawSideEffects: rawSideEffects || `No raw data available for the FDA field: adverse_reactions`,
+        rawInteractions: rawInteractions || `No raw data available for the FDA field: drug_interactions`,
+        rawRecommendations: rawRecommendations || `No raw data available for the FDA field: indications_and_usage`,
+        sideEffects: getCleanedSection('adverse_reactions', label, medicationName),
+        interactions: getCleanedSection('drug_interactions', label, medicationName),
+        recommendations: getCleanedSection('indications_and_usage', label, medicationName),
+    };
+}
+
 function extractDelimitedTerms(segment, opts = {}) {
     const minLen = opts.minLen || 3;
     const maxLen = opts.maxLen || 40;
+    const field = opts.field || '';
+    const splitPattern = opts.splitPattern || /,|\band\b|\bor\b|\//i;
     const dedupe = new Set();
     const out = [];
     String(segment || '')
-        .split(/,|\band\b|\bor\b|\//i)
+        .split(splitPattern)
         .map(t => t.trim())
         .map(t => t.replace(/^[\-:\s]+|[\-:\s]+$/g, ''))
-        .map(t => t.replace(/^(the|other|including)\s+/i, ''))
         .forEach((term) => {
-            const cleaned = term.replace(/\s+/g, ' ').trim();
+            const cleaned = sanitizeMedicalListItem(term, field);
             if (!cleaned) return;
             if (cleaned.length < minLen || cleaned.length > maxLen) return;
-            if (/^(clinical impact|intervention|warnings?|precautions?)$/i.test(cleaned)) return;
             const key = cleaned.toLowerCase();
             if (dedupe.has(key)) return;
             dedupe.add(key);
-            out.push(titleCasePhrase(cleaned));
+            out.push(cleaned);
         });
     return out;
 }
@@ -1304,37 +2017,50 @@ function summarizeFdaSection(field, rawText) {
     const text = cleanFdaText(rawText);
     const sentences = splitIntoSentences(text);
     const results = [];
-    const pushUnique = (item) => {
-        const s = String(item || '').trim();
+    const pushUnique = (item, punctuate = false) => {
+        let s = sanitizeMedicalListItem(item, field);
         if (!s) return;
+        if (punctuate && !/[.!?]$/.test(s)) s = `${s}.`;
         const key = s.toLowerCase();
         if (results.find(x => x.toLowerCase() === key)) return;
-        results.push(s.endsWith('.') ? s : `${s}.`);
+        results.push(s);
     };
 
     if (field === 'adverse_reactions') {
         const listPatterns = [
-            /most common adverse reactions(?:[^:]{0,80})[:\s]+([^\.]{10,280})/i,
-            /common adverse reactions(?:[^:]{0,80})[:\s]+([^\.]{10,280})/i,
-            /adverse reactions include[:\s]+([^\.]{10,280})/i,
+            /most common adverse reactions(?:[^:.;]{0,120})[:\s]+([^.;]{10,360})/i,
+            /common adverse reactions(?:[^:.;]{0,120})[:\s]+([^.;]{10,360})/i,
+            /adverse reactions include[:\s]+([^.;]{10,360})/i,
+            /more common than placebo(?:[^:.;]{0,120})[:\s]+([^.;]{10,360})/i,
         ];
         for (const re of listPatterns) {
             const m = text.match(re);
             if (m && m[1]) {
-                extractDelimitedTerms(m[1], { minLen: 4, maxLen: 36 }).forEach(t => pushUnique(t));
+                extractDelimitedTerms(m[1], { minLen: 4, maxLen: 48, field: 'adverse_reactions' }).forEach(t => pushUnique(t));
             }
         }
         if (results.length === 0) {
             const symptomWords = /(nausea|vomiting|diarrhea|fatigue|headache|dizziness|somnolence|insomnia|dry mouth|rash|hypoglycemia)/i;
             sentences.forEach((s) => {
-                if (symptomWords.test(s)) pushUnique(s.replace(/^the most common adverse reactions (are|include)\s*/i, ''));
+                if (!symptomWords.test(s)) return;
+                extractDelimitedTerms(
+                    s.replace(/^the most common adverse reactions (are|include)\s*/i, ''),
+                    { minLen: 4, maxLen: 48, field: 'adverse_reactions' }
+                ).forEach(t => pushUnique(t));
             });
         }
         return results.slice(0, 5);
     }
 
     if (field === 'drug_interactions') {
-        const interactionSignals = /(concomitant use|interaction|may increase|avoid|contraindicated|serotonin syndrome|qt prolongation|bleeding risk)/i;
+        const exampleMatches = text.match(/Examples:\s*[^.]{4,200}\./gi) || [];
+        exampleMatches.forEach((match) => {
+            const list = match.replace(/^Examples:\s*/i, '').replace(/\.$/, '');
+            extractDelimitedTerms(list, { minLen: 3, maxLen: 60, field: 'drug_interactions', splitPattern: /,|\band\b|\bor\b/i })
+                .forEach(t => pushUnique(t));
+        });
+
+        const interactionSignals = /(concomitant use|interaction|may increase|avoid|contraindicated|serotonin syndrome|qt prolongation|bleeding risk|monitor|coadministration|inhibitor|inducer)/i;
         sentences.forEach((s) => {
             if (!interactionSignals.test(s)) return;
             let c = s
@@ -1344,7 +2070,7 @@ function summarizeFdaSection(field, rawText) {
                 .replace(/\s+/g, ' ')
                 .trim();
             if (c.length > 140) c = `${c.slice(0, 137)}...`;
-            pushUnique(c);
+            pushUnique(c, true);
         });
         return results.slice(0, 5);
     }
@@ -1359,7 +2085,7 @@ function summarizeFdaSection(field, rawText) {
                 .replace(/\s+/g, ' ')
                 .trim();
             if (c.length > 140) c = `${c.slice(0, 137)}...`;
-            pushUnique(c);
+            pushUnique(c, true);
         });
         return results.slice(0, 4);
     }
@@ -1372,25 +2098,25 @@ const getCleanedSection = (field, label, medicationName) => {
     const rawText = label[field] && label[field].length > 0 ? label[field][0] : "";
     if (rawText === "") return ["No specific details found in this section."];
 
-    let text = rawText;
+    const text = cleanFdaText(rawText);
     let extractedItems = [];
-    const medNameLc = String(medicationName || '').toLowerCase();
+    const pushUnique = (item) => {
+        const cleaned = sanitizeMedicalListItem(item, field);
+        if (!cleaned) return;
+        if (!extractedItems.find(x => x.toLowerCase() === cleaned.toLowerCase())) {
+            extractedItems.push(cleaned);
+        }
+    };
+
+    const medNameLc = normalizeMedicationName(medicationName);
     const isLexaproFamily = medNameLc.includes('lexapro') || medNameLc.includes('escitalopram');
+    const isMetformin = medNameLc.includes('metformin');
+    const isLisinopril = medNameLc.includes('lisinopril');
+    const isInsulin = medNameLc.includes('insulin');
 
-    const sentenceCleanup = (s) => String(s || '')
-        .replace(/\[[^\]]*\]/g, ' ')
-        .replace(/\(\s*\d+(\.\d+)?\s*\)/g, ' ')
-        .replace(/\s+/g, ' ')
-        .replace(/^\s*(\d+\s+)?(ADVERSE REACTIONS|DRUG INTERACTIONS|INDICATIONS AND USAGE|WARNINGS AND PRECAUTIONS)\s*/i, '')
-        .trim();
-
-    // --- AGGRESSIVE CLEANING & PARSING RULES ---
-
-    // 1. SIDE EFFECTS (ADVERSE REACTIONS) 
     if (field === 'adverse_reactions') {
-        // --- Specific Rule for Lexapro / Escitalopram ---
         if (isLexaproFamily) {
-            const keyEffects = [
+            [
                 'Nausea',
                 'Insomnia',
                 'Somnolence',
@@ -1398,77 +2124,48 @@ const getCleanedSection = (field, label, medicationName) => {
                 'Headache',
                 'Dry mouth',
                 'Sexual dysfunction'
-            ];
-            keyEffects.forEach((effect) => {
+            ].forEach((effect) => {
                 const re = new RegExp(effect.replace(' ', '\\s*'), 'i');
-                if (re.test(text) && !extractedItems.includes(effect)) extractedItems.push(effect);
+                if (re.test(text)) pushUnique(effect);
             });
             if (extractedItems.length > 0) return extractedItems.slice(0, 5);
         }
-        
-        // --- Specific Rule for Metformin (Combination Drug Data) ---
-        if (medicationName === 'Metformin') {
-             const sections = text.split(/\[see Warnings and Precautions/);
-            if (sections[0]) {
-                const majorSideEffects = sections[0].match(/([A-Z][a-zA-Z0-9\s-]{3,}?)\s*(\(|\d\.\d)/g) || [];
-                majorSideEffects.forEach(item => {
-                    let cleaned = item.trim()
-                                  .replace(/(\s*\(\s*\d+\.\d+\s*\))|(\s*\(\s*\d+\s*\))|(\s*\d+\.\d+\s*$)/g, '') 
-                                  .replace(/^(Severe and Disabling|Most common adverse reactions|Hypoglycemia with Concomitant Use with Insulin or Insulin Secretagogues|The following adverse reactions are also discussed elsewhere in the prescribing information)/, '')
-                                  .trim();
-                    if (cleaned.length > 5 && !extractedItems.includes(cleaned)) {
-                         extractedItems.push(cleaned);
-                    }
-                });
+
+        if (isMetformin) {
+            const commonMetformin = text.match(/most common adverse reactions(?:[^:.;]{0,100})[:\s]+([^.;]{10,360})/i);
+            if (commonMetformin && commonMetformin[1]) {
+                extractDelimitedTerms(commonMetformin[1], { minLen: 4, maxLen: 48, field: 'adverse_reactions' })
+                    .forEach(pushUnique);
             }
-            if (text.includes('diarrhea') || text.includes('nausea')) {
-                 if (!extractedItems.includes('Diarrhea')) extractedItems.push('Diarrhea');
-                 if (!extractedItems.includes('Nausea/Vomiting')) extractedItems.push('Nausea/Vomiting');
+            ['Diarrhea', 'Nausea', 'Vomiting', 'Flatulence', 'Abdominal discomfort'].forEach((term) => {
+                if (new RegExp(`\\b${term.replace(' ', '\\s*')}\\b`, 'i').test(text)) pushUnique(term);
+            });
+            if (extractedItems.length > 0) return extractedItems.slice(0, 5);
+        }
+
+        if (isLisinopril) {
+            const commonMatch = text.match(/(dizziness|headache|cough|fatigue|orthostatic effects|diarrhea|nausea)/gi) || [];
+            commonMatch.forEach(item => pushUnique(item));
+            const severeMatch = text.match(/(Angioedema|Hypotension|Acute Renal Failure|Pancreatitis)/gi) || [];
+            severeMatch.forEach(item => pushUnique(item));
+            if (extractedItems.length > 0) return extractedItems.slice(0, 5);
+        }
+
+        if (isInsulin) {
+            ['Hypoglycemia', 'Weight gain', 'Injection site reaction', 'Lipodystrophy'].forEach((term) => {
+                if (new RegExp(term.replace(' ', '\\s*'), 'i').test(text)) pushUnique(term);
+            });
+            if (extractedItems.length === 0) {
+                return ['Hypoglycemia', 'Weight gain', 'Injection site reaction'];
             }
             return extractedItems.slice(0, 5);
-        }
-        
-        // --- Specific Rule for Lisinopril (Combination Drug Data) ---
-        if (medicationName === 'Lisinopril') {
-             const commonMatch = text.match(/(dizziness|headache|cough|fatigue|orthostatic effects|diarrhea|nausea)/gi);
-             if (commonMatch) {
-                 const uniqueCommon = [...new Set(commonMatch.map(s => s.charAt(0).toUpperCase() + s.slice(1)))];
-                 extractedItems.push(...uniqueCommon.slice(0, 4));
-             }
-             const severeMatch = text.match(/(Angioedema|Hypotension|Acute Renal Failure|Pancreatitis)/gi);
-             if (severeMatch) {
-                 const uniqueSevere = [...new Set(severeMatch.map(s => s.charAt(0).toUpperCase() + s.slice(1)))];
-                 extractedItems.push(...uniqueSevere.slice(0, 2));
-             }
-             return extractedItems.filter(item => item.length > 5);
-        }
-        
-        // --- Specific Rule for Insulin ---
-        if (medicationName === 'Insulin') {
-             const hypoMatch = text.match(/(adverse reaction of hypoglycemia|hypoglycemia|weight gain|injection site reaction|lipodystrophy)/gi);
-             if (hypoMatch) {
-                 const uniqueHypo = [...new Set(hypoMatch.map(s => s.charAt(0).toUpperCase() + s.slice(1)))];
-                 const prioritized = uniqueHypo.filter(item => item.includes('Hypoglycemia'));
-                 prioritized.push(...uniqueHypo.filter(item => !item.includes('Hypoglycemia')));
-                 
-                 if (prioritized.length === 0) {
-                      return ["Common adverse effects include hypoglycemia, weight gain, and injection site reactions."];
-                 }
-                 
-                 return prioritized.slice(0, 5);
-             }
-             
-             return ["Common adverse effects include hypoglycemia, weight gain, and injection site reactions."];
         }
 
         const genericEffects = summarizeFdaSection('adverse_reactions', text);
         if (genericEffects.length > 0) return genericEffects;
-        
     }
 
-    // 2. INTERACTIONS (DRUG INTERACTIONS) 
     if (field === 'drug_interactions') {
-        // --- Specific Rule for Lexapro / Escitalopram ---
         if (isLexaproFamily) {
             const lexaproInteractions = [
                 { label: 'MAOIs (risk of serotonin syndrome)', re: /\bMAOI|monoamine oxidase\b/i },
@@ -1477,212 +2174,54 @@ const getCleanedSection = (field, label, medicationName) => {
                 { label: 'Antiplatelets or anticoagulants (bleeding risk)', re: /\bantiplatelet|anticoagulant|bleed/i },
             ];
             lexaproInteractions.forEach((it) => {
-                if (it.re.test(text) && !extractedItems.includes(it.label)) extractedItems.push(it.label);
-<<<<<<< HEAD
-=======
+                if (it.re.test(text)) pushUnique(it.label);
             });
             if (extractedItems.length > 0) return extractedItems.slice(0, 5);
         }
 
-        // Rule 1: Extract drugs listed after "Examples:" 
-        const exampleMatch = text.match(/Examples:\s*([A-Za-z0-9\s-,\/]+)\./g);
-        if (exampleMatch) {
-            exampleMatch.forEach(match => {
-                const list = match.replace(/Examples:\s*/, '').replace(/\.$/, '').trim();
-                list.split(/,\s*|\s+or\s+/).forEach(drug => {
-                    const cleanedDrug = drug.replace(/\.$/g, '').trim();
-                    if (cleanedDrug && !extractedItems.includes(cleanedDrug) && cleanedDrug.length > 2) {
-                        extractedItems.push(cleanedDrug);
-                    }
-                });
-            });
-        }
-        
-        // Rule 2: Extract the type of interaction (if list of examples is short)
-        const interactionTypes = text.match(/Clinical Impact:\s*(.*?)\s*Intervention:/g) || [];
-        if (extractedItems.length < 3) {
-            interactionTypes.forEach(type => {
-                const cleanedType = type.replace(/Clinical Impact:\s*/, '').replace(/\s*Intervention:/, '').trim();
-                if (cleanedType.length > 20 && !cleanedType.includes('Monitor renal function')) {
-                     extractedItems.push(cleanedType); 
-                }
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
-            });
-            if (extractedItems.length > 0) return extractedItems.slice(0, 5);
-        }
+        const genericInteractions = summarizeFdaSection('drug_interactions', text);
+        genericInteractions.forEach(pushUnique);
 
-        // Rule 1: Extract drugs listed after "Examples:" 
-        const exampleMatch = text.match(/Examples:\s*([A-Za-z0-9\s-,\/]+)\./g);
-        if (exampleMatch) {
-            exampleMatch.forEach(match => {
-                const list = match.replace(/Examples:\s*/, '').replace(/\.$/, '').trim();
-                list.split(/,\s*|\s+or\s+/).forEach(drug => {
-                    const cleanedDrug = drug.replace(/\.$/g, '').trim();
-                    if (cleanedDrug && !extractedItems.includes(cleanedDrug) && cleanedDrug.length > 2) {
-                        extractedItems.push(cleanedDrug);
-                    }
-                });
-            });
+        if (isLisinopril && extractedItems.length < 3) {
+            pushUnique('Potassium supplements / potassium-sparing diuretics');
+            pushUnique('Non-steroidal anti-inflammatory drugs (NSAIDs)');
         }
-        
-        // Rule 2: Extract the type of interaction (if list of examples is short)
-        const interactionTypes = text.match(/Clinical Impact:\s*(.*?)\s*Intervention:/g) || [];
-        if (extractedItems.length < 3) {
-            interactionTypes.forEach(type => {
-                const cleanedType = type.replace(/Clinical Impact:\s*/, '').replace(/\s*Intervention:/, '').trim();
-                if (cleanedType.length > 20 && !cleanedType.includes('Monitor renal function')) {
-                     extractedItems.push(cleanedType); 
-                }
-            });
+        if (isInsulin && extractedItems.length < 3) {
+            pushUnique('Beta-blockers (can mask hypoglycemia symptoms)');
+            pushUnique('Corticosteroids (may increase blood glucose)');
         }
-
-        // Rule 3: Hard-coded common interactions for specific drugs if API is messy
-        if (medicationName === 'Lisinopril' && extractedItems.length < 3) {
-            extractedItems.push('Potassium Supplements/Potassium-sparing Diuretics');
-            extractedItems.push('Non-Steroidal Anti-Inflammatory Drugs (NSAIDs)');
-        }
-        if (medicationName === 'Insulin' && extractedItems.length < 3) {
-            extractedItems.push('Beta-Blockers (can mask hypoglycemia symptoms)');
-            extractedItems.push('Corticosteroids (may increase blood glucose)');
-        }
-        
-        if (extractedItems.length === 0) {
-            const genericInteractions = summarizeFdaSection('drug_interactions', text);
-            if (genericInteractions.length > 0) return genericInteractions;
-        }
-<<<<<<< HEAD
-=======
-        if (medicationName === 'Insulin' && extractedItems.length < 3) {
-            extractedItems.push('Beta-Blockers (can mask hypoglycemia symptoms)');
-            extractedItems.push('Corticosteroids (may increase blood glucose)');
-        }
-        
-        if (extractedItems.length === 0) {
-            const genericInteractions = summarizeFdaSection('drug_interactions', text);
-            if (genericInteractions.length > 0) return genericInteractions;
-        }
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
-        return extractedItems.slice(0, 5); 
+        if (extractedItems.length > 0) return extractedItems.slice(0, 5);
     }
 
-    // 3. RECOMMENDATIONS (INDICATIONS AND USAGE)
     if (field === 'indications_and_usage') {
-        // --- Specific Rule for Lexapro / Escitalopram ---
         if (isLexaproFamily) {
             if (/major depressive disorder|depression/i.test(text)) {
-                extractedItems.push('Indicated for major depressive disorder (MDD).');
+                pushUnique('Indicated for major depressive disorder (MDD).');
             }
             if (/generalized anxiety disorder|GAD/i.test(text)) {
-                extractedItems.push('Indicated for generalized anxiety disorder (GAD).');
-            }
-            const limitationMatch = text.match(/Limitations of Use:\s*([^\.]{10,200})/i);
-            if (limitationMatch) {
-                const lim = sentenceCleanup(limitationMatch[1]);
-                if (lim && lim.length > 10) extractedItems.push(`${lim.replace(/\.*$/, '')}.`);
-<<<<<<< HEAD
-=======
+                pushUnique('Indicated for generalized anxiety disorder (GAD).');
             }
             if (extractedItems.length > 0) return extractedItems.slice(0, 3);
         }
-        
-        // --- Specific Rule for Insulin ---
-        if (medicationName === 'Insulin') {
-            const indicationMatch = text.match(/(Insulin is indicated to improve glycemic control in adult and pediatric patients with diabetes mellitus)/i) || 
-                                    text.match(/(Insulin is indicated as an adjunct to diet and exercise to improve glycemic control in patients with diabetes mellitus)/i);
-            if (indicationMatch) {
-                let indication = indicationMatch[1].trim();
-                if (!indication.endsWith('.')) indication += '.';
-                extractedItems.push(indication);
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
-            }
+
+        if (isInsulin) {
+            const indicationMatch = text.match(/(insulin is indicated to improve glycemic control in adult and pediatric patients with diabetes mellitus)/i) ||
+                text.match(/(insulin is indicated as an adjunct to diet and exercise to improve glycemic control in patients with diabetes mellitus)/i);
+            if (indicationMatch && indicationMatch[1]) pushUnique(`${indicationMatch[1]}.`);
             if (extractedItems.length > 0) return extractedItems.slice(0, 3);
         }
-        
-        // --- Specific Rule for Insulin ---
-        if (medicationName === 'Insulin') {
-            const indicationMatch = text.match(/(Insulin is indicated to improve glycemic control in adult and pediatric patients with diabetes mellitus)/i) || 
-                                    text.match(/(Insulin is indicated as an adjunct to diet and exercise to improve glycemic control in patients with diabetes mellitus)/i);
-            if (indicationMatch) {
-                let indication = indicationMatch[1].trim();
-                if (!indication.endsWith('.')) indication += '.';
-                extractedItems.push(indication);
-            }
-            if (extractedItems.length > 0) return extractedItems.slice(0, 3);
-        }
-        
-        // Start by stating the main indication (usually the first sentence)
-        const mainIndicationMatch = text.match(/^([A-Z].*?\.)/);
-        if (mainIndicationMatch) {
-            let indication = mainIndicationMatch[1].trim();
-            // Strip common API headings like INDICATIONS AND USAGE
-            indication = indication.replace(/^INDICATIONS AND USAGE\s*/, '');
-            indication = indication.replace(/ZITUVIMET|PRINZIDE|ADMELOG/gi, medicationName);
-            extractedItems.push(indication);
-        }
-        
-        // Extract content after "Limitations of Use:"
-        const limitationsMatch = text.match(/Limitations of Use:\s*(.*)/i);
-        if (limitationsMatch && limitationsMatch[1].length > 20) {
-            let limitations = limitationsMatch[1].trim();
-            limitations = limitations.replace(/\[see Warnings and Precautions.*?\]/gi, ''); 
-            limitations = limitations.replace(/ZITUVIMET|PRINZIDE|ADMELOG/gi, medicationName);
-            
-            // Limit to two major limitation points for clarity
-            const limitPoints = limitations.split(/\.|\;/).filter(limit => limit.trim().length > 5).slice(0, 2); 
-            
-            limitPoints.forEach(limit => {
-                let cleanedLimit = limit.trim();
-                
-                // NEW FIX: Aggressively strip list numbering like (1), 1), ( a ), etc.
-                cleanedLimit = cleanedLimit.replace(/^\s*(\s*\(\s*\d+\s*\)|\d+\s*\.|\d+\s*\)|\d+\s*)\s*/, '').trim();
-                
-                if (cleanedLimit.length > 5) {
-                    if (!cleanedLimit.endsWith('.')) cleanedLimit += '.';
-                    extractedItems.push(cleanedLimit);
-                }
-            });
-        }
 
-        if (extractedItems.length === 0) {
-            const genericRecs = summarizeFdaSection('indications_and_usage', text);
-            if (genericRecs.length > 0) return genericRecs;
-        }
-
-        if (extractedItems.length === 0) {
-            const genericRecs = summarizeFdaSection('indications_and_usage', text);
-            if (genericRecs.length > 0) return genericRecs;
-        }
-
-        // If no recommendations were extracted, return a clear message.
-        if (extractedItems.length === 0) {
-            return ["No recommendations or limitations found in this section."];
-        }
-        
-        return extractedItems.slice(0, 4);
+        const genericRecs = summarizeFdaSection('indications_and_usage', text);
+        if (genericRecs.length > 0) return genericRecs;
+        return ["No recommendations or limitations found in this section."];
     }
-    
-    // Fallback: short clean sentences instead of long label blocks.
-    const fallbackParts = sentenceCleanup(text)
-        .split(/\.|\;|\n/)
-        .map(s => sentenceCleanup(s))
-        .filter(s => s.length >= 8)
-        .filter(s => !/^(the following adverse reactions|clinical impact|intervention)$/i.test(s));
+
+    const fallbackParts = splitIntoSentences(text)
+        .map(s => sanitizeMedicalListItem(s, field))
+        .filter(Boolean);
     if (fallbackParts.length > 0) {
-        return fallbackParts.slice(0, 4).map(s => s.endsWith('.') ? s : `${s}.`);
+        return fallbackParts.slice(0, 4).map(s => (/[.!?]$/.test(s) ? s : `${s}.`));
     }
-<<<<<<< HEAD
-=======
-    
-    // Fallback: short clean sentences instead of long label blocks.
-    const fallbackParts = sentenceCleanup(text)
-        .split(/\.|\;|\n/)
-        .map(s => sentenceCleanup(s))
-        .filter(s => s.length >= 8)
-        .filter(s => !/^(the following adverse reactions|clinical impact|intervention)$/i.test(s));
-    if (fallbackParts.length > 0) {
-        return fallbackParts.slice(0, 4).map(s => s.endsWith('.') ? s : `${s}.`);
-    }
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
     return ["No concise details available for this section."];
 };
 
@@ -1705,29 +2244,31 @@ async function fetchDrugDetails(medicationName) {
 
     const cacheKey = `drugDetailsCache_${userId}`;
     let cache = JSON.parse(localStorage.getItem(cacheKey) || '{}');
-<<<<<<< HEAD
     
     // 2. CHECK CACHE
     const cachedEntry = cache[medicationName];
     const now = new Date().getTime();
+    const isCurrentParserCache = !!(cachedEntry && cachedEntry.parserVersion === DRUG_DETAILS_PARSER_VERSION);
 
-    if (cachedEntry && (now - cachedEntry.fetchedTime) < CACHE_LIFESPAN_MS) {
+    if (cachedEntry && !isCurrentParserCache) {
+        const upgraded = reparseCachedDrugDetails(cachedEntry.data, medicationName);
+        if (upgraded) {
+            cache[medicationName] = {
+                fetchedTime: now,
+                parserVersion: DRUG_DETAILS_PARSER_VERSION,
+                data: upgraded
+            };
+            localStorage.setItem(cacheKey, JSON.stringify(cache));
+            console.log(`[Cache Upgrade] Reparsed details for ${medicationName} with parser v${DRUG_DETAILS_PARSER_VERSION}`);
+            return upgraded;
+        }
+    }
+
+    if (cachedEntry && isCurrentParserCache && (now - cachedEntry.fetchedTime) < CACHE_LIFESPAN_MS) {
         console.log(`[Cache Hit] Returning details for ${medicationName}`);
         return cachedEntry.data;
     }
 
-=======
-    
-    // 2. CHECK CACHE
-    const cachedEntry = cache[medicationName];
-    const now = new Date().getTime();
-
-    if (cachedEntry && (now - cachedEntry.fetchedTime) < CACHE_LIFESPAN_MS) {
-        console.log(`[Cache Hit] Returning details for ${medicationName}`);
-        return cachedEntry.data;
-    }
-
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
     // 3. FETCH FROM API (multi-query fallback for brand/generic recognition)
     console.log(`[Cache Miss] Fetching details for ${medicationName} from FDA API...`);
 
@@ -1770,7 +2311,11 @@ async function fetchDrugDetails(medicationName) {
         }
 
         if (!label) {
-            if (cachedEntry) return cachedEntry.data;
+            if (cachedEntry) {
+                const reparsed = reparseCachedDrugDetails(cachedEntry.data, medicationName);
+                if (reparsed) return reparsed;
+                return cachedEntry.data;
+            }
             if (lastStatus) return { name: medicationName, error: `Details not found (Status ${lastStatus})` };
             return { name: medicationName, error: "Details not available in the API database." };
         }
@@ -1795,6 +2340,7 @@ async function fetchDrugDetails(medicationName) {
         // 5. STORE IN CACHE
         cache[medicationName] = {
             fetchedTime: now,
+            parserVersion: DRUG_DETAILS_PARSER_VERSION,
             data: parsedDetails
         };
         localStorage.setItem(cacheKey, JSON.stringify(cache));
@@ -1804,6 +2350,8 @@ async function fetchDrugDetails(medicationName) {
     } catch (e) {
         console.error(`Failed to fetch or parse details for ${medicationName}:`, e);
         if (cachedEntry) {
+            const reparsed = reparseCachedDrugDetails(cachedEntry.data, medicationName);
+            if (reparsed) return reparsed;
             console.log(`[Parsing Error] Returning last good cache for ${medicationName}.`);
             return cachedEntry.data;
         }
@@ -2039,7 +2587,6 @@ function renderCustomizationOptions() {
 /* --- SYMPTOM LOGGING FUNCTIONS --- */
 /* ------------------------------------------------ */
 function showSymptomModal(medId, time, callback) {
-<<<<<<< HEAD
     currentLogEntry = { medId, time };
     symptomCallback = callback; 
     selectedSymptoms.clear();
@@ -2047,15 +2594,6 @@ function showSymptomModal(medId, time, callback) {
     document.querySelectorAll('#symptomButtons .symptom-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-=======
-    currentLogEntry = { medId, time };
-    symptomCallback = callback; 
-    selectedSymptoms.clear();
-    document.getElementById('symptomText').value = '';
-    document.querySelectorAll('#symptomButtons .symptom-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
     // init severity display
     try {
         document.querySelectorAll('#symptomButtons .symptom-btn').forEach(btn => {
@@ -2090,17 +2628,10 @@ function toggleSymptom(event) {
 }
 
 function submitSymptoms() {
-<<<<<<< HEAD
     const customText = document.getElementById('symptomText').value.trim();
     let finalSymptoms = Array.from(selectedSymptoms);
     if (customText) finalSymptoms.push(`Note: ${customText}`);
     const textData = finalSymptoms.length > 0 ? finalSymptoms.join('; ') : null;
-=======
-    const customText = document.getElementById('symptomText').value.trim();
-    let finalSymptoms = Array.from(selectedSymptoms);
-    if (customText) finalSymptoms.push(`Note: ${customText}`);
-    const textData = finalSymptoms.length > 0 ? finalSymptoms.join('; ') : null;
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
     const severity = Number(document.getElementById('symptomSeverity')?.value ?? 0);
     const symptomPayload = {
         text: textData,
@@ -2183,8 +2714,10 @@ async function handleTabRendering(tab) {
         case 'log':
             await syncFromSupabase();
             renderLogList(loadMeds());
-<<<<<<< HEAD
-=======
+            break;
+        case 'schedule':
+            await syncFromSupabase();
+            renderScheduleTab();
             break;
         case 'pet':
             renderPetStatus();
@@ -2192,171 +2725,13 @@ async function handleTabRendering(tab) {
             break;
         case 'chat':
             renderChat();
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
             break;
-        case 'pet':
-            renderPetStatus();
-            renderCustomizationOptions();
-            break;
-        case 'chat':
-            renderChat();
+        case 'settings':
+            await renderSettingsTab();
             break;
         case 'data':
             await renderCharts(); 
             break;
-<<<<<<< HEAD
-    }
-}
-
-/* ------------------------------------------------ */
-/* --- CHAT FUNCTIONS --- */
-/* ------------------------------------------------ */
-function getChatKey() {
-    const doctorId = 'doctor1';
-    return `chat_${current}_${doctorId}`;
-}
-function loadChatMessages() {
-    try { return JSON.parse(localStorage.getItem(getChatKey())||'[]'); } catch(e){ return []; }
-}
-function saveChatMessages(msgs) { localStorage.setItem(getChatKey(), JSON.stringify(msgs)); }
-function renderChatMessages() {
-    const container = document.getElementById('chatMessages');
-    if (!container) return;
-    const msgs = loadChatMessages();
-    container.innerHTML = '';
-    msgs.forEach(m => {
-        const el = document.createElement('div');
-        el.className = `chat-msg ${m.sender === 'patient' ? 'patient' : 'doctor'}`;
-        el.innerHTML = `<div>${m.text}</div><div class="chat-meta" style="margin-top:6px">${new Date(m.time).toLocaleString()}</div>`;
-        container.appendChild(el);
-    });
-    container.scrollTop = container.scrollHeight;
-}
-function sendChatMessage(text) {
-    if (!text || !text.trim()) return;
-    const msgs = loadChatMessages();
-    msgs.push({ id: uid(), sender: 'patient', text: text.trim(), time: new Date().getTime() });
-    saveChatMessages(msgs);
-    renderChatMessages();
-}
-let chatPollInterval = null;
-function startChatPolling() {
-    stopChatPolling();
-    chatPollInterval = setInterval(() => { renderChatMessages(); }, 2000);
-}
-function stopChatPolling() { if (chatPollInterval) { clearInterval(chatPollInterval); chatPollInterval = null; } }
-function clearChatHistory() { localStorage.removeItem(getChatKey()); renderChatMessages(); }
-function renderChat() {
-    const users = JSON.parse(localStorage.getItem('users')||'[]');
-    const doc = users.find(u => u.id === 'doctor1') || users.find(u => u.role === 'doctor') || { firstName: 'Doctor', lastName: 'Care' };
-    const docNameEl = document.getElementById('chatDoctorName');
-    if (docNameEl) docNameEl.textContent = `${doc.firstName} ${doc.lastName}`;
-    renderChatMessages();
-    startChatPolling();
-}
-
-/* --- MEDICATION TAB FUNCTIONS --- */
-async function renderMedicationList(meds) {
-    const medsWrap = document.getElementById('medsWrap');
-    const userMeds = getUserMedsFromStore(meds);
-    
-    // Add try/catch block to ensure we catch errors and clear "Loading..."
-    try {
-        if (userMeds.length === 0) {
-            medsWrap.innerHTML = '<p class="muted">No medications assigned yet.</p>';
-            return;
-        }
-        medsWrap.innerHTML = '<p class="muted">Loading medication details... <span style="font-size:1.2em;">⏳</span></p>';
-
-        const detailedMedsPromises = userMeds.map(async med => {
-            const details = await fetchDrugDetails(med.name);
-            return { ...med, details };
-        });
-        
-        const detailedMeds = await Promise.all(detailedMedsPromises);
-        medsWrap.innerHTML = ''; 
-
-        detailedMeds.forEach(med => {
-            const drugDetails = med.details;
-            const hasDetails = !drugDetails.error;
-            let infoHtml = '';
-
-            // START: DISPLAY CLEANED DATA (Default view)
-            if (hasDetails) {
-                // Formatting Recommendations list to include prefix only if necessary
-                const formatRecommendations = (recs) => {
-                    // This function is no longer needed since the parsing function now handles the prefixing/stripping.
-                    // We simply render the cleaned items.
-                    return recs.map(r => `<li>${r}</li>`).join('');
-                };
-                
-                infoHtml = `
-                    <div class="med-details-toggle" onclick="this.nextElementSibling.classList.toggle('hidden')">
-                        <span style="font-size:0.9em; color: var(--deep-green); cursor:pointer; font-weight: 600;">
-                            <i style="margin-right:5px;">ℹ️</i> View Drug Details
-                        </span>
-                    </div>
-                    <div class="med-details-content hidden">
-                        ${drugDetails.sideEffects && drugDetails.sideEffects.length > 0 ? `
-                            <p style="font-weight:600; margin-bottom:5px;">Common Side Effects:</p>
-                            <ul>${drugDetails.sideEffects.map(s => `<li>${s}</li>`).join('')}</ul>` : ''}
-                        ${drugDetails.interactions && drugDetails.interactions.length > 0 ? `
-                            <p style="font-weight:600; margin:10px 0 5px 0;">Key Interactions:</p>
-                            <ul>${drugDetails.interactions.map(i => `<li>${i}</li>`).join('')}</ul>` : ''}
-                        ${drugDetails.recommendations && drugDetails.recommendations.length > 0 ? `
-                            <p style="font-weight:600; margin:10px 0 5px 0;">Recommendations:</p>
-                            <ul>${formatRecommendations(drugDetails.recommendations)}</ul>` : ''}
-                        <div class="muted" style="margin-top:10px;">Disclaimer: This information is for educational purposes only.</div>
-                        
-                        <div class="med-details-toggle" style="margin-top: 15px;" onclick="this.nextElementSibling.classList.toggle('hidden'); this.scrollIntoView(true);">
-                            <span style="font-size:0.8em; color: var(--brick-red); cursor:pointer; font-weight: 600;">
-                                <i style="margin-right:5px;">⚠️</i> View RAW Drug Data (Technical)
-                            </span>
-                        </div>
-                        <div class="med-details-content hidden" style="white-space: pre-wrap; font-family: monospace; font-size: 0.8em; background: #f0f0f0; padding: 10px; border: 1px solid #ccc; max-height: 400px; overflow-y: scroll;">
-                            <h3 style="margin-top:0;">RAW SIDE EFFECTS</h3>
-                            <p>${drugDetails.rawSideEffects}</p>
-                            <hr>
-                            <h3>RAW INTERACTIONS</h3>
-                            <p>${drugDetails.rawInteractions}</p>
-                            <hr>
-                            <h3>RAW RECOMMENDATIONS</h3>
-                            <p>${drugDetails.rawRecommendations}</p>
-                        </div>
-                    </div>
-                `;
-            } else {
-                infoHtml = `<div class="muted" style="margin-top:5px; color: var(--brick-red);">⚠️ ${drugDetails.error}</div>`;
-            }
-            // END: DISPLAY CLEANED DATA
-
-            const medEl = document.createElement('div');
-            medEl.className = 'med-item';
-            medEl.innerHTML = `
-                <div class="med-item-header">
-                    <div>
-                        <strong>${med.name} (${med.dosage})</strong> 
-                        <span class="muted">${med.schedule.toUpperCase()}</span>
-                        ${med.assignedBy === 'doctor' ? '<span style="font-size:0.8em; color: var(--brick-red); font-weight:700;">(Doctor)</span>' : ''}
-                        <div class="muted">${med.instructions}</div>
-                    </div>
-                    <button class="danger smallbtn delete-med" data-id="${med.id}">Delete</button>
-                </div>
-                ${infoHtml}
-            `;
-            medsWrap.appendChild(medEl);
-        });
-
-        document.querySelectorAll('.delete-med').forEach(button => {
-            button.addEventListener('click', handleDeleteMedication);
-        });
-    } catch (err) {
-        console.error("Error rendering medication list:", err);
-        medsWrap.innerHTML = '<p class="danger">Error loading medications. Please try again later.</p>';
-    }
-}
-
-=======
     }
 }
 
@@ -2798,7 +3173,6 @@ async function renderMedicationList(meds) {
     }
 }
 
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
 function handleDeleteMedication(event) {
     const medIdToDelete = event.target.dataset.id;
     let meds = loadMeds();
@@ -2808,6 +3182,8 @@ function handleDeleteMedication(event) {
     saveMeds(meds);
     renderMedicationList(meds);
     renderLogList(meds);
+    renderScheduleMedicationOptions();
+    renderScheduleTimeline();
 }
 
 function handleAddMedication() {
@@ -2832,6 +3208,8 @@ function handleAddMedication() {
     document.getElementById('medInstr').value = '';
     renderMedicationList(meds);
     renderLogList(meds);
+    renderScheduleMedicationOptions();
+    renderScheduleTimeline();
     syncMedicationToSupabase(newMed);
 }
 
@@ -2860,7 +3238,6 @@ function renderLogList(meds) {
     const logMedList = document.getElementById('logMedList');
     logMedList.innerHTML = '';
     const userMeds = getUserMedsFromStore(meds);
-<<<<<<< HEAD
     const logs = loadLogs()[current] || {};
     const today = new Date().toISOString().slice(0, 10);
     // Helper to format symptom display (handles legacy string and new {text,severity} payloads)
@@ -2956,103 +3333,6 @@ function isDoseLogged(medId, time) {
     return logs[logKey] && logs[logKey].taken;
 }
 
-=======
-    const logs = loadLogs()[current] || {};
-    const today = new Date().toISOString().slice(0, 10);
-    // Helper to format symptom display (handles legacy string and new {text,severity} payloads)
-    const formatSymptomsDisplay = (sym) => {
-        if (!sym) return '';
-        if (typeof sym === 'string') return `<div class="log-item-symptoms">Symptoms: ${sym}</div>`;
-        const txt = sym.text || '';
-        const sev = (typeof sym.severity === 'number' && !isNaN(sym.severity)) ? ` (Severity: ${sym.severity}/10)` : '';
-        const displayText = txt ? `${txt}${sev}` : `Severity: ${sym.severity}/10`;
-        return `<div class="log-item-symptoms">Symptoms: ${displayText}</div>`;
-    };
-    
-    if (userMeds.length === 0) {
-        logMedList.innerHTML = '<p class="muted">No medications to log. Please add some in the Medications tab.</p>';
-        return;
-    }
-
-    userMeds.forEach(med => {
-        const amKey = `${today}_${med.id}_am`;
-        const pmKey = `${today}_${med.id}_pm`;
-        const isAmLogged = logs[amKey] && logs[amKey].taken;
-        const isPmLogged = logs[pmKey] && logs[pmKey].taken;
-        
-        const amSymptoms = isAmLogged && logs[amKey].symptoms ? formatSymptomsDisplay(logs[amKey].symptoms) : '';
-        const pmSymptoms = isPmLogged && logs[pmKey].symptoms ? formatSymptomsDisplay(logs[pmKey].symptoms) : '';
-
-        const amButton = med.schedule.includes('am') || med.schedule.includes('both') ? 
-            `<button class="smallbtn ${isAmLogged ? 'ghost' : ''}" data-id="${med.id}" data-time="am" onclick="handleLogClick(this, 'am', ${isAmLogged})">${isAmLogged ? 'AM Logged' : 'Log AM'}</button>` : '';
-        const pmButton = med.schedule.includes('pm') || med.schedule.includes('both') ? 
-            `<button class="smallbtn ${isPmLogged ? 'ghost' : ''}" data-id="${med.id}" data-time="pm" onclick="handleLogClick(this, 'pm', ${isPmLogged})">${isPmLogged ? 'PM Logged' : 'Log PM'}</button>` : '';
-
-        logMedList.innerHTML += `
-            <div class="med-list-log">
-                <div><strong>${med.name} (${med.dosage})</strong>${amSymptoms}${pmSymptoms}</div>
-                <div class="log-controls">${amButton}${pmButton}</div>
-            </div>`;
-    });
-}
-
-function handleLogClick(button, time, isLogged) {
-    if (isLogged) {
-        alert("This dose is already logged for today.");
-        return;
-    }
-    const medId = button.dataset.id;
-    showSymptomModal(medId, time, (id, t, symptoms) => {
-        logMedicationTaken(id, t, symptoms);
-    });
-}
-
-function handleBulkLog(time) {
-    const meds = loadMeds()[current] || [];
-    let dosesToLog = [];
-    
-    meds.forEach(med => {
-        let doses = [];
-        if (time === 'am' && (med.schedule.includes('am') || med.schedule.includes('both'))) doses.push('am');
-        else if (time === 'pm' && (med.schedule.includes('pm') || med.schedule.includes('both'))) doses.push('pm');
-        else if (time === 'all') {
-            if (med.schedule.includes('am') || med.schedule.includes('both')) doses.push('am');
-            if (med.schedule.includes('pm') || med.schedule.includes('both')) doses.push('pm');
-        }
-        
-        doses.forEach(doseTime => {
-            if (!isDoseLogged(med.id, doseTime)) {
-                dosesToLog.push({ medId: med.id, time: doseTime });
-            }
-        });
-    });
-
-    if (dosesToLog.length === 0) {
-        alert(`No unlogged doses found for ${time === 'am' ? 'AM' : (time === 'pm' ? 'PM' : 'Today')}.`);
-        return;
-    }
-
-    // Trigger modal for bulk logging (pass null for medId)
-    showSymptomModal(null, time, (ignoredId, ignoredTime, symptomData) => {
-        let loggedCount = 0;
-        dosesToLog.forEach(dose => {
-            logMedicationTaken(dose.medId, dose.time, symptomData);
-            loggedCount++;
-        });
-        if (loggedCount > 0) {
-            alert(`${loggedCount} doses logged for ${time.toUpperCase()} with symptoms.`);
-        }
-    });
-}
-
-function isDoseLogged(medId, time) {
-    const logs = loadLogs()[current] || {};
-    const today = new Date().toISOString().slice(0, 10);
-    const logKey = `${today}_${medId}_${time}`;
-    return logs[logKey] && logs[logKey].taken;
-}
-
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
 /* --- CHART FUNCTIONS --- */
 function dosesPerDayFromSchedule(s) {
     const schedule = String(s || '').toLowerCase();
@@ -3099,14 +3379,6 @@ async function getAdherenceDataForCharts() {
     let medEvents = [];
 
     try {
-<<<<<<< HEAD
-        const user = await getSupabaseAuthUser();
-        if (window.supabaseClient && user) {
-            const { data: medRows, error: medErr } = await window.supabaseClient
-                .from('medications')
-                .select('id,medication_key,drug_name,frequency_text,is_active')
-                .eq('user_key', user.id)
-=======
         await ensureSupabaseClient();
         const user = await getSupabaseAuthUser();
         const resolvedUserKey = user?.id || getSessionUserKeyFallback();
@@ -3115,7 +3387,6 @@ async function getAdherenceDataForCharts() {
                 .from('medications')
                 .select('id,medication_key,drug_name,frequency_text,is_active')
                 .eq('user_key', resolvedUserKey)
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
                 .eq('is_active', true);
             if (medErr) throw medErr;
 
@@ -3129,11 +3400,7 @@ async function getAdherenceDataForCharts() {
             const { data: evRows, error: evErr } = await window.supabaseClient
                 .from('med_events')
                 .select('medication_id,event_time,event_type,metadata')
-<<<<<<< HEAD
-                .eq('user_key', user.id)
-=======
                 .eq('user_key', resolvedUserKey)
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
                 .gte('event_time', startIso);
             if (evErr) throw evErr;
             medEvents = evRows || [];
@@ -3321,7 +3588,6 @@ async function renderCharts() {
 function seedData() {
     if (window.supabaseClient) return; // DB-backed mode should not seed local demo accounts
     const patientId = "patient1";
-<<<<<<< HEAD
     if (!localStorage.getItem('users')) {
         const users = [
             { id: patientId, firstName: "Patient1", lastName: "Sample", email: "alex@test.com", password: "password", role: 'patient' },
@@ -3355,48 +3621,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadData();
 
     document.querySelectorAll('.tab-nav button').forEach(button => button.addEventListener('click', handleTabClick));
-=======
-    if (!localStorage.getItem('users')) {
-        const users = [
-            { id: patientId, firstName: "Patient1", lastName: "Sample", email: "alex@test.com", password: "password", role: 'patient' },
-            { id: 'doctor1', firstName: "Doctor", lastName: "Care", email: "doc@test.com", password: "password", role: 'doctor' }
-        ];
-        localStorage.setItem('users', JSON.stringify(users));
-        localStorage.setItem('loggedInUser', JSON.stringify({ id: patientId, firstName: "Patient1", lastName: "Sample" }));
-
-        // Seed a starter chat between patient and doctor
-        const chatKey = `chat_${patientId}_doctor1`;
-        const sampleChat = [
-            { id: uid(), sender: 'doctor', text: 'Hello — I can see your adherence. Let me know any concerns.', time: new Date().getTime() - 1000 * 60 * 60 },
-            { id: uid(), sender: 'patient', text: 'Thanks, I logged my meds today.', time: new Date().getTime() - 1000 * 60 * 30 }
-        ];
-        localStorage.setItem(chatKey, JSON.stringify(sampleChat));
-    }
-    let meds = loadMeds();
-    if (!meds[patientId] || meds[patientId].length === 0) {
-        meds[patientId] = sampleMeds_patient1; 
-        saveMeds(meds);
-    }
-    let petStatusStore = loadAllPetStatus();
-    if (!petStatusStore[patientId]) {
-        petStatusStore[patientId] = DEFAULT_PET_STATUS;
-        localStorage.setItem('petStatus', JSON.stringify(petStatusStore));
-    }
-}
-
-document.addEventListener('DOMContentLoaded', async () => {
-    seedData(); 
-    await loadData();
-
-    document.querySelectorAll('.tab-nav button').forEach(button => button.addEventListener('click', handleTabClick));
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
     document.getElementById('logout').addEventListener('click', () => {
         localStorage.removeItem('loggedInUser');
         localStorage.removeItem('TYMI_currentUser');
         localStorage.removeItem('TYMI_currentRole');
         window.location.reload();
     });
-<<<<<<< HEAD
     document.getElementById('refreshBtn').addEventListener('click', loadData);
     document.getElementById('addMedBtn').addEventListener('click', handleAddMedication);
     
@@ -3404,70 +3634,35 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('markPmBtn').addEventListener('click', () => handleBulkLog('pm'));
     document.getElementById('markAllBtn').addEventListener('click', () => handleBulkLog('all'));
 
-    document.getElementById('symptomSubmit').addEventListener('click', submitSymptoms);
-    document.getElementById('symptomCancel').addEventListener('click', cancelSymptoms);
-    document.getElementById('symptomClose').addEventListener('click', closeSymptomModal);
-    document.querySelectorAll('#symptomButtons .symptom-btn').forEach(btn => btn.addEventListener('click', toggleSymptom));
-    // clicking outside the modal will now cancel (do not log)
-    document.getElementById('symptomOverlay').addEventListener('click', (e) => { if (e.target.id === 'symptomOverlay') closeSymptomModal(); });
-
-    // Chat listeners
-    const chatSend = document.getElementById('chatSend');
-    const chatInput = document.getElementById('chatInput');
-    const clearChatBtn = document.getElementById('clearChat');
-    if (chatSend && chatInput) {
-        chatSend.addEventListener('click', () => { sendChatMessage(chatInput.value); chatInput.value = ''; });
-        chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); sendChatMessage(chatInput.value); chatInput.value = ''; } });
+    document.querySelectorAll('#scheduleViewSwitch [data-schedule-view]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            setScheduleView(btn.dataset.scheduleView);
+            renderScheduleTimeline();
+        });
+    });
+    const scheduleAnchorDate = document.getElementById('scheduleAnchorDate');
+    if (scheduleAnchorDate) {
+        scheduleAnchorDate.addEventListener('change', renderScheduleTimeline);
     }
-    if (clearChatBtn) clearChatBtn.addEventListener('click', () => { if (confirm('Clear chat history?')) clearChatHistory(); });
+    const addScheduleMedicationBtn = document.getElementById('addScheduleMedicationBtn');
+    if (addScheduleMedicationBtn) {
+        addScheduleMedicationBtn.addEventListener('click', handleAddMedicationScheduleEntry);
+    }
+    const addScheduleMealBtn = document.getElementById('addScheduleMealBtn');
+    if (addScheduleMealBtn) {
+        addScheduleMealBtn.addEventListener('click', handleAddMealScheduleEntry);
+    }
 
-    // Ensure polling stops when leaving the page
-    window.addEventListener('beforeunload', stopChatPolling);
-});
-</script>
-        <footer class="site-footer">
-            <div class="container" style="max-width:1200px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;">
-                <div>
-                    <h3 style="color:#7dd3fc;font-size:1.25rem;margin-bottom:8px;">TYM</h3>
-                    <p style="color:#9ca3af;font-size:0.9rem;">Empowering better health through innovative medication adherence solutions.</p>
-                </div>
-                <div>
-                    <h4 style="font-weight:600;margin-bottom:8px;">Quick Links</h4>
-                    <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
-                        <li><a href="index.html#home">Home</a></li>
-                        <li><a href="index.html#about">About</a></li>
-                        <li><a href="index.html#solutions">Solutions</a></li>
-                        <li><a href="index.html#contact">Contact</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 style="font-weight:600;margin-bottom:8px;">Resources</h4>
-                    <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">Research</a></li>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Support</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 style="font-weight:600;margin-bottom:8px;">Contact Us</h4>
-                    <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
-                        <li>✉️ info@tym.health</li>
-                        <li>📞 (555) 123-4567</li>
-                        <li>📍 San Francisco, CA</li>
-                    </ul>
-                </div>
-            </div>
-            <div style="text-align:center;margin-top:24px;color:#94a3b8;">© 2026 Take Your Medicine Innovations. All rights reserved.</div>
-        </footer>
-</body>
-=======
-    document.getElementById('refreshBtn').addEventListener('click', loadData);
-    document.getElementById('addMedBtn').addEventListener('click', handleAddMedication);
-    
-    document.getElementById('markAmBtn').addEventListener('click', () => handleBulkLog('am'));
-    document.getElementById('markPmBtn').addEventListener('click', () => handleBulkLog('pm'));
-    document.getElementById('markAllBtn').addEventListener('click', () => handleBulkLog('all'));
+    const settingsSaveEmailBtn = document.getElementById('settingsSaveEmailBtn');
+    if (settingsSaveEmailBtn) settingsSaveEmailBtn.addEventListener('click', handleSettingsSaveEmail);
+    const settingsChangePasswordBtn = document.getElementById('settingsChangePasswordBtn');
+    if (settingsChangePasswordBtn) settingsChangePasswordBtn.addEventListener('click', handleSettingsChangePassword);
+    const settingsSavePrefsBtn = document.getElementById('settingsSavePrefsBtn');
+    if (settingsSavePrefsBtn) settingsSavePrefsBtn.addEventListener('click', handleSettingsSavePreferences);
+    const settingsExportDataBtn = document.getElementById('settingsExportDataBtn');
+    if (settingsExportDataBtn) settingsExportDataBtn.addEventListener('click', handleSettingsExportData);
+    const settingsClearLocalDataBtn = document.getElementById('settingsClearLocalDataBtn');
+    if (settingsClearLocalDataBtn) settingsClearLocalDataBtn.addEventListener('click', handleSettingsClearLocalData);
 
     document.getElementById('symptomSubmit').addEventListener('click', submitSymptoms);
     document.getElementById('symptomCancel').addEventListener('click', cancelSymptoms);
@@ -3551,5 +3746,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div style="text-align:center;margin-top:24px;color:#94a3b8;">© 2026 Take Your Medicine Innovations. All rights reserved.</div>
         </footer>
 </body>
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
 </html>
+
+
+
+
+
+
+

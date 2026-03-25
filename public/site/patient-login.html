@@ -203,6 +203,9 @@ nav.fixed a:focus, nav.fixed button:focus{outline:none!important;box-shadow:none
 
                         <label class="text-sm font-semibold text-gray-700" style="margin-top:8px">Password</label>
                         <input id="password" class="w-full px-4 py-3 border rounded-2xl" placeholder="Password" type="password" />
+                        <div style="margin-top:8px;">
+                            <button id="forgotPasswordBtn" type="button" class="text-blue-600" style="background:transparent;border:0;padding:0;cursor:pointer;">Forgot password?</button>
+                        </div>
 
                         <div style="display:flex;gap:12px;margin-top:12px;">
                             <button id="login" class="px-6 py-3 bg-blue-600 text-white rounded-full shadow-sm">Login</button>
@@ -293,126 +296,96 @@ if (isBrowser){
 }
 </script>
 
-<script>
-    // Global variable to hold all users once loaded by initializeUsers
-    let ALL_USERS = []; 
+async function waitForSupabaseClient() {
+    const deadline = Date.now() + 8000;
+    while (!window.supabaseClient && Date.now() < deadline) {
+        await new Promise((r) => setTimeout(r, 100));
+    }
+    if (!window.supabaseClient) throw new Error('Supabase client not initialized.');
+    return window.supabaseClient;
+}
 
-    // --- 1. CORE STORAGE HELPERS ---
+async function doPatientLoginSupabase() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const messageElement = document.getElementById('msg');
+    if (messageElement) messageElement.textContent = '';
 
-    async function loadUsers() {
-        try {
-            const rawData = await Storage.getItem('users');
-            if (!rawData) {
-                console.log("No user data found in storage. Initializing with empty array.");
-                return [];
-            }
-            const users = JSON.parse(rawData);
-            if (Array.isArray(users)) {
-                return users;
-            } else {
-                console.warn("Storage data for users was not an array. Returning empty array.");
-                return [];
-            }
-        } catch (e) {
-            console.error("Error loading or parsing users:", e);
-            return [];
-        }
+    if (!username || !password) {
+        if (messageElement) messageElement.textContent = 'Please enter both username and password.';
+        return;
     }
 
-    async function saveUsers(usersArray) {
+    try {
+        const sb = await waitForSupabaseClient();
+        const email = usernameToEmail(username);
+        const { data: authData, error: authError } = await sb.auth.signInWithPassword({ email, password });
+        if (authError) throw authError;
+        if (!authData.user) throw new Error('Login failed - no user returned');
+
+        let isPatient = false;
+        let isPending = false;
         try {
-            await Storage.setItem('users', JSON.stringify(usersArray));
-        } catch (e) {
-            console.error("Error saving users:", e);
+            const { data: row, error } = await sb
+                .from('users')
+                .select('user_key,role,account_status')
+                .eq('user_key', authData.user.id)
+                .single();
+            if (!error && row) {
+                const role = String(row.role || '').toLowerCase();
+                const status = String(row.account_status || '').toLowerCase();
+                isPatient = role === 'patient' && (!status || status === 'approved');
+                isPending = role === 'patient' && status === 'pending';
+            }
+        } catch (_) {}
+
+        if (!isPatient) {
+            const metaRole = String(authData.user.user_metadata?.role || '').toLowerCase();
+            if (metaRole === 'patient') {
+                if (isPending) {
+                    await sb.auth.signOut();
+                    if (messageElement) messageElement.textContent = 'Account pending doctor approval.';
+                    return;
+                }
+                isPatient = true;
+            }
         }
-    }
 
-    // --- 2. AUTHENTICATION LOGIC (Completed) ---
-
-    async function doLogin() {
-        const username = document.getElementById('username').value.trim();
-        const password = document.getElementById('password').value.trim();
-        const messageElement = document.getElementById('msg'); // message container on this page is #msg
-        const users = ALL_USERS; // 🔑 FIX: Use the global ALL_USERS loaded during initialization
-
-        if (!messageElement) {
-            console.error("CRITICAL UI ERROR: Login message element with ID 'msg' not found.");
+        if (!isPatient) {
+            await sb.auth.signOut();
+            if (messageElement) messageElement.textContent = 'Invalid patient credentials or role.';
             return;
         }
 
-        messageElement.textContent = ''; // Clear previous message
-
-        if (!username || !password) {
-            messageElement.textContent = 'Please enter both username and password.';
-            return;
-        }
-
-        const user = users.find(u => u.username === username);
-
-        if (user && user.password === password && user.role === 'patient') {
-            const userSession = {
-                username: user.username,
-                role: user.role,
-                preferredDoctor: user.preferredDoctor || null,
-            };
-            await Storage.setItem('currentUser', JSON.stringify(userSession));
-            window.location.href = 'patient-dashboard.html';
-
-        } else {
-            messageElement.textContent = 'Invalid patient credentials.';
-            console.warn(`Login failed for user: ${username}`);
-        }
-    }
-
-    // --- 3. INITIALIZATION AND SEEDING ---
-
-    async function initializeUsers() {
-        let users = await loadUsers(); 
-
-        const DEFAULT_USER = {
-            username: "patient1",
-            password: "patientpass",
-            role: "patient",
-            approved: true,
-            preferredDoctor: "doctor1"
+        const userSession = {
+            user_key: authData.user.id,
+            username: username,
+            role: 'patient',
         };
-        const idx = users.findIndex(u => u.username === DEFAULT_USER.username && u.role === "patient");
-
-        let changed = false;
-        
-        if (idx === -1) {
-            users.push(DEFAULT_USER);
-            changed = true;
-            console.log("Default patient1 added.");
-        } else {
-            const u = users[idx];
-            let needsUpdate = false;
-            
-            if (u.approved !== true) { u.approved = true; needsUpdate = true; }
-            if (!u.preferredDoctor) { u.preferredDoctor = "doctor1"; needsUpdate = true; }
-
-            if (needsUpdate) {
-                users[idx] = u;
-                changed = true;
-                console.log("Default patient updated.");
-            } else {
-                console.log("Default patient 'patient1' already present and up-to-date.");
-            }
+        await window.Storage.setItem('currentUser', JSON.stringify(userSession));
+        await window.Storage.setItem('currentRole', 'patient');
+        window.location.href = 'patient-dashboard.html';
+    } catch (err) {
+        const text = String(err?.message || err || '');
+        if (messageElement) {
+            if (text.includes('Invalid login credentials')) messageElement.textContent = 'Invalid patient credentials.';
+            else messageElement.textContent = text;
         }
+    }
+}
 
-        if (changed) {
-            await saveUsers(users); 
-        }
-        
-        ALL_USERS = users; 
-        console.log(`Initialization complete. Total users: ${ALL_USERS.length}.`);
-        
-        document.getElementById("login").addEventListener("click", doLogin);
-        
-        document.addEventListener("keydown", async function(e){ 
+document.addEventListener("DOMContentLoaded", () => {
+    const loginButton = document.getElementById("login");
+    const passwordInput = document.getElementById("password");
+    const forgotPasswordButton = document.getElementById("forgotPasswordBtn");
+    if (loginButton) {
+        loginButton.addEventListener("click", doPatientLoginSupabase);
+    }
+    if (passwordInput) {
+        passwordInput.addEventListener("keydown", async function(e){
             if (e.key === "Enter"){
-                e.preventDefault(); 
-                await doLogin();
+                e.preventDefault();
+                await doPatientLoginSupabase();
             }
         });
     }
@@ -476,6 +449,60 @@ async function waitForSupabaseClient() {
     const sb = await ensureSupabaseClient();
     if (!sb) throw new Error('Supabase client not initialized.');
     return sb;
+}
+
+function getPasswordResetRedirectUrl() {
+    return new URL('change-password.html', window.location.href).toString();
+}
+
+async function resolveResetEmail(username, sb) {
+    const value = String(username || '').trim();
+    if (!value) return '';
+    if (value.includes('@')) return value.toLowerCase();
+    try {
+        const { data: row } = await sb
+            .from('users')
+            .select('email')
+            .eq('display_name', value)
+            .maybeSingle();
+        const dbEmail = String(row?.email || '').trim().toLowerCase();
+        if (dbEmail && dbEmail.includes('@')) return dbEmail;
+    } catch (_) {}
+    return usernameToEmail(value);
+}
+
+async function requestPatientPasswordReset() {
+    const username = document.getElementById('username')?.value?.trim();
+    const messageElement = document.getElementById('msg');
+    const forgotButton = document.getElementById('forgotPasswordBtn');
+    if (messageElement) messageElement.textContent = '';
+    if (!username) {
+        if (messageElement) messageElement.textContent = 'Enter your username (or email) first.';
+        return;
+    }
+    if (forgotButton) {
+        forgotButton.disabled = true;
+        forgotButton.textContent = 'Sending reset email...';
+    }
+    try {
+        const sb = await waitForSupabaseClient();
+        const resetEmail = await resolveResetEmail(username, sb);
+        if (!resetEmail || !resetEmail.includes('@')) {
+            throw new Error('Could not resolve an email for this account.');
+        }
+        const { error } = await sb.auth.resetPasswordForEmail(resetEmail, {
+            redirectTo: getPasswordResetRedirectUrl(),
+        });
+        if (error) throw error;
+        if (messageElement) messageElement.textContent = 'Password reset email sent. Check your inbox.';
+    } catch (err) {
+        if (messageElement) messageElement.textContent = String(err?.message || 'Failed to send reset email.');
+    } finally {
+        if (forgotButton) {
+            forgotButton.disabled = false;
+            forgotButton.textContent = 'Forgot password?';
+        }
+    }
 }
 
 async function doPatientLoginSupabase() {
@@ -566,6 +593,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 await doPatientLoginSupabase();
             }
         });
+    }
+    if (forgotPasswordButton) {
+        forgotPasswordButton.addEventListener("click", requestPatientPasswordReset);
     }
 });
 </script>

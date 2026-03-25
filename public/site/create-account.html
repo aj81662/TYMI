@@ -262,7 +262,8 @@ function saveDoctorSpecialtiesMap(m){ localStorage.setItem('doctorSpecialties', 
     saveUsers(u);
     saveDoctorSpecialtiesMap(specialties);
   }
-})();
+  return window.supabaseClient || null;
+}
 
 async function waitForSupabaseClient(){
   const deadline = Date.now() + 8000;
@@ -370,6 +371,34 @@ document.getElementById('createBtn').addEventListener('click', async (e)=>{
         const map = loadDoctorSpecialtiesMap();
         map[user] = doctorSpecialties;
         saveDoctorSpecialtiesMap(map);
+      }
+      await refreshDoctors();
+
+      if(msg) msg.textContent = role==='patient' ? 'Patient created and marked Pending approval.' : 'Doctor account created.';
+    } else {
+      const text = 'siteSync not available - ensure supabase-init.js and site-sync.js are loaded';
+      console.warn(text);
+      if (msg) msg.textContent = text;
+    }
+  }catch(err){
+    console.error('Supabase signup error', err);
+    const text = err && err.message ? err.message : String(err || 'Unknown error');
+    if(msg) msg.textContent = `Supabase error: ${text}`;
+  }
+});
+</script>
+
+    if (window.siteSync && typeof window.siteSync.signupAndCreateUser === 'function'){
+      const res = await window.siteSync.signupAndCreateUser(user, pass, role, pref);
+      console.log('siteSync signup result', res);
+
+      // Keep local cache in sync only after successful DB signup.
+      const users=loadUsers();
+      if(!users.find(u=>u.username===user)){
+        const entry = { username:user, password:pass, role:role, approved: role==='doctor', preferredDoctor: pref, assignedDoctor: null };
+        if(role==='patient'){ entry.approved=false; }
+        users.push(entry);
+        saveUsers(users);
       }
       await refreshDoctors();
 

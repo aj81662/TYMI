@@ -199,56 +199,8 @@ nav.fixed a:focus, nav.fixed button:focus{outline:none!important;box-shadow:none
 })();
 </script>
 
-    <main class="hero">
-        <div class="card">
-            <h2 class="text-3xl font-bold">Doctor Login</h2>
-            <p class="text-gray-600">Sign in to access your dashboard.</p>
-            <div style="margin-top:20px;">
-                <input id="username" placeholder="Username" class="w-full border rounded-2xl px-4 py-3" />
-                <input id="password" placeholder="Password" type="password" class="w-full border rounded-2xl px-4 py-3" style="margin-top:12px;" />
-                <button id="login" class="bg-blue-600 text-white rounded-2xl w-full py-3" style="margin-top:16px;">Login</button>
-                <div id="message" class="text-gray-600" style="margin-top:12px;"></div>
-            </div>
-        </div>
-    </main>
-
-    <footer class="site-footer">
-        <div class="container" style="max-width:1200px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;">
-            <div>
-                <h3 style="color:#7dd3fc;font-size:1.25rem;margin-bottom:8px;">TYM</h3>
-                <p style="color:#9ca3af;font-size:0.9rem;">Empowering better health through innovative medication adherence solutions.</p>
-            </div>
-            <div>
-                <h4 style="font-weight:600;margin-bottom:8px;">Quick Links</h4>
-                <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
-                    <li><a href="index.html#home">Home</a></li>
-                    <li><a href="index.html#about">About</a></li>
-                    <li><a href="index.html#solutions">Solutions</a></li>
-                    <li><a href="index.html#contact">Contact</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 style="font-weight:600;margin-bottom:8px;">Resources</h4>
-                <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
-                    <li><a href="#">Blog</a></li>
-                    <li><a href="#">Research</a></li>
-                    <li><a href="#">FAQ</a></li>
-                    <li><a href="#">Support</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 style="font-weight:600;margin-bottom:8px;">Contact Us</h4>
-                <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
-                    <li>✉️ info@tym.health</li>
-                    <li>📞 (555) 123-4567</li>
-                    <li>📍 San Francisco, CA</li>
-                </ul>
-            </div>
-        </div>
-        <div style="text-align:center;margin-top:24px;color:#94a3b8;">© 2026 Take Your Medicine Innovations. All rights reserved.</div>
-    </footer>
-
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+<script src="supabase-init.js"></script>
 <script>
 /* Inlined _storage.js to avoid bundler 404/MIME issues when loaded inside WebView */
 const STORAGE_KEY_PREFIX = 'TYMI_';

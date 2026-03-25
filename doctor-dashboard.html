@@ -6,8 +6,6 @@
     <script src="global-polyfills.js"></script>
     <script>
         (function () {
-<<<<<<< HEAD
-=======
             try {
                 if (!window.crypto) window.crypto = window.msCrypto || {};
                 if (typeof window.crypto.randomUUID !== 'function') {
@@ -24,7 +22,6 @@
     </script>
     <script>
         (function(){
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
             try {
                 if (!window.crypto) window.crypto = window.msCrypto || {};
                 if (typeof window.crypto.randomUUID !== 'function') {
@@ -39,230 +36,6 @@
             } catch (e) {}
         })();
     </script>
-<<<<<<< HEAD
-    <script>
-        (function(){
-            try {
-                if (!window.crypto) window.crypto = window.msCrypto || {};
-                if (!crypto.randomUUID) {
-                    crypto.randomUUID = function() {
-                        var bytes = (crypto.getRandomValues && crypto.getRandomValues(new Uint8Array(16))) || new Uint8Array(16);
-                        bytes[6] = (bytes[6] & 0x0f) | 0x40;
-                        bytes[8] = (bytes[8] & 0x3f) | 0x80;
-                        var hex = Array.from(bytes).map(function(b){return b.toString(16).padStart(2,'0')}).join('');
-                        return hex.substr(0,8) + '-' + hex.substr(8,4) + '-' + hex.substr(12,4) + '-' + hex.substr(16,4) + '-' + hex.substr(20,12);
-                    };
-                }
-            } catch (e) {}
-        })();
-    </script>
- 
-<title>Patient Login</title>
-
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Glacial+Indifference&family=Hanken+Grotesk:wght@300;400&display=swap" rel="stylesheet"/>
-
-<style>
-:root {
-    --deep-green: #3F1263;    /* primary */
-    --brick-red: #986EAD;    /* primary-variant */
-    --coral: #D8CBBB;        /* neutral */
-    --mustard: #986EAD;      /* accent */
-    --sky: #F2F2F2;          /* background */
-    --rose: #D8CBBB;         /* neutral */
-    --font-primary: 'Glacial Indifference', sans-serif;
-    --font-secondary: 'Hanken Grotesk', sans-serif;
-}
-
-body {
-  font-family: var(--font-secondary);
-  background: var(--sky);
-    color: #222;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-
-  color: #222;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-/* Header */
-header {
-  background-color: var(--deep-green);
-  color: white;
-  padding: 16px 10%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-header h1 {
-  font-family: var(--font-primary);
-  font-size: 1.6rem;
-  margin: 0;
-}
-
-header .site-logo {
-    height: 44px;
-    width: auto;
-    margin-right: 12px;
-}
-
-nav a {
-  color: white;
-  text-decoration: none;
-  margin-left: 18px;
-  font-weight: 500;
-  transition: opacity 0.2s;
-}
-
-nav a:hover {
-  opacity: 0.8;
-  text-decoration: underline;
-}
-
-/* Login Box */
-.container {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 20px;
-}
-
-.box {
-  background: #fff;
-  padding: 32px;
-  border-radius: 16px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-  width: 340px;
-  text-align: center;
-}
-
-.box h3 {
-  font-family: var(--font-primary);
-  color: var(--brick-red);
-  margin-bottom: 20px;
-}
-
-input {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-family: var(--font-secondary);
-}
-
-button {
-  margin-top: 20px;
-  padding: 12px;
-  width: 100%;
-  background: var(--deep-green);
-  color: #fff;
-  border: 0;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  font-family: var(--font-secondary);
-  transition: background 0.3s;
-}
-
-button:hover {
-  background: var(--brick-red);
-}
-
-#msg {
-  color: var(--brick-red);
-  margin-top: 12px;
-  font-size: 0.9rem;
-}
-
-footer {
-  text-align: center;
-  padding: 16px;
-  background: var(--rose);
-  color: #333;
-  font-size: 0.9rem;
-}
-
-    .wrap{max-width:1200px;margin:0 auto}
-    /* UPDATED: Changed card background to white, border to light gray */
-    .card{background:#ffffff;padding:16px;border-radius:10px;margin-bottom:12px;border:1px solid #e0e0e0}
-    /* Kept buttons similar, but adjusted text color for better contrast on light theme */
-    button{padding:8px 10px;border-radius:8px;border:0;background:#06b6d4;color:#ffffff;cursor:pointer}
-    /* UPDATED: Ghost button colors for light theme */
-    .ghost{background:transparent;border:1px solid #ccc;color:#666}
-    table{width:100%;border-collapse:collapse;margin-top:8px}
-    /* UPDATED: Table border and text color for light theme */
-    th,td{padding:8px;text-align:left;border-bottom:1px dashed #eee;color:#333}
-    /* UPDATED: Input field colors for light theme */
-    input,select,textarea{padding:8px;border-radius:6px;border:1px solid #ccc;background:#ffffff;color:#333}
-    /* UPDATED: Muted color for light theme */
-    .muted{color:#888;font-size:13px}
-    .med-form{display:flex;gap:8px;flex-wrap:wrap}
-    .med-form > * { flex:1 1 220px; }
-    .row{display:flex;gap:12px;align-items:center}
-    .flex-1{flex:1}
-    #chartWrap{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
-    /* UPDATED: Chart background for light theme */
-    canvas{background:#fafafa; border-radius: 4px; padding: 6px;} 
-    /* UPDATED: Panel background for light theme */
-    .panel{background:#f0f3f5;padding:12px;border-radius:8px;margin-top:8px;border:1px solid #ddd}
-    .small{font-size:13px}
-    .hidden{display:none}
-
-    /* Patient Details Resizable Grid */
-    .pd-grid {
-      display: grid;
-      grid-template-columns: var(--pd-col-1-width) var(--pd-col-2-width);
-      gap: 12px;
-      position: relative;
-      user-select: none;
-      --pd-col-1-width: 50%; /* Default split */
-      --pd-col-2-width: 50%;
-    }
-
-    /* Splitter style */
-    .pd-splitter {
-      width: 12px;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: var(--pd-col-1-width);
-      transform: translateX(-50%);
-      cursor: col-resize;
-      z-index: 10;
-      /* UPDATED: Splitter colors for light theme */
-      background: rgba(0, 0, 0, 0.05);
-      border-left: 1px solid #ccc;
-      border-right: 1px solid #ccc;
-    }
-    
-    /* Chart Container Styling */
-    .patient-chart-container {
-        margin-top: 12px;
-        margin-bottom: 12px;
-    }
-
-    /* Responsive stacking for patient details */
-    @media (max-width: 768px) {
-      .pd-grid {
-        grid-template-columns: 1fr;
-      }
-      .pd-splitter {
-        display: none;
-      }
-    }
- 
-=======
  
 <title>Doctor Dashboard</title>
 
@@ -481,7 +254,6 @@ footer {
       }
     }
  
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
 </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
@@ -497,317 +269,6 @@ footer {
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
-<<<<<<< HEAD
-    <script src="supabase-init.js"></script>
-    <script src="site-sync.js?v=20260216e"></script>
-</head>
-
-<body>
-    <header>
-        <img class="site-logo" src="./Logo.png" alt="logo" />
-        <h1>Take Your Medicine Innovations: Doctor Dashboard</h1>
-        <nav>
-      <a href="index.html">Home</a>
-      <a href="doctor-login.html">Doctor Portal</a>
-      <a href="patient-login.html">Patient Portal</a>
-      <a href="change-password.html">Change Password</a>
-      <a href="create-account.html">Create Account</a>
-    </nav>
-  </header>
-
-
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-  <div class="wrap">
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <h2 style="margin:0">Doctor Dashboard</h2>
-          <div id="who" class="muted"></div>
-        </div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <button id="refresh" class="ghost">Refresh</button>
-          <button id="logout" class="ghost">Logout</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
-        <div style="flex:1;min-width:320px">
-          <h3 style="margin:0">Overall Adherence (All Assigned Patients)</h3>
-          <div id="chartWrap">
-            <div style="width:260px;height:260px">
-              <canvas id="overallChart"></canvas>
-            </div>
-            <div class="flex-1">
-              <div class="muted">Totals (Assigned Patients)</div>
-              <table style="max-width:420px">
-                <tr><th>Metric</th><th>Value</th></tr>
-                <tr><td>Total Patients</td><td id="totalPatients">0</td></tr>
-                <tr><td>Total Events</td><td id="totalEvents">0</td></tr>
-                <tr><td>Taken</td><td id="totalTaken">0</td></tr>
-                <tr><td>Missed (proxy)</td><td id="totalMissed">0</td></tr>
-                <tr><td>Avg adherence (proxy)</td><td id="avgAdherence">—</td></tr>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <div style="width:320px;min-width:260px">
-          <h3 style="margin:0">Select Patient</h3>
-          <div style="margin-top:8px;display:flex;gap:8px">
-            <select id="patientSelector" style="flex:1;padding:8px;border-radius:6px;background:#ffffff;color:#333;border:1px solid #ccc"></select>
-            <button id="viewPatient" title="Open patient details">View</button>
-          </div>
-          <div class="muted" style="margin-top:8px">Choose an approved patient assigned to you.</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card" id="approvals">
-      <h3 style="margin:0">Pending Patient Approvals</h3>
-      <div id="pendingWrap" style="margin-top:10px" class="muted">Loading...</div>
-    </div>
-
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <h3 style="margin:0">Patient Details</h3>
-        <div class="muted" id="detailNote">Select a patient and click <strong>View</strong></div>
-      </div>
-
-      <div id="patientPanel" class="panel hidden">
-        <div class="pd-grid">
-          <div id="pd-col-1" style="min-width:260px">
-            <div class="muted">Patient</div>
-            <div id="pd_name" style="font-weight:700;font-size:18px">—</div>
-            <div class="muted" id="pd_assigned">Assigned doctor: —</div>
-            <div style="margin-top:10px">
-              <button id="exportPatientCSV" class="ghost">Export Patient CSV</button>
-              <button id="closePatient" class="ghost" style="margin-left:8px">Close</button>
-            </div>
-
-            <div class="patient-chart-container">
-              <div class="muted" id="pd_stats" style="margin-bottom:6px"></div>
-              
-              <h4 style="margin:8px 0">Taken vs Missed (7d)</h4>
-              <div style="width:180px;height:180px;"><canvas id="patientPieChart"></canvas></div>
-
-              <h4 style="margin:12px 0 8px 0">Daily Trend (7d)</h4>
-              <canvas id="patientDailyTrendChart"></canvas>
-
-              <h4 style="margin:12px 0 8px 0">Adherence by Medication (7d)</h4>
-              <canvas id="patientMedBarChart"></canvas>
-              
-              <h4 style="margin:12px 0 8px 0">AM vs PM Adherence (7d)</h4>
-              <canvas id="patientAmPmChart"></canvas>
-            </div>
-          </div>
-
-          <div id="pd-splitter" class="pd-splitter"></div>
-
-          <div id="pd-col-2" style="min-width:260px;overflow:hidden">
-            <div class="muted">Medications</div>
-            <div id="pd_meds" style="margin-top:8px"></div>
-
-            <div style="margin-top:12px">
-              <div class="muted">Recent Events</div>
-              <div id="pd_events" style="margin-top:8px"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3 style="margin:0">Add Medication for a Patient</h3>
-      <div style="margin-top:8px" class="med-form">
-        <select id="selectPatient"><option value="">-- select patient --</option></select>
-        <input id="d_medName" placeholder="Medication name" />
-        <select id="d_medType"><option value="pill">Pill</option><option value="liquid">Liquid</option><option value="injection">Injection</option><option value="other">Other</option></select>
-        <input id="d_medDose" placeholder="Dosage (e.g., 10 mg)" />
-        <select id="d_medSchedule"><option value="am">AM</option><option value="pm">PM</option><option value="both">Both</option><option value="custom">Custom</option></select>
-        <input id="d_medInstr" placeholder="Instructions (take with meal...)" />
-        <button id="d_addMedBtn">Add Medication (doctor)</button>
-      </div>
-      <div class="muted" style="margin-top:8px">Doctors can assign meds to any approved patient assigned to them.</div>
-    </div>
-
-    <div class="card">
-      <h3 style="margin:0">Patients & Med Summary (Assigned)</h3>
-      <div id="patientSummary" style="margin-top:8px"></div>
-    </div>
-
-    <div class="card">
-      <h3 style="margin:0">Medication Management (Edit/Delete)</h3>
-      <div id="medManagement" style="margin-top:8px"></div>
-    </div>
-
-    <div class="card">
-      <h3 style="margin:0">Adherence Logs (Assigned Patients)</h3>
-      <div id="logs" style="margin-top:8px"></div>
-    </div>
-  </div>
-<script>
-/* Inlined _storage.js to avoid bundler 404/MIME issues when loaded inside WebView */
-
-/* ============================================================
- * storage.js
- * FINAL FIX FOR REDECLARATION ERROR
- * ============================================================ */
-
-// 1. Internal Constant Declaration (This must be the only place it is declared)
-const STORAGE_KEY_PREFIX = 'TYMI_'; 
-
-// 2. SAFELY determine the execution environment
-const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
-const isReactNativeWebView = isBrowser && !!window.ReactNativeWebView;
-
-// 3. Promise Queue for Asynchronous getItem Resolution (WebView only)
-const nativeStorageQueue = {}; 
-
-function generateTransactionId() {
-    return Math.random().toString(36).substring(2, 15);
-}
-
-// Global function called by the React Native side 
-function resolveNativeStorageResponse(message) {
-    if (message.type !== 'STORAGE_RESPONSE') return;
-    const { txId, value, error } = message;
-    const promiseHandlers = nativeStorageQueue[txId];
-
-    if (promiseHandlers) {
-        delete nativeStorageQueue[txId];
-        if (error) {
-            console.error(`WebView Storage Error (Tx:${txId}):`, error);
-            promiseHandlers.reject(new Error(error));
-        } else {
-            promiseHandlers.resolve(value); 
-        }
-    }
-}
-
-// Sends a storage operation request to the native side
-function sendNativeStorageRequest(action, key, value = null) {
-    if (!isReactNativeWebView) {
-        return Promise.reject(new Error("Attempted native storage outside WebView."));
-    }
-
-    const txId = generateTransactionId();
-
-    return new Promise((resolve, reject) => {
-        // 🔑 FIX: Store ALL promises in the queue, regardless of action.
-        // This forces the JS to wait until the native side sends a response.
-        nativeStorageQueue[txId] = { resolve, reject };
-
-        try {
-            console.log(`[WebView] Sending ${action} request for key: ${key}, TxID: ${txId}`);
-            
-            window.ReactNativeWebView.postMessage(
-                JSON.stringify({
-                    type: "STORAGE_OPERATION",
-                    action: action,
-                    key: key,
-                    value: value,
-                    txId: txId, 
-                })
-            );
-        } catch (e) {
-            // Clean up the promise queue if the postMessage itself failed
-            if (nativeStorageQueue[txId]) delete nativeStorageQueue[txId]; 
-            console.error("Failed to send native storage request:", e);
-            reject(e);
-        }
-    });
-}
-
-
-/* ------------------------------------------------ */
-/* --- EXPORTED ASYNCHRONOUS FUNCTIONS --- */
-/* ------------------------------------------------ */
-
-async function getItem(key) {
-    const fullKey = STORAGE_KEY_PREFIX + key;
-    if (!isBrowser) return null;
-    
-    if (isReactNativeWebView) {
-        return sendNativeStorageRequest('getItem', fullKey);
-    } else {
-        return Promise.resolve(localStorage.getItem(fullKey));
-    }
-}
-
-async function setItem(key, value) {
-    const fullKey = STORAGE_KEY_PREFIX + key;
-    if (!isBrowser) return;
-
-    if (isReactNativeWebView) {
-        return sendNativeStorageRequest('setItem', fullKey, value);
-    } else {
-        localStorage.setItem(fullKey, value);
-        return Promise.resolve();
-    }
-}
-
-async function removeItem(key) {
-    const fullKey = STORAGE_KEY_PREFIX + key;
-    if (!isBrowser) return;
-
-    if (isReactNativeWebView) {
-        return sendNativeStorageRequest('removeItem', fullKey);
-    } else {
-        localStorage.removeItem(fullKey);
-        return Promise.resolve();
-    }
-}
-
-/* ------------------------------------------------ */
-/* --- GLOBAL SCOPE INITIALIZATION (Client Only) --- */
-/* ------------------------------------------------ */
-
-// 4. Create a global Storage object for easy access in other dashboard scripts
-if (isBrowser) {
-    // Assign the exports to the global window object for use in the static HTML file
-    window.Storage = {
-        getItem: getItem,
-        setItem: setItem,
-        removeItem: removeItem,
-    };
-
-    // Attach the global listener for native replies
-    if (isReactNativeWebView) {
-    // ⚠️ CRITICAL FIX: Listen on the window object for the event dispatched by RN.
-    window.addEventListener('message', (event) => {
-        try {
-            // event.data may be a JSON string or already an object depending on
-            // how the native side injected the message. Handle both.
-            let data = event.data;
-            if (typeof data === 'string') {
-                data = JSON.parse(data);
-            }
-
-            if (data && data.type === 'STORAGE_RESPONSE') {
-                resolveNativeStorageResponse(data);
-            }
-        } catch (e) {
-            console.error("Error parsing native response in listener:", e);
-        }
-    });
-}
-}
-
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-/* -------------------------
-    Storage helpers (Async Proxy)
-    ------------------------- */
-function uid(){ return Math.random().toString(36).slice(2,9); }
-
-=======
     <script>
         (function () {
             function ensureSupabaseClient() {
@@ -1354,16 +815,12 @@ async function saveDoctorSpecialtiesMap(map) {
     await window.Storage.setItem('doctorSpecialties', JSON.stringify(map || {}));
 }
 
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
 // All storage functions are now ASYNCHRONOUS and use window.Storage
 async function loadUsers(){ 
     // Prefer DB-backed users when Supabase client is available.
     try {
-<<<<<<< HEAD
-=======
         const specialistAccessMap = await loadSpecialistAccessMap();
         const doctorSpecialtiesMap = await loadDoctorSpecialtiesMap();
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
         if (window.supabaseClient) {
             const sb = window.supabaseClient;
             let rows = null;
@@ -1371,12 +828,6 @@ async function loadUsers(){
 
             ({ data: rows, error } = await sb
                 .from('users')
-<<<<<<< HEAD
-                .select('user_key,email,display_name,role,account_status,preferred_doctor_user_key,assigned_doctor_user_key')
-                .order('created_at', { ascending: true }));
-
-            if (error) {
-=======
                 .select('user_key,email,display_name,role,account_status,preferred_doctor_user_key,assigned_doctor_user_key,specialist_doctor_user_keys')
                 .order('created_at', { ascending: true }));
 
@@ -1389,7 +840,6 @@ async function loadUsers(){
             }
 
             if (error) {
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
                 // Fallback for minimal schema projects.
                 ({ data: rows, error } = await sb
                     .from('users')
@@ -1398,8 +848,6 @@ async function loadUsers(){
             }
 
             if (!error && Array.isArray(rows)) {
-<<<<<<< HEAD
-=======
                 const accessByPatient = {};
                 try {
                     const { data: linkRows, error: linkErr } = await sb
@@ -1416,24 +864,12 @@ async function loadUsers(){
                         });
                     }
                 } catch (_) {}
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
                 const keyToName = {};
                 rows.forEach((r) => {
                     const name = r.display_name || (r.email ? String(r.email).split('@')[0] : r.user_key);
                     if ((r.role || '').toLowerCase() === 'doctor') keyToName[r.user_key] = name;
                 });
                 try {
-<<<<<<< HEAD
-                    const { data: docs } = await sb.from('doctors').select('user_key,display_name,email');
-                    (docs || []).forEach((d) => {
-                        keyToName[d.user_key] = d.display_name || (d.email ? String(d.email).split('@')[0] : d.user_key);
-                    });
-                } catch (_) {}
-
-                return rows.map((r) => {
-                    const username = r.display_name || (r.email ? String(r.email).split('@')[0] : r.user_key);
-                    const userRole = (r.role || 'patient').toLowerCase();
-=======
                     let docs = null;
                     let docsErr = null;
                     ({ data: docs, error: docsErr } = await sb.from('doctors').select('user_key,display_name,email,specialties_text,specialty'));
@@ -1450,7 +886,6 @@ async function loadUsers(){
                     const username = r.display_name || (r.email ? String(r.email).split('@')[0] : r.user_key);
                     const inferredRole = keyToName[r.user_key] ? 'doctor' : 'patient';
                     const userRole = String(r.role || inferredRole).toLowerCase();
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
                     const approved = (r.account_status || '') ? r.account_status === 'approved' : userRole === 'doctor';
                     return {
                         user_key: r.user_key,
@@ -1462,8 +897,6 @@ async function loadUsers(){
                         assignedDoctorUserKey: r.assigned_doctor_user_key || null,
                         preferredDoctor: keyToName[r.preferred_doctor_user_key] || null,
                         assignedDoctor: keyToName[r.assigned_doctor_user_key] || null,
-<<<<<<< HEAD
-=======
                         doctorSpecialties: doctorSpecialtiesMap[String(r.user_key)] || r.doctor_specialties_text || '',
                         specialistDoctorUserKeys: normalizeDoctorKeyList(
                             accessByPatient[String(r.user_key)] ||
@@ -1471,7 +904,6 @@ async function loadUsers(){
                             specialistAccessMap[String(r.user_key)] ||
                             specialistAccessMap[String(username)]
                         ),
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
                     };
                 });
             }
@@ -1521,7 +953,6 @@ async function saveMeds(m){
 
 async function syncMedsFromSupabaseForDoctor(){ // ASYNC
     if (!window.supabaseClient) return;
-<<<<<<< HEAD
     try {
         const users = await loadUsers();
         const assignedPatients = users.filter(u => u.role === 'patient' && u.approved && isAssignedToCurrentDoctor(u) && u.user_key);
@@ -1648,134 +1079,6 @@ async function checkAuthAndInit() {
 
     // Parse current user from the stringified JSON stored in the login step
     try {
-=======
-    try {
-        const users = await loadUsers();
-        const assignedPatients = users.filter(u => u.role === 'patient' && u.approved && isAssignedToCurrentDoctor(u) && u.user_key);
-        if (assignedPatients.length === 0) return;
-
-        const medsStore = await loadMeds();
-        await Promise.all(assignedPatients.map(async (p) => {
-            const { data, error } = await window.supabaseClient
-                .from('medications')
-                .select('id,medication_key,drug_name,strength,route,instruction,frequency_text,added_by_role,added_by_user_key,created_at')
-                .eq('user_key', p.user_key)
-                .order('created_at', { ascending: false });
-            if (error) throw error;
-            medsStore[p.username] = (data || []).map((m) => ({
-                id: m.medication_key || `db-${m.id}`,
-                medication_key: m.medication_key || null,
-                name: m.drug_name || '',
-                type: m.route || '',
-                dosage: m.strength || '',
-                schedule: m.frequency_text || '',
-                instructions: m.instruction || '',
-                addedBy: m.added_by_role ? `${m.added_by_role}:${m.added_by_user_key || ''}` : '',
-                createdAt: m.created_at || null
-            }));
-        }));
-        await saveMeds(medsStore);
-    } catch (e) {
-        console.warn('syncMedsFromSupabaseForDoctor failed', e);
-    }
-}
-
-/* -------------------------
-    Global State & Auth Check
-    ------------------------- */
-let current = null; // Current logged-in username
-let currentUserKey = null; // Current logged-in user_key
-let role = null;    // Current logged-in role
-
-// --- Sample Data Definitions ---
-const SAMPLE_PATIENT = 'patient1';
-const SAMPLE_DOCTOR = 'doctor1';
-
-const sampleMeds_patient1 = [
-  { id: "med1", name: "Metformin", type: "pill", dosage: "500 mg", schedule: "am", instructions: "Take with breakfast", assignedBy: "doctor" },
-  { id: "med2", name: "Lisinopril", type: "pill", dosage: "10 mg", schedule: "pm", instructions: "Take before bed", assignedBy: "doctor" },
-  { id: "med3", name: "Insulin", type: "injection", dosage: "5 units", schedule: "both", instructions: "Inject with meals", assignedBy: "doctor" },
-];
-
-// --- Sample Data Generation Function ---
-async function generateAdherenceData(patientId, medsList) {
-    let logs = await loadLogs(); // AWAIT
-    logs[patientId] = [];
-    const today = new Date();
-    
-    // Generate logs for the last 7 days
-    for (let i = 6; i >= 0; i--) { 
-        const date = new Date(today);
-        date.setDate(today.getDate() - i);
-        
-        medsList.forEach(med => {
-            const prob = (med.schedule === "pm") ? 0.7 : 0.8; 
-            
-            // Log for AM dose (if applicable)
-            if ((med.schedule === 'am' || med.schedule === 'both') && Math.random() < prob) {
-                logs[patientId].push({
-                    ts: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 8, 0, 0).toISOString(),
-                    type: "taken", medId: med.id, medName: med.name, schedule: 'am',
-                    note: med.instructions, by: patientId
-                });
-            }
-            
-            // Log for PM dose (if applicable)
-            if ((med.schedule === 'pm' || med.schedule === 'both') && Math.random() < prob) {
-                logs[patientId].push({
-                    ts: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 20, 0, 0).toISOString(),
-                    type: "taken", medId: med.id, medName: med.name, schedule: 'pm',
-                    note: med.instructions, by: patientId
-                });
-            }
-        });
-    }
-    await saveLogs(logs); // AWAIT
-}
-
-/* -------------------------
-    Seed demo 
-    ------------------------- */
-async function seedDemo(){ // ASYNC
-    if (window.supabaseClient) return; // No local demo seeding in DB-backed mode
-    let users = await loadUsers(); // AWAIT
-    let medsStore = await loadMeds(); // AWAIT
-    
-    // 1. Ensure Doctor and Patient accounts exist
-    if(!users.find(u=>u.username===SAMPLE_DOCTOR)){
-        users.push({username:SAMPLE_DOCTOR,password:'docpass',role:'doctor',approved:true,pendingPatients:[]});
-    }
-    if(!users.find(u=>u.username===SAMPLE_PATIENT)){
-        users.push({
-            username:SAMPLE_PATIENT,
-            password:'patpass',
-            role:'patient',
-            approved:true, 
-            preferredDoctor:SAMPLE_DOCTOR,
-            assignedDoctor:SAMPLE_DOCTOR
-        });
-    }
-    await saveUsers(users); // AWAIT
-
-    // 2. Ensure Medications and Logs for patient1 exist
-    if(!medsStore[SAMPLE_PATIENT] || medsStore[SAMPLE_PATIENT].length === 0){
-        medsStore[SAMPLE_PATIENT] = sampleMeds_patient1.map(m => ({ ...m, addedBy: 'doctor:' + SAMPLE_DOCTOR }));
-        await saveMeds(medsStore); // AWAIT
-        
-        await generateAdherenceData(SAMPLE_PATIENT, medsStore[SAMPLE_PATIENT]); // AWAIT
-    }
-}
-
-/* -------------------------
-    Basic async auth guard
-    ------------------------- */
-async function checkAuthAndInit() {
-    const currentJSON = await window.Storage.getItem('currentUser');
-    const roleString = await window.Storage.getItem('currentRole');
-
-    // Parse current user from the stringified JSON stored in the login step
-    try {
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
         const parsed = JSON.parse(currentJSON || '{}');
         current = parsed?.username || null;
         currentUserKey = parsed?.user_key || null;
@@ -1783,7 +1086,6 @@ async function checkAuthAndInit() {
         current = null;
         currentUserKey = null;
     }
-<<<<<<< HEAD
     role = roleString;
 
     if(!current || role !== 'doctor'){ 
@@ -1798,22 +1100,6 @@ async function checkAuthAndInit() {
         whoElement.textContent = 'Logged in as: ' + current;
     }
 
-=======
-    role = roleString;
-
-    if(!current || role !== 'doctor'){ 
-        alert('Not logged in as doctor'); 
-        window.location.href='doctor-login.html'; 
-        return; 
-    }
-
-    // After successful auth, display username
-    const whoElement = document.getElementById('who');
-    if (whoElement) {
-        whoElement.textContent = 'Logged in as: ' + current;
-    }
-
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
     // Wait for Supabase init so loadUsers can use DB instead of local fallback.
     await waitForSupabaseClient();
     await refreshUI();
@@ -2018,12 +1304,6 @@ async function buildPatientCharts(username){ // ASYNC
     Compute overall adherence & update UI
     ------------------------- */
 function isAssignedToCurrentDoctor(u){
-<<<<<<< HEAD
-    return u.assignedDoctor === current || (currentUserKey && u.assignedDoctorUserKey === currentUserKey);
-}
-
-async function waitForSupabaseClient(timeoutMs = 8000) {
-=======
     const specialistKeys = normalizeDoctorKeyList(u.specialistDoctorUserKeys);
     const byAssigned = u.assignedDoctor === current || (currentUserKey && u.assignedDoctorUserKey === currentUserKey);
     const byPreferred = (u.preferredDoctor && u.preferredDoctor === current) || (currentUserKey && u.preferredDoctorUserKey === currentUserKey);
@@ -2039,7 +1319,6 @@ async function waitForSupabaseClient(timeoutMs = 8000) {
             { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } }
         );
     }
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
     const started = Date.now();
     while (!window.supabaseClient && (Date.now() - started) < timeoutMs) {
         await new Promise((r) => setTimeout(r, 100));
@@ -2064,7 +1343,6 @@ async function computeOverall(){ // ASYNC
     const logs = await loadLogs(); // AWAIT
 
     const assignedPatients = users.filter(u=>u.role==='patient' && u.approved && isAssignedToCurrentDoctor(u)); 
-<<<<<<< HEAD
     let overallTaken = 0, overallEvents = 0;
     
     assignedPatients.forEach(p=>{
@@ -2087,30 +1365,6 @@ async function computeOverall(){ // ASYNC
 /* -------------------------
     Pending approvals
     ------------------------- */
-=======
-    let overallTaken = 0, overallEvents = 0;
-    
-    assignedPatients.forEach(p=>{
-        const evs = logs[p.username] || [];
-        overallTaken += evs.filter(e=>e.type==='taken').length;
-        overallEvents += evs.length;
-    });
-    
-    const overallMissed = overallEvents - overallTaken; 
-    const avgAdh = overallEvents ? Math.round((overallTaken/overallEvents)*100) : '—';
-    
-    document.getElementById('totalPatients').textContent = assignedPatients.length;
-    document.getElementById('totalEvents').textContent = overallEvents;
-    document.getElementById('totalTaken').textContent = overallTaken;
-    document.getElementById('totalMissed').textContent = overallMissed;
-    document.getElementById('avgAdherence').textContent = (avgAdh==='—'? '—' : avgAdh + '%');
-    buildOverallChart(overallTaken, overallMissed);
-}
-
-/* -------------------------
-    Pending approvals
-    ------------------------- */
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
 async function renderPending(){ // ASYNC
     const users = await loadUsers(); // AWAIT
     const pending = users.filter(isPendingForCurrentDoctor);
@@ -2131,8 +1385,6 @@ async function approve(username){ // ASYNC
         if (error) {
             alert('Failed to approve in database: ' + (error.message || error));
             return;
-<<<<<<< HEAD
-=======
         }
     }
     u.approved = true; u.assignedDoctor = current; 
@@ -2142,7 +1394,6 @@ async function approve(username){ // ASYNC
     users.forEach(doc=>{
         if(doc.role==='doctor' && Array.isArray(doc.pendingPatients)){
             doc.pendingPatients = doc.pendingPatients.filter(p=>p !== username);
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
         }
     }
     u.approved = true; u.assignedDoctor = current; 
@@ -2211,74 +1462,6 @@ async function fillDoctorPatientSelect(){ // ASYNC
         sel.appendChild(opt);
     });
 }
-<<<<<<< HEAD
-
-document.getElementById('viewPatient').addEventListener('click', async ()=>{ // ASYNC
-    const username = document.getElementById('patientSelector').value;
-    if(!username) return alert('Choose a patient');
-    await openPatientPanel(username); // AWAIT
-});
-
-document.getElementById('closePatient').addEventListener('click', ()=>{ 
-    document.getElementById('patientPanel').classList.add('hidden'); 
-});
-
-async function openPatientPanel(username){ // ASYNC
-    const users = await loadUsers(); // AWAIT
-    const patient = users.find(u=>u.username===username && u.role==='patient');
-    if(!patient) return alert('Patient not found');
-    document.getElementById('patientPanel').classList.remove('hidden');
-    document.getElementById('pd_name').textContent = patient.username;
-    document.getElementById('pd_assigned').textContent = 'Assigned doctor: ' + (patient.assignedDoctor||'—');
-    
-    await renderPatientMeds(username); // AWAIT
-    await renderPatientEvents(username); // AWAIT
-    
-    await buildPatientCharts(username); // AWAIT
-}
-
-/* export patient CSV */
-document.getElementById('exportPatientCSV').addEventListener('click', async ()=>{ // ASYNC
-    const username = document.getElementById('pd_name').textContent;
-    if(!username || username==='—') return alert('Open a patient first');
-    const logs = await loadLogs(); const arr = logs[username] || []; // AWAIT
-    let csv = 'time,patient,event,medName,note\n';
-    arr.forEach(e=>{
-        csv += `"${e.ts}","${username}","${e.type}","${e.medName||''}","${(e.note||'').replace(/"/g,'""')}"\n`;
-    });
-    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'}); const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = `${username}_adherence.csv`; a.click(); a.remove();
-});
-
-/* -------------------------
-    Render patient meds and events
-    ------------------------- */
-async function renderPatientMeds(username){ // ASYNC
-    const meds = await loadMeds(); // AWAIT
-    const list = meds[username] || [];
-    const wrap = document.getElementById('pd_meds'); 
-    if(list.length===0){ wrap.innerHTML = '<div class="muted">No medications assigned</div>'; return;}
-    let html = '<table><tr><th>Med</th><th>Dosage</th><th>Schedule</th><th>Instr</th></tr>';
-    list.forEach(m => { html += `<tr><td>${m.name}</td><td>${m.dosage||''}</td><td>${m.schedule||''}</td><td>${m.instructions||''}</td></tr>`; });
-    html += '</table>'; wrap.innerHTML = html;
-}
-
-async function renderPatientEvents(username){ // ASYNC
-    const logs = await loadLogs(); // AWAIT
-    const arr = logs[username] || [];
-    const wrap = document.getElementById('pd_events');
-    if(arr.length===0) { wrap.innerHTML = '<div class="muted">No events</div>'; return; }
-    let html = '<table><tr><th>Time</th><th>Med</th><th>Type</th><th>Note</th></tr>';
-    arr.slice().reverse().forEach(e => {
-        html += `<tr><td>${new Date(e.ts).toLocaleString()}</td><td>${e.medName||e.medId||'—'}</td><td>${e.type}</td><td>${e.note||''}</td></tr>`;
-    });
-    html += '</table>'; wrap.innerHTML = html;
-}
-
-/* -------------------------
-    Add medication (doctor)
-    ------------------------- */
-=======
 
 document.getElementById('viewPatient').addEventListener('click', async ()=>{ // ASYNC
     const username = document.getElementById('patientSelector').value;
@@ -2499,7 +1682,6 @@ async function renderPatientEvents(username){ // ASYNC
 /* -------------------------
     Add medication (doctor)
     ------------------------- */
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
 document.getElementById('d_addMedBtn').addEventListener('click', async ()=>{ // ASYNC
     const patientSel = document.getElementById('selectPatient');
     const patientIdentifier = patientSel.value;
@@ -2555,7 +1737,6 @@ document.getElementById('d_addMedBtn').addEventListener('click', async ()=>{ // 
     };
     meds[patient].push(entry);
     await saveMeds(meds); // AWAIT
-<<<<<<< HEAD
     
     if (document.getElementById('pd_name').textContent === patient) {
         await renderPatientMeds(patient); // AWAIT
@@ -2624,76 +1805,6 @@ async function renderMedManagement(){ // ASYNC
     wrap.innerHTML = html;
 }
 
-=======
-    
-    if (document.getElementById('pd_name').textContent === patient) {
-        await renderPatientMeds(patient); // AWAIT
-        await buildPatientCharts(patient); // AWAIT
-    }
-    await renderMedManagement(); // AWAIT
-    await renderSummary(); // AWAIT
-    alert('Medication added for ' + patient);
-});
-
-/* -------------------------
-    Patient summary / med management / logs (reuse earlier functions)
-    ------------------------- */
-async function renderSummary(){ // ASYNC
-    const users = await loadUsers(); // AWAIT
-    const meds = await loadMeds(); // AWAIT
-
-    const patients = users.filter(u=>u.role==='patient' && u.approved && isAssignedToCurrentDoctor(u)); 
-    
-    // 🔑 FIX: 
-    // 1. Create a variable (patientRows) to hold the array of strings.
-    // 2. AWAIT the result of Promise.all(map) to get the array.
-    const patientRows = await Promise.all(patients.map(async p => {
-        const pMeds = meds[p.username] || [];
-        const { taken, missed } = await getPatientAdherence(p.username); // AWAIT
-        
-        // Ensure you await loadLogs here as well
-        const evs = await loadLogs(); 
-        const pLogs = evs[p.username] || [];
-
-        const denom = taken+missed;
-        const pct = denom ? Math.round((taken/denom)*100) : '—';
-        return `<tr><td>${p.username}</td><td>${pMeds.length}</td><td>${pLogs.length}</td><td>${pct}</td></tr>`;
-    }));
-    
-    // 3. Now, call .join('') on the awaited array (patientRows)
-    const html = '<table><tr><th>Patient</th><th>Meds</th><th>Events</th><th>Adherence % (7d est)</th></tr>' + 
-                 patientRows.join('') + 
-                 '</table>';
-                 
-    document.getElementById('patientSummary').innerHTML = html;
-}
-async function renderMedManagement(){ // ASYNC
-    const meds = await loadMeds(); // AWAIT
-    const users = await loadUsers(); // AWAIT
-
-    const approvedPatients = users.filter(u=>u.role==='patient' && u.approved && isAssignedToCurrentDoctor(u));
-    const wrap = document.getElementById('medManagement');
-    if(approvedPatients.length===0){ wrap.innerHTML = '<div class="muted">No approved patients assigned to you</div>'; return; }
-    let html = '';
-    approvedPatients.forEach(p=>{
-        html += `<h4 style="margin-bottom:6px">${p.username}</h4>`;
-        const list = meds[p.username] || [];
-        if(list.length===0){ html += '<div class="muted">No meds</div>'; }
-        else{
-            html += '<table><tr><th>Med</th><th>Schedule</th><th>Instr</th><th>AddedBy</th><th>Actions</th></tr>';
-            list.forEach(m=>{
-                html += `<tr><td>${m.name} ${m.dosage?('— '+m.dosage):''}</td><td>${m.schedule}</td><td>${m.instructions||''}</td><td>${m.addedBy||''}</td><td>
-                         <button onclick="editMed('${p.username}','${m.medication_key || m.id}','${p.user_key || p.username}')">Edit</button>
-                         <button onclick="deleteMedDoctor('${p.username}','${m.medication_key || m.id}','${p.user_key || p.username}')" style="margin-left:6px" class="ghost">Delete</button>
-                         </td></tr>`;
-            });
-            html += '</table>';
-        }
-    });
-    wrap.innerHTML = html;
-}
-
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
 async function editMed(patientUser, medId, patientIdentifier){ // ASYNC
     const patientRef = patientIdentifier || patientUser;
     const meds = await loadMeds(); const list = meds[patientUser] || []; const m = list.find(x=>x.id===medId || x.medication_key===medId); // AWAIT
@@ -2718,28 +1829,6 @@ async function editMed(patientUser, medId, patientIdentifier){ // ASYNC
         } catch (e) {
             console.warn('resolveMedicationKeyForPatient failed', e);
         }
-<<<<<<< HEAD
-    }
-    if (!m.medication_key) {
-        alert('This medication has no database key yet. Re-add it so edit/delete can sync to database.');
-        return;
-    }
-
-    if (window.supabaseClient && (!window.siteSync || typeof window.siteSync.updateMedicationForPatient !== 'function')) {
-        alert('Medication update sync module is missing. Hard refresh the page (Ctrl+F5) and try again.');
-        return;
-    }
-    if (window.siteSync && typeof window.siteSync.updateMedicationForPatient === 'function') {
-        try {
-            await window.siteSync.updateMedicationForPatient(patientRef, m.medication_key, {
-                name, dosage, schedule, instructions: instr, type: m.type, match: prev
-            });
-        } catch (e) {
-            const msg = (e && e.message) ? e.message : String(e || 'Unknown error');
-            alert('Failed to update medication in database: ' + msg);
-            return;
-        }
-=======
     }
     if (!m.medication_key) {
         alert('This medication has no database key yet. Re-add it so edit/delete can sync to database.');
@@ -3147,187 +2236,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (dashboardTabBtn) {
         dashboardTabBtn.addEventListener('click', () => switchDoctorTab('dashboard'));
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
     }
     if (chatTabBtn) {
         chatTabBtn.addEventListener('click', () => switchDoctorTab('chat'));
     }
     switchDoctorTab('dashboard');
 
-<<<<<<< HEAD
-    m.name = name; m.dosage = dosage; m.schedule = schedule; m.instructions = instr;
-    await saveMeds(meds); // AWAIT
-    await renderMedManagement(); await renderSummary(); // AWAIT
-    if (document.getElementById('pd_name').textContent === patientUser) {
-        await renderPatientMeds(patientUser); // AWAIT
-        await buildPatientCharts(patientUser); // AWAIT
-    }
-}
-
-async function deleteMedDoctor(patientUser, medId, patientIdentifier){ // ASYNC
-    const patientRef = patientIdentifier || patientUser;
-    if(!confirm('Delete medication?')) return;
-    const meds = await loadMeds(); // AWAIT
-    const list = meds[patientUser] || [];
-    const m = list.find(x=>x.id===medId || x.medication_key===medId);
-    if (!m) return alert('Medication not found');
-
-    if (!m.medication_key && m.id && String(m.id).startsWith('med_')) m.medication_key = m.id;
-    if (!m.medication_key && window.siteSync && typeof window.siteSync.resolveMedicationKeyForPatient === 'function') {
-        try {
-            const resolvedKey = await window.siteSync.resolveMedicationKeyForPatient(patientRef, {
-                name: m.name, dosage: m.dosage, schedule: m.schedule, instructions: m.instructions
-            });
-            if (resolvedKey) {
-                m.medication_key = resolvedKey;
-                m.id = resolvedKey;
-                await saveMeds(meds);
-            }
-        } catch (e) {
-            console.warn('resolveMedicationKeyForPatient failed', e);
-        }
-    }
-    if (!m.medication_key) {
-        alert('This medication has no database key yet. Re-add it so edit/delete can sync to database.');
-        return;
-    }
-
-    if (window.supabaseClient && (!window.siteSync || typeof window.siteSync.deleteMedicationForPatient !== 'function')) {
-        alert('Medication delete sync module is missing. Hard refresh the page (Ctrl+F5) and try again.');
-        return;
-    }
-    if (window.siteSync && typeof window.siteSync.deleteMedicationForPatient === 'function') {
-        try {
-            await window.siteSync.deleteMedicationForPatient(patientRef, m.medication_key);
-        } catch (e) {
-            const msg = (e && e.message) ? e.message : String(e || 'Unknown error');
-            alert('Failed to delete medication from database: ' + msg);
-            return;
-        }
-    }
-
-    meds[patientUser] = list.filter(x => (x.id!==medId && x.medication_key!==medId));
-    await saveMeds(meds); // AWAIT
-    await renderMedManagement(); await renderSummary(); // AWAIT
-    if (document.getElementById('pd_name').textContent === patientUser) {
-        await renderPatientMeds(patientUser); // AWAIT
-        await buildPatientCharts(patientUser); // AWAIT
-    }
-}
-
-/* -------------------------
-    Logs rendering (global)
-    ------------------------- */
-async function renderLogs(){ // ASYNC
-    const logs = await loadLogs(); // AWAIT
-    const users = await loadUsers(); // AWAIT
-    
-    const assignedPatients = users.filter(u => u.role === 'patient' && u.approved && isAssignedToCurrentDoctor(u)).map(u => u.username);
-    const wrap = document.getElementById('logs');
-    
-    if(assignedPatients.length === 0){ wrap.innerHTML = '<div class="muted">No logs from your assigned patients yet</div>'; return; }
-    
-    let allEvents = [];
-
-    assignedPatients.forEach(k => {
-        const arr = logs[k] || [];
-        allEvents.push(...arr.map(e => ({ ...e, patient: k })));
-    });
-    
-    if (allEvents.length === 0) {
-        wrap.innerHTML = '<div class="muted">No events from your assigned patients yet</div>';
-        return;
-    }
-
-    allEvents.sort((a, b) => new Date(b.ts) - new Date(a.ts));
-    
-    let html = '<table><tr><th>Time</th><th>Patient</th><th>Med</th><th>Type</th><th>Note</th></tr>';
-    allEvents.forEach(e => {
-        html += `<tr><td>${new Date(e.ts).toLocaleString()}</td><td>${e.patient}</td><td>${e.medName||e.medId}</td><td>${e.type}</td><td>${e.note||''}</td></tr>`;
-    });
-    html += '</table>';
-    wrap.innerHTML = html;
-}
-
-/* -------------------------
-    Resizable Panel Logic
-    ------------------------- */
-function setupResizablePatientPanel() {
-    // Logic remains synchronous as it only handles DOM interaction, not data loading.
-    const grid = document.querySelector('.pd-grid');
-    const splitter = document.getElementById('pd-splitter');
-    let isDragging = false;
-
-    if (!grid || !splitter) return;
-
-    // 1. Mouse Down (Start Drag)
-    splitter.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        document.body.style.cursor = 'col-resize';
-        grid.style.pointerEvents = 'none'; 
-        e.preventDefault(); 
-    });
-
-    // 2. Mouse Move (Dragging)
-    document.addEventListener('mousemove', async (e) => { // ASYNC needed here for chart redraw
-        if (!isDragging) return;
-
-        const gridRect = grid.getBoundingClientRect();
-        let newCol1Width = (e.clientX - gridRect.left) / gridRect.width * 100;
-
-        // Set limits (min 20% / max 80%)
-        newCol1Width = Math.max(20, Math.min(80, newCol1Width));
-        
-        const newCol2Width = 100 - newCol1Width;
-
-        // Apply new widths using CSS variables
-        grid.style.setProperty('--pd-col-1-width', `${newCol1Width}%`);
-        grid.style.setProperty('--pd-col-2-width', `${newCol2Width}%`);
-        
-        // Crucial for Chart.js to redraw
-        const openPatient = document.getElementById('pd_name').textContent;
-        if (openPatient && openPatient !== '—') {
-            await buildPatientCharts(openPatient); // AWAIT
-        }
-    });
-
-    // 3. Mouse Up (End Drag)
-    document.addEventListener('mouseup', () => {
-        if (isDragging) {
-            isDragging = false;
-            document.body.style.cursor = 'default';
-            grid.style.pointerEvents = 'auto';
-        }
-    });
-}
-
-
-/* -------------------------
-    Initialization / Event Handlers
-    ------------------------- */
-async function refreshUI(){ // ASYNC
-    await syncMedsFromSupabaseForDoctor();
-    await computeOverall();
-    await renderPending();
-    await populatePatientSelector();
-    await fillDoctorPatientSelect();
-    await renderSummary();
-    await renderMedManagement();
-    await renderLogs();
-    setupResizablePatientPanel();
-}
-
-document.getElementById('refresh').addEventListener('click', refreshUI);
-
-document.getElementById('logout').addEventListener('click', async ()=>{ // ASYNC
-    await window.Storage.removeItem('currentUser'); // AWAIT
-    await window.Storage.removeItem('currentRole'); // AWAIT
-    window.location.href='doctor-login.html';
-});
-
-// Final initialization call
-document.addEventListener("DOMContentLoaded", checkAuthAndInit);
-=======
     if (patientSel) {
         patientSel.addEventListener('change', async (e) => {
             docChatState.activePatientKey = e.target.value || null;
@@ -3365,7 +2279,6 @@ document.addEventListener("DOMContentLoaded", checkAuthAndInit);
     if (refreshBtn) refreshBtn.addEventListener('click', async () => { await renderDocChatMessages(); });
     window.addEventListener('beforeunload', stopDocChatRealtime);
 });
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
 </script>
 </body>
 </html>

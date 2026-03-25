@@ -1,25 +1,3 @@
-<<<<<<< HEAD
-/* Minimal browser sync helpers for the static site
- * Exposes `siteSync.signupAndCreateUser(username,password,role,preferredDoctor)`
- * and basic helpers `createMedication` and `logMedEvent` using window.supabaseClient.
- */
-// Diagnostic: indicate the file was requested
-console.log('site-sync.js: loading');
-(function(){
-  try {
-    if (!window) return;
-    const ns = {};
-
-  function ensureClient(){
-    if (!window.supabaseClient) throw new Error('Supabase client not initialized. Include supabase-init.js');
-    return window.supabaseClient;
-  }
-
-  /**
-   * Create an auth user (email synthesized from username) and upsert into `users` table.
-   */
-  ns.signupAndCreateUser = async function(username, password, role, preferredDoctor) {
-=======
 /* Minimal browser sync helpers for the static site
  * Exposes `siteSync.signupAndCreateUser(username,password,role,preferredDoctor)`
  * and basic helpers `createMedication` and `logMedEvent` using window.supabaseClient.
@@ -40,7 +18,6 @@ console.log('site-sync.js: loading');
    * Create an auth user (email synthesized from username) and upsert into `users` table.
    */
   ns.signupAndCreateUser = async function(username, password, role, preferredDoctor, doctorSpecialties) {
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
     const supabase = ensureClient();
     const email = `${username}@local.example`;
 
@@ -180,7 +157,6 @@ console.log('site-sync.js: loading');
       console.error('signupAndCreateUser exception', err);
       throw err;
     }
-<<<<<<< HEAD
   };
 
   ns.createMedication = async function(user_key, medPayload) {
@@ -210,37 +186,6 @@ console.log('site-sync.js: loading');
    * Create a medication for a patient identified by username (display_name) or email.
    * Uses `window.supabaseService` (service role) when available to bypass RLS for quick dev.
    */
-=======
-  };
-
-  ns.createMedication = async function(user_key, medPayload) {
-    const supabase = ensureClient();
-    try {
-      // Set audit fields for who added the medication
-      let added_by_role = medPayload.added_by_role || 'patient';
-      let added_by_user_key = medPayload.added_by_user_key || null;
-      try {
-        if (!added_by_user_key && window.supabaseClient?.auth) {
-          const s = await window.supabaseClient.auth.getUser();
-          added_by_user_key = s?.data?.user?.id || added_by_user_key;
-        }
-      } catch (e) {}
-
-      const body = Object.assign({}, medPayload, { user_key, added_by_role, added_by_user_key });
-      const { data, error } = await supabase.from('medications').insert(body).select().single();
-      if (error) throw error;
-      return data;
-    } catch (e) {
-      console.error('createMedication error', e);
-      throw e;
-    }
-  };
-
-  /**
-   * Create a medication for a patient identified by username (display_name) or email.
-   * Uses `window.supabaseService` (service role) when available to bypass RLS for quick dev.
-   */
->>>>>>> 3a236c9 (Restore latest web login/specialist/chat updates and sync to Expo public site)
   ns.createMedicationForPatient = async function(patientIdentifier, medPayload = {}) {
     const svc = window.supabaseService || window.supabaseClient;
     if (!svc) throw new Error('Supabase client not initialized');
