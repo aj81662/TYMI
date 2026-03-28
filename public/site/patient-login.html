@@ -68,21 +68,21 @@ nav.fixed a:focus, nav.fixed button:focus{outline:none!important;box-shadow:none
                             <div class="flex-shrink-0"><span class="text-2xl font-bold text-blue-600">TYM</span></div>
 
                             <div class="hidden md:flex items-center space-x-8">
-                                <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='index.html#home'">Home</button>
-                                <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='index.html#about'">About</button>
-                                <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='index.html#solutions'">Solutions</button>
-                                <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='index.html#contact'">Contact</button>
+                                <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='/index.html#home'">Home</button>
+                                <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='/index.html#about'">About</button>
+                                <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='/index.html#solutions'">Solutions</button>
+                                <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='/index.html#contact'">Contact</button>
                             </div>
 
                             <div class="hidden md:flex items-center space-x-4">
                                 <div class="relative">
                                     <button id="navLoginBtnPatient" class="px-4 py-2 text-blue-600 hover:text-blue-700 transition-colors">Login ▾</button>
                                     <div id="navLoginMenuPatient" class="hidden absolute right-0 mt-2 w-44 bg-white border rounded shadow-lg">
-                                        <a class="block px-4 py-2 text-gray-700 hover:bg-blue-50" href="patient-login.html">Patient Login</a>
-                                        <a class="block px-4 py-2 text-gray-700 hover:bg-blue-50" href="doctor-login.html">Doctor Login</a>
+                                        <a class="block px-4 py-2 text-gray-700 hover:bg-blue-50" href="/patient-login.html">Patient Login</a>
+                                        <a class="block px-4 py-2 text-gray-700 hover:bg-blue-50" href="/doctor-login.html">Doctor Login</a>
                                     </div>
                                 </div>
-                                <a class="px-6 py-2 bg-blue-600 text-white rounded-full" href="create-account.html">Sign Up</a>
+                                <a class="px-6 py-2 bg-blue-600 text-white rounded-full" href="/create-account.html">Sign Up</a>
                             </div>
 
                             <div class="md:hidden">
@@ -93,14 +93,14 @@ nav.fixed a:focus, nav.fixed button:focus{outline:none!important;box-shadow:none
 
                     <div id="mobileMenuPatient" class="md:hidden bg-white border-t" style="display:none;">
                         <div class="px-4 pt-2 pb-4 space-y-2">
-                            <button onclick="location.href='index.html#home'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">Home</button>
-                            <button onclick="location.href='index.html#about'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">About</button>
-                            <button onclick="location.href='index.html#solutions'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">Solutions</button>
-                            <button onclick="location.href='index.html#contact'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">Contact</button>
+                            <button onclick="location.href='/index.html#home'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">Home</button>
+                            <button onclick="location.href='/index.html#about'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">About</button>
+                            <button onclick="location.href='/index.html#solutions'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">Solutions</button>
+                            <button onclick="location.href='/index.html#contact'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">Contact</button>
                             <div class="pt-4 space-y-2">
-                                <a href="patient-login.html" class="block w-full px-4 py-2 text-blue-600 border border-blue-600 rounded-full hover:bg-blue-50">Patient Login</a>
-                                <a href="doctor-login.html" class="block w-full px-4 py-2 text-gray-700 border rounded-full hover:bg-blue-50">Doctor Login</a>
-                                <a href="create-account.html" class="block w-full px-4 py-2 bg-blue-600 text-white rounded-full">Sign Up</a>
+                                <a href="/patient-login.html" class="block w-full px-4 py-2 text-blue-600 border border-blue-600 rounded-full hover:bg-blue-50">Patient Login</a>
+                                <a href="/doctor-login.html" class="block w-full px-4 py-2 text-gray-700 border rounded-full hover:bg-blue-50">Doctor Login</a>
+                                <a href="/create-account.html" class="block w-full px-4 py-2 bg-blue-600 text-white rounded-full">Sign Up</a>
                             </div>
                         </div>
                     </div>
@@ -352,7 +352,7 @@ async function waitForSupabaseClient() {
 }
 
 function getPasswordResetRedirectUrl() {
-    return new URL('change-password.html', window.location.href).toString();
+    return new URL('/change-password.html', window.location.origin).toString();
 }
 
 async function resolveResetEmail(username, sb) {
@@ -468,7 +468,7 @@ async function doPatientLoginSupabase() {
         const storage = getStorageApi();
         await storage.setItem('currentUser', JSON.stringify(userSession));
         await storage.setItem('currentRole', 'patient');
-        window.location.href = 'patient-dashboard.html';
+        window.location.assign('/patient-dashboard.html?v=20260328');
     } catch (err) {
         const text = String(err?.message || err || '');
         if (messageElement) {

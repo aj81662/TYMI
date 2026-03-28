@@ -2974,10 +2974,10 @@ html {
         const loginMenu = make('div', 'hidden absolute right-0 mt-2 w-44 bg-white border rounded shadow-lg');
         loginMenu.style.minWidth = '160px';
         const pLink = make('a', 'block px-4 py-2 text-gray-700 hover:bg-blue-50', 'Patient Login');
-        pLink.href = 'patient-login.html';
+        pLink.href = '/patient-login.html';
         pLink.addEventListener('click', (e) => { e.preventDefault(); window.location.href = pLink.href; });
         const dLink = make('a', 'block px-4 py-2 text-gray-700 hover:bg-blue-50', 'Doctor Login');
-        dLink.href = 'doctor-login.html';
+        dLink.href = '/doctor-login.html';
         dLink.addEventListener('click', (e) => { e.preventDefault(); window.location.href = dLink.href; });
         loginMenu.appendChild(pLink);
         loginMenu.appendChild(dLink);
@@ -2988,8 +2988,8 @@ html {
         document.addEventListener('click', () => { if (!loginMenu.classList.contains('hidden')) loginMenu.classList.add('hidden'); });
         auth.appendChild(loginWrap);
         const signupLink = make('a', 'px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors', 'Sign Up');
-        signupLink.href = 'create-account.html';
-        signupLink.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'create-account.html'; });
+        signupLink.href = '/create-account.html';
+        signupLink.addEventListener('click', (e) => { e.preventDefault(); window.location.href = '/create-account.html'; });
         auth.appendChild(signupLink);
 
         const mobileToggle = make('div', 'md:hidden');
@@ -3014,16 +3014,16 @@ html {
         const mobileAuth = make('div', 'pt-4 space-y-2');
         // Mobile: show both login options stacked
         const mPatient = make('a', 'block w-full px-4 py-2 text-blue-600 border border-blue-600 rounded-full hover:bg-blue-50 transition-colors', 'Patient Login');
-        mPatient.href = 'patient-login.html';
+        mPatient.href = '/patient-login.html';
         mPatient.addEventListener('click', (e) => { e.preventDefault(); window.location.href = mPatient.href; });
         mobileAuth.appendChild(mPatient);
         const mDoctor = make('a', 'block w-full px-4 py-2 text-gray-700 border rounded-full hover:bg-blue-50 transition-colors', 'Doctor Login');
-        mDoctor.href = 'doctor-login.html';
+        mDoctor.href = '/doctor-login.html';
         mDoctor.addEventListener('click', (e) => { e.preventDefault(); window.location.href = mDoctor.href; });
         mobileAuth.appendChild(mDoctor);
         const mSignup = make('a', 'block w-full px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors', 'Sign Up');
-        mSignup.href = 'create-account.html';
-        mSignup.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'create-account.html'; });
+        mSignup.href = '/create-account.html';
+        mSignup.addEventListener('click', (e) => { e.preventDefault(); window.location.href = '/create-account.html'; });
         mobileAuth.appendChild(mSignup);
         mobileList.appendChild(mobileAuth);
         mobileMenu.appendChild(mobileList);
@@ -3049,8 +3049,8 @@ html {
 
         const ctaWrap = make('div', 'flex flex-col sm:flex-row items-center justify-center gap-4');
         const getStarted = make('a', 'px-8 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors flex items-center gap-2 group', 'Get Started');
-        getStarted.href = 'create-account.html';
-        getStarted.addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'create-account.html'; });
+        getStarted.href = '/create-account.html';
+        getStarted.addEventListener('click', (e) => { e.preventDefault(); window.location.href = '/create-account.html'; });
         ctaWrap.appendChild(getStarted);
         const learn = make('a', 'px-8 py-3 bg-white text-blue-600 border-2 border-blue-600 rounded-full hover:bg-blue-50 transition-colors', 'Learn More');
         learn.href = '#about';
@@ -3176,3 +3176,4 @@ html {
     <script src="supabase-init.js"></script>
   </body>
 </html>
+
