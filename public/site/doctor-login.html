@@ -376,7 +376,9 @@ async function doLogin() {
         };
         await window.Storage.setItem('currentUser', JSON.stringify(userSession));
         await window.Storage.setItem('currentRole', 'doctor');
-        window.location.href = 'doctor-dashboard.html';
+        const dashboardUrl = new URL('doctor-dashboard.html', window.location.href);
+        dashboardUrl.searchParams.set('v', '20260328');
+        window.location.assign(dashboardUrl.toString());
     } catch (err) {
         const text = String(err?.message || err || '');
         if (messageElement) {
