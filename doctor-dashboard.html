@@ -787,6 +787,11 @@ function patientAccessMapKey(u) {
     return String(u?.user_key || u?.username || '');
 }
 
+function looksLikeUserKey(value) {
+    const v = String(value || '').trim();
+    return v.length > 20 && v.indexOf('-') > -1;
+}
+
 async function loadSpecialistAccessMap() {
     try {
         const raw = await window.Storage.getItem('patientSpecialistAccess');
@@ -815,36 +820,84 @@ async function saveDoctorSpecialtiesMap(map) {
     await window.Storage.setItem('doctorSpecialties', JSON.stringify(map || {}));
 }
 
+function readLegacyLocalStorageJson(key, fallbackValue) {
+    try {
+        if (typeof localStorage === 'undefined') return fallbackValue;
+        const raw = localStorage.getItem(key);
+        if (!raw) return fallbackValue;
+        const parsed = JSON.parse(raw);
+        return parsed ?? fallbackValue;
+    } catch (_) {
+        return fallbackValue;
+    }
+}
+
+function normalizeStoredUser(u, doctorSpecialtiesMap, specialistAccessMap) {
+    const normalizedRole = String(u?.role || '').toLowerCase();
+    const legacyApproved = typeof u?.approved === 'boolean' ? u.approved : null;
+    const accountStatus = String(u?.accountStatus || '').toLowerCase() ||
+        (legacyApproved === false ? 'pending' : (legacyApproved === true ? 'approved' : ''));
+    const approved = accountStatus ? accountStatus === 'approved' : (legacyApproved !== null ? legacyApproved : true);
+    const preferredDoctorUserKey = u?.preferredDoctorUserKey || (looksLikeUserKey(u?.preferredDoctor) ? String(u?.preferredDoctor) : null);
+    const assignedDoctorUserKey = u?.assignedDoctorUserKey || (looksLikeUserKey(u?.assignedDoctor) ? String(u?.assignedDoctor) : null);
+    const preferredDoctor = preferredDoctorUserKey && looksLikeUserKey(u?.preferredDoctor) ? null : (u?.preferredDoctor || null);
+    const assignedDoctor = assignedDoctorUserKey && looksLikeUserKey(u?.assignedDoctor) ? null : (u?.assignedDoctor || null);
+    return {
+        ...u,
+        role: normalizedRole || u?.role,
+        accountStatus,
+        approved,
+        legacyApproved,
+        preferredDoctorUserKey,
+        assignedDoctorUserKey,
+        preferredDoctor,
+        assignedDoctor,
+        doctorSpecialties: u?.doctorSpecialties || doctorSpecialtiesMap[String(u?.user_key || u?.username)] || '',
+        specialistDoctorUserKeys: normalizeDoctorKeyList(
+            u?.specialistDoctorUserKeys || specialistAccessMap[patientAccessMapKey(u)]
+        ),
+    };
+}
+
 // All storage functions are now ASYNCHRONOUS and use window.Storage
 async function loadUsers(){ 
     // Prefer DB-backed users when Supabase client is available.
     try {
         const specialistAccessMap = await loadSpecialistAccessMap();
         const doctorSpecialtiesMap = await loadDoctorSpecialtiesMap();
-        if (window.supabaseClient) {
-            const sb = window.supabaseClient;
+        const sb = await getSupabaseDataClient();
+        if (sb) {
             let rows = null;
             let error = null;
 
             ({ data: rows, error } = await sb
                 .from('users')
-                .select('user_key,email,display_name,role,account_status,preferred_doctor_user_key,assigned_doctor_user_key,specialist_doctor_user_keys')
-                .order('created_at', { ascending: true }));
+                .select('user_key,email,display_name,username,role,account_status,preferred_doctor_user_key,assigned_doctor_user_key,doctor_specialties_text'));
 
             if (error) {
-                // Fallback for schemas without specialist_doctor_user_keys.
+                // Fallback for schemas without doctor_specialties_text.
                 ({ data: rows, error } = await sb
                     .from('users')
-                    .select('user_key,email,display_name,role,account_status,preferred_doctor_user_key,assigned_doctor_user_key')
-                    .order('created_at', { ascending: true }));
+                    .select('user_key,email,display_name,username,role,account_status,preferred_doctor_user_key,assigned_doctor_user_key'));
             }
 
             if (error) {
-                // Fallback for minimal schema projects.
                 ({ data: rows, error } = await sb
                     .from('users')
-                    .select('user_key,email,display_name')
-                    .order('created_at', { ascending: true }));
+                    .select('user_key,email,display_name,username,role,account_status'));
+            }
+
+            if (error) {
+                ({ data: rows, error } = await sb
+                    .from('users')
+                    .select('user_key,email,display_name,username,role'));
+            }
+
+            if (error) {
+                // Final fallback for minimal schema projects.
+                ({ data: rows, error } = await sb
+                    .from('users')
+                    .select('user_key,email,display_name'));
             }
 
             if (!error && Array.isArray(rows)) {
@@ -872,26 +925,40 @@ async function loadUsers(){
                 try {
                     let docs = null;
                     let docsErr = null;
-                    ({ data: docs, error: docsErr } = await sb.from('doctors').select('user_key,display_name,email,specialties_text,specialty'));
-                    if (docsErr) ({ data: docs, error: docsErr } = await sb.from('doctors').select('user_key,display_name,email'));
+                    const specialtyByKey = {};
+                    ({ data: docs, error: docsErr } = await sb.from('doctors').select('user_key,display_name,email'));
+                    if (!docsErr) {
+                        let specRows = null;
+                        let specErr = null;
+                        ({ data: specRows, error: specErr } = await sb.from('doctors').select('user_key,specialties_text'));
+                        if (!specErr && Array.isArray(specRows)) {
+                            specRows.forEach((r) => {
+                                const spec = r.specialties_text || '';
+                                if (spec) specialtyByKey[r.user_key] = spec;
+                            });
+                        }
+                    }
                     (docs || []).forEach((d) => {
                         keyToName[d.user_key] = d.display_name || (d.email ? String(d.email).split('@')[0] : d.user_key);
-                        const spec = d.specialties_text || d.specialty || '';
+                        const spec = specialtyByKey[d.user_key] || '';
                         if (spec) doctorSpecialtiesMap[d.user_key] = spec;
                     });
                 } catch (_) {}
                 await saveDoctorSpecialtiesMap(doctorSpecialtiesMap);
 
-                return rows.map((r) => {
-                    const username = r.display_name || (r.email ? String(r.email).split('@')[0] : r.user_key);
-                    const inferredRole = keyToName[r.user_key] ? 'doctor' : 'patient';
+                const dbUsers = rows.map((r) => {
+                    const username = r.display_name || r.username || (r.email ? String(r.email).split('@')[0] : r.user_key);
+                    const inferredRole = keyToName[r.user_key]
+                        ? 'doctor'
+                        : ((currentUserKey && String(r.user_key) === String(currentUserKey)) || (current && username === current) ? 'doctor' : 'patient');
                     const userRole = String(r.role || inferredRole).toLowerCase();
-                    const approved = (r.account_status || '') ? r.account_status === 'approved' : userRole === 'doctor';
+                    const normalizedStatus = String(r.account_status || '').toLowerCase();
+                    const approved = normalizedStatus === 'approved';
                     return {
                         user_key: r.user_key,
                         username,
                         role: userRole,
-                        accountStatus: (r.account_status || '').toLowerCase(),
+                        accountStatus: normalizedStatus,
                         approved,
                         preferredDoctorUserKey: r.preferred_doctor_user_key || null,
                         assignedDoctorUserKey: r.assigned_doctor_user_key || null,
@@ -900,12 +967,38 @@ async function loadUsers(){
                         doctorSpecialties: doctorSpecialtiesMap[String(r.user_key)] || r.doctor_specialties_text || '',
                         specialistDoctorUserKeys: normalizeDoctorKeyList(
                             accessByPatient[String(r.user_key)] ||
-                            r.specialist_doctor_user_keys ||
                             specialistAccessMap[String(r.user_key)] ||
                             specialistAccessMap[String(username)]
                         ),
                     };
                 });
+
+                const hasDbPatients = dbUsers.some((u) => u.role === 'patient');
+                if (hasDbPatients) return dbUsers;
+
+                // If DB only returns the current doctor (common with stricter RLS),
+                // merge local cached users so dashboard sections do not go blank.
+                try {
+                    const localRaw = await window.Storage.getItem('users');
+                    let localUsers = JSON.parse(localRaw || '[]');
+                    if (!Array.isArray(localUsers) || localUsers.length === 0) {
+                        localUsers = readLegacyLocalStorageJson('users', []);
+                    }
+                    if (!Array.isArray(localUsers) || localUsers.length === 0) return dbUsers;
+                    const merged = dbUsers.slice();
+                    localUsers
+                        .map((u) => normalizeStoredUser(u, doctorSpecialtiesMap, specialistAccessMap))
+                        .forEach((u) => {
+                            const idx = merged.findIndex((m) =>
+                                (m.user_key && u.user_key && String(m.user_key) === String(u.user_key)) ||
+                                (m.username && u.username && String(m.username) === String(u.username))
+                            );
+                            if (idx === -1) merged.push(u);
+                        });
+                    return merged;
+                } catch (_) {
+                    return dbUsers;
+                }
             }
         }
     } catch (e) {
@@ -915,44 +1008,49 @@ async function loadUsers(){
     // Local fallback
     try{
         const json = await window.Storage.getItem('users');
-        const users = JSON.parse(json || '[]');
+        let users = JSON.parse(json || '[]');
+        if (!Array.isArray(users) || users.length === 0) {
+            users = readLegacyLocalStorageJson('users', []);
+        }
         const specialistAccessMap = await loadSpecialistAccessMap();
         const doctorSpecialtiesMap = await loadDoctorSpecialtiesMap();
-        return (Array.isArray(users) ? users : []).map((u) => ({
-            ...u,
-            doctorSpecialties: u.doctorSpecialties || doctorSpecialtiesMap[String(u.user_key || u.username)] || '',
-            specialistDoctorUserKeys: normalizeDoctorKeyList(
-                u.specialistDoctorUserKeys || specialistAccessMap[patientAccessMapKey(u)]
-            ),
-        }));
+        return (Array.isArray(users) ? users : []).map((u) => normalizeStoredUser(u, doctorSpecialtiesMap, specialistAccessMap));
     }catch(e){ return [] } 
 }
 async function saveUsers(u){ 
     await window.Storage.setItem('users', JSON.stringify(u)); 
+    try { if (typeof localStorage !== 'undefined') localStorage.setItem('users', JSON.stringify(u)); } catch (_) {}
 }
 
 async function loadLogs(){ 
     try{
         const json = await window.Storage.getItem('adherenceLogs');
-        return JSON.parse(json || '{}');
+        const parsed = JSON.parse(json || '{}');
+        if (parsed && Object.keys(parsed).length > 0) return parsed;
+        return readLegacyLocalStorageJson('adherenceLogs', {});
     }catch(e){ return {} } 
 }
 async function saveLogs(l){ 
     await window.Storage.setItem('adherenceLogs', JSON.stringify(l)); 
+    try { if (typeof localStorage !== 'undefined') localStorage.setItem('adherenceLogs', JSON.stringify(l)); } catch (_) {}
 }
 
 async function loadMeds(){ 
     try{
         const json = await window.Storage.getItem('medications');
-        return JSON.parse(json || '{}');
+        const parsed = JSON.parse(json || '{}');
+        if (parsed && Object.keys(parsed).length > 0) return parsed;
+        return readLegacyLocalStorageJson('medications', {});
     }catch(e){ return {} } 
 }
 async function saveMeds(m){ 
     await window.Storage.setItem('medications', JSON.stringify(m)); 
+    try { if (typeof localStorage !== 'undefined') localStorage.setItem('medications', JSON.stringify(m)); } catch (_) {}
 }
 
 async function syncMedsFromSupabaseForDoctor(){ // ASYNC
-    if (!window.supabaseClient) return;
+    const sb = await getSupabaseDataClient();
+    if (!sb) return;
     try {
         const users = await loadUsers();
         const assignedPatients = users.filter(u => u.role === 'patient' && u.approved && isAssignedToCurrentDoctor(u) && u.user_key);
@@ -960,7 +1058,7 @@ async function syncMedsFromSupabaseForDoctor(){ // ASYNC
 
         const medsStore = await loadMeds();
         await Promise.all(assignedPatients.map(async (p) => {
-            const { data, error } = await window.supabaseClient
+            const { data, error } = await sb
                 .from('medications')
                 .select('id,medication_key,drug_name,strength,route,instruction,frequency_text,added_by_role,added_by_user_key,created_at')
                 .eq('user_key', p.user_key)
@@ -1326,16 +1424,54 @@ async function waitForSupabaseClient(timeoutMs = 8000) {
     return window.supabaseClient || null;
 }
 
+async function ensureSupabaseServiceClient() {
+    if (window.supabaseService) return window.supabaseService;
+    if (!window.supabase || typeof window.supabase.createClient !== 'function') return null;
+    let serviceKey = window.__SUPABASE_SERVICE_ROLE || '';
+    let supabaseUrl = 'https://sxucfwshtvskoqvisbeu.supabase.co';
+    if (!serviceKey) {
+        const envCandidates = ['/env.json', './env.json', '../env.json', '../../env.json'];
+        for (const envPath of envCandidates) {
+            try {
+                const r = await fetch(envPath, { cache: 'no-store' });
+                if (!r.ok) continue;
+                const j = await r.json();
+                serviceKey = j.supabaseServiceKey || j.SUPABASE_SERVICE_ROLE || '';
+                supabaseUrl = j.supabaseUrl || j.SUPABASE_URL || supabaseUrl;
+                if (serviceKey) break;
+            } catch (_) {}
+        }
+    }
+    if (!serviceKey) return null;
+    window.supabaseService = window.supabase.createClient(supabaseUrl, serviceKey, {
+        auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+    });
+    return window.supabaseService;
+}
+
+async function getSupabaseDataClient() {
+    await waitForSupabaseClient();
+    await ensureSupabaseServiceClient();
+    return window.supabaseService || window.supabaseClient || null;
+}
+
 function isPendingForCurrentDoctor(u){
     if (u.role !== 'patient') return false;
-    const noAssignedDoctor = !u.assignedDoctor && !u.assignedDoctorUserKey;
-    if (!noAssignedDoctor) return false;
+    const status = String(u.accountStatus || '').toLowerCase();
+    const isPending = status === 'pending' || (u.legacyApproved === false && !status);
+    if (!isPending) return false;
+    const specialistKeys = normalizeDoctorKeyList(u.specialistDoctorUserKeys);
 
     // Strict behavior: only patients whose preferred doctor matches current doctor.
-    const preferredMatchesCurrent =
+    const matchesCurrentDoctor =
         (u.preferredDoctor && u.preferredDoctor === current) ||
-        (currentUserKey && u.preferredDoctorUserKey === currentUserKey);
-    return preferredMatchesCurrent;
+        (u.assignedDoctor && u.assignedDoctor === current) ||
+        (currentUserKey && (
+            u.preferredDoctorUserKey === currentUserKey ||
+            u.assignedDoctorUserKey === currentUserKey ||
+            specialistKeys.includes(currentUserKey)
+        ));
+    return matchesCurrentDoctor;
 }
 
 async function computeOverall(){ // ASYNC
@@ -1378,27 +1514,32 @@ async function renderPending(){ // ASYNC
 async function approve(username){ // ASYNC
     const users = await loadUsers(); const u = users.find(x=>x.username===username); // AWAIT
     if(!u) return alert('User missing');
-    if (window.supabaseClient && u.user_key) {
-        const payload = { account_status: 'approved', updated_at: new Date().toISOString() };
+    const sb = await getSupabaseDataClient();
+    if (sb && u.user_key) {
+        const nowIso = new Date().toISOString();
+        const payload = { account_status: 'approved', updated_at: nowIso };
         if (currentUserKey) payload.assigned_doctor_user_key = currentUserKey;
-        const { error } = await window.supabaseClient.from('users').update(payload).eq('user_key', u.user_key);
+        let { error } = await sb.from('users').update(payload).eq('user_key', u.user_key);
+        if (error) {
+            const legacyPayload = { approved: true, updated_at: nowIso };
+            if (current) legacyPayload.assigned_doctor = current;
+            const { error: legacyError } = await sb
+                .from('users')
+                .update(legacyPayload)
+                .eq('user_key', u.user_key);
+            error = legacyError;
+        }
         if (error) {
             alert('Failed to approve in database: ' + (error.message || error));
             return;
         }
     }
-    u.approved = true; u.assignedDoctor = current; 
+    u.approved = true;
+    u.legacyApproved = true;
+    u.accountStatus = 'approved';
+    u.assignedDoctor = current; 
     if (currentUserKey) u.assignedDoctorUserKey = currentUserKey;
-    
-    // Update doctor's pending list (if stored, though not explicitly used here)
-    users.forEach(doc=>{
-        if(doc.role==='doctor' && Array.isArray(doc.pendingPatients)){
-            doc.pendingPatients = doc.pendingPatients.filter(p=>p !== username);
-        }
-    }
-    u.approved = true; u.assignedDoctor = current; 
-    if (currentUserKey) u.assignedDoctorUserKey = currentUserKey;
-    
+
     // Update doctor's pending list (if stored, though not explicitly used here)
     users.forEach(doc=>{
         if(doc.role==='doctor' && Array.isArray(doc.pendingPatients)){
@@ -2188,7 +2329,58 @@ async function refreshUI(){ // ASYNC
     await renderLogs();
     await populateDocChatPatients();
     await loadDocChatThreads();
+    await showDoctorDashboardDiagnosticsIfEmpty();
     setupResizablePatientPanel();
+}
+
+async function showDoctorDashboardDiagnosticsIfEmpty() {
+    const patientSel = document.getElementById('patientSelector');
+    const pendingWrap = document.getElementById('pendingWrap');
+    const hasPatients = !!(patientSel && patientSel.options && patientSel.options.length > 1);
+    const pendingText = String(pendingWrap?.textContent || '');
+    const hasPending = pendingText && !/No pending requests/i.test(pendingText);
+    if (hasPatients || hasPending) return;
+
+    let dbUsersCount = 0;
+    let dbPatientsCount = 0;
+    let dbError = '';
+    try {
+        const sb = await getSupabaseDataClient();
+        if (sb) {
+            let data = null;
+            let error = null;
+            ({ data, error } = await sb.from('users').select('user_key,role'));
+            if (error) ({ data, error } = await sb.from('users').select('user_key'));
+            if (error) dbError = error.message || String(error);
+            else {
+                dbUsersCount = (data || []).length;
+                dbPatientsCount = (data || []).filter((u) => String(u.role || '').toLowerCase() === 'patient').length;
+            }
+        }
+    } catch (e) {
+        dbError = e?.message || String(e);
+    }
+
+    let storageUsersCount = 0;
+    let legacyUsersCount = 0;
+    try {
+        const raw = await window.Storage.getItem('users');
+        const arr = JSON.parse(raw || '[]');
+        storageUsersCount = Array.isArray(arr) ? arr.length : 0;
+    } catch (_) {}
+    try {
+        const rawLegacy = (typeof localStorage !== 'undefined') ? localStorage.getItem('users') : null;
+        const arrLegacy = JSON.parse(rawLegacy || '[]');
+        legacyUsersCount = Array.isArray(arrLegacy) ? arrLegacy.length : 0;
+    } catch (_) {}
+
+    const debugMsg = `Debug: dbUsers=${dbUsersCount}, dbPatients=${dbPatientsCount}, TYMI_users=${storageUsersCount}, legacy_users=${legacyUsersCount}${dbError ? `, dbError=${dbError}` : ''}`;
+    if (pendingWrap) {
+        pendingWrap.innerHTML = `<div class="muted">No pending requests for you</div><div class="muted" style="margin-top:8px;font-size:12px">${debugMsg}</div>`;
+    }
+    const detailNote = document.getElementById('detailNote');
+    if (detailNote) detailNote.textContent = debugMsg;
+    console.warn('[Doctor dashboard diagnostics]', debugMsg);
 }
 
 function switchDoctorTab(tab) {

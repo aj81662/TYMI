@@ -206,40 +206,40 @@ nav.fixed .text-gray-700, nav.fixed .text-blue-600{ padding:0.5rem 0.75rem; }
     </main>
 
     <footer class="site-footer">
-      <div class="container" style="max-width:1200px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;">
-        <div>
-          <h3 style="color:#7dd3fc;font-size:1.25rem;margin-bottom:8px;">TYM</h3>
-          <p style="color:#9ca3af;font-size:0.9rem;">Empowering better health through innovative medication adherence solutions.</p>
-        </div>
-        <div>
-          <h4 style="font-weight:600;margin-bottom:8px;">Quick Links</h4>
-            <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
-            <li><a href="index.html#home">Home</a></li>
-            <li><a href="index.html#about">About</a></li>
-            <li><a href="index.html#solutions">Solutions</a></li>
-            <li><a href="index.html#contact">Contact</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 style="font-weight:600;margin-bottom:8px;">Resources</h4>
-          <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
-            <li><a href="#">Blog</a></li>
-            <li><a href="#">Research</a></li>
-            <li><a href="#">FAQ</a></li>
-            <li><a href="#">Support</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 style="font-weight:600;margin-bottom:8px;">Contact Us</h4>
-          <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
-            <li>✉️ info@tym.health</li>
-            <li>📞 (555) 123-4567</li>
-            <li>📍 San Francisco, CA</li>
-          </ul>
-        </div>
-      </div>
-      <div style="text-align:center;margin-top:24px;color:#94a3b8;">© 2026 Take Your Medicine Innovations. All rights reserved.</div>
-    </footer>
+  <div class="container" style="max-width:1200px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;">
+    <div>
+      <h3 style="color:#7dd3fc;font-size:1.25rem;margin-bottom:8px;">TYM</h3>
+      <p style="color:#9ca3af;font-size:0.9rem;">Empowering better health through innovative medication adherence solutions.</p>
+    </div>
+    <div>
+      <h4 style="font-weight:600;margin-bottom:8px;">Quick Links</h4>
+      <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
+        <li><a href="index.html#home">Home</a></li>
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#solutions">Solutions</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="font-weight:600;margin-bottom:8px;">Resources</h4>
+      <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Research</a></li>
+        <li><a href="#">FAQ</a></li>
+        <li><a href="#">Support</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="font-weight:600;margin-bottom:8px;">Contact Us</h4>
+      <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
+        <li>&#9993;&#65039; takeyourmeds25@gmail.com</li>
+        <li>&#128222; N/A</li>
+        <li>&#128205; College Station, TX</li>
+      </ul>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:24px;color:#94a3b8;">&copy; 2026 Take Your Medicine Innovations. All rights reserved.</div>
+</footer>
 
 <script>
 /******** User "spreadsheet" in localStorage *********
@@ -262,8 +262,7 @@ function saveDoctorSpecialtiesMap(m){ localStorage.setItem('doctorSpecialties', 
     saveUsers(u);
     saveDoctorSpecialtiesMap(specialties);
   }
-  return window.supabaseClient || null;
-}
+})();
 
 async function waitForSupabaseClient(){
   const deadline = Date.now() + 8000;
@@ -388,34 +387,6 @@ document.getElementById('createBtn').addEventListener('click', async (e)=>{
 });
 </script>
 
-    if (window.siteSync && typeof window.siteSync.signupAndCreateUser === 'function'){
-      const res = await window.siteSync.signupAndCreateUser(user, pass, role, pref);
-      console.log('siteSync signup result', res);
-
-      // Keep local cache in sync only after successful DB signup.
-      const users=loadUsers();
-      if(!users.find(u=>u.username===user)){
-        const entry = { username:user, password:pass, role:role, approved: role==='doctor', preferredDoctor: pref, assignedDoctor: null };
-        if(role==='patient'){ entry.approved=false; }
-        users.push(entry);
-        saveUsers(users);
-      }
-      await refreshDoctors();
-
-      if(msg) msg.textContent = role==='patient' ? 'Patient created and marked Pending approval.' : 'Doctor account created.';
-    } else {
-      const text = 'siteSync not available - ensure supabase-init.js and site-sync.js are loaded';
-      console.warn(text);
-      if (msg) msg.textContent = text;
-    }
-  }catch(err){
-    console.error('Supabase signup error', err);
-    const text = err && err.message ? err.message : String(err || 'Unknown error');
-    if(msg) msg.textContent = `Supabase error: ${text}`;
-  }
-});
-</script>
-
 <!-- Load Supabase client and site sync (ensure these are after page JS) -->
 <script>
 if (!window.crypto) window.crypto = window.msCrypto || {};
@@ -434,3 +405,4 @@ if (typeof window.crypto.randomUUID !== 'function') {
 <script src="site-sync.js"></script>
   </body>
 </html>
+
