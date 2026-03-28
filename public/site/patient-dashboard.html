@@ -1799,7 +1799,7 @@ async function syncFromSupabase() {
         // Pull med events -> local adherence logs
         const { data: evRows, error: evErr } = await window.supabaseClient
             .from('med_events')
-            .select('medication_id,event_time,event_type,metadata')
+            .select('medication_id,event_time,true_time,logged_time,event_type,metadata')
             .eq('user_key', resolvedUserKey)
             .order('event_time', { ascending: false })
             .limit(1000);
@@ -1814,13 +1814,15 @@ async function syncFromSupabase() {
         allLogs[current] = allLogs[current] || {};
         (evRows || []).forEach((ev) => {
             if (String(ev.event_type || '').toLowerCase() !== 'taken') return;
+            const effectiveEventTime = ev.true_time || ev.event_time || ev.logged_time;
+            if (!effectiveEventTime) return;
             const localMedId = medIdToLocalKey[ev.medication_id] || `db-${ev.medication_id}`;
-            const day = String(ev.event_time).slice(0, 10);
-            const doseTime = inferDoseTimeFromEvent(ev.event_time, ev.metadata || {});
+            const day = String(effectiveEventTime).slice(0, 10);
+            const doseTime = inferDoseTimeFromEvent(effectiveEventTime, ev.metadata || {});
             const key = `${day}_${localMedId}_${doseTime}`;
             allLogs[current][key] = {
                 medId: localMedId,
-                time: new Date(ev.event_time).getTime(),
+                time: new Date(effectiveEventTime).getTime(),
                 doseTime: doseTime,
                 taken: true,
                 symptoms: ev.metadata?.symptoms || null,
@@ -1854,7 +1856,7 @@ async function syncMedicationToSupabase(newMed) {
     }
 }
 
-async function syncMedEventToSupabase(medId, doseTime, symptomData = null) {
+async function syncMedEventToSupabase(medId, doseTime, symptomData = null, takenAtIso = null) {
     await ensureSupabaseClient();
     const user = await getSupabaseAuthUser();
     const resolvedUserKey = user?.id || getSessionUserKeyFallback();
@@ -1872,10 +1874,14 @@ async function syncMedEventToSupabase(medId, doseTime, symptomData = null) {
         dbMedId = medRow?.id || null;
         if (!dbMedId) return;
 
+        const trueTimeIso = takenAtIso || new Date().toISOString();
+        const loggedTimeIso = new Date().toISOString();
         const payload = {
             user_key: resolvedUserKey,
             medication_id: dbMedId,
-            event_time: new Date().toISOString(),
+            event_time: trueTimeIso,
+            true_time: trueTimeIso,
+            logged_time: loggedTimeIso,
             event_type: 'taken',
             source: 'patient-dashboard',
             metadata: {
@@ -1892,7 +1898,7 @@ async function syncMedEventToSupabase(medId, doseTime, symptomData = null) {
 
 // --- REAL API INTEGRATION (FDA) ---
 const CACHE_LIFESPAN_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
-const DRUG_DETAILS_PARSER_VERSION = 2;
+const DRUG_DETAILS_PARSER_VERSION = 3;
 
 function cleanFdaText(raw) {
     return String(raw || '')
@@ -1913,9 +1919,14 @@ function splitIntoSentences(raw) {
 
 function titleCasePhrase(s) {
     return String(s || '')
-        .toLowerCase()
-        .split(' ')
-        .map(w => w ? (w[0].toUpperCase() + w.slice(1)) : w)
+        .split(/\s+/)
+        .map((w) => {
+            if (!w) return w;
+            if (/^[A-Z0-9-]{2,6}$/.test(w)) return w;
+            if (/^[a-z]{1,3}\d+[a-z0-9-]*$/i.test(w)) return w.toUpperCase();
+            const lower = w.toLowerCase();
+            return lower[0].toUpperCase() + lower.slice(1);
+        })
         .join(' ');
 }
 
@@ -1934,6 +1945,8 @@ function sanitizeMedicalListItem(rawItem, field = '') {
     let item = cleanFdaText(rawItem)
         .replace(/^examples?\s*:\s*/i, '')
         .replace(/^\s*(the|other|including)\s+/i, '')
+        .replace(/^\s*(has|have)\s+included?\s*/i, '')
+        .replace(/^\s*%+\s*(are|is|were|include|includes?)\s*/i, '')
         .replace(/^\s*(\(?\d+[a-z]?\)?[.):]?|[ivxlcdm]+\.)\s*/i, '')
         .replace(/^most common adverse reactions?\s*(are|include)?\s*/i, '')
         .replace(/^adverse reactions?\s*(are|include)?\s*/i, '')
@@ -1945,15 +1958,27 @@ function sanitizeMedicalListItem(rawItem, field = '') {
         .replace(/\s+/g, ' ')
         .trim();
 
+    if (field === 'adverse_reactions') {
+        item = item
+            .replace(/^(adults?|children|pediatric(?:\s+patients?)?)\s*[:\-]\s*/i, '')
+            .replace(/^(incidence[^:]{0,160}(?:are|were|include|includes|included|including)?\s*[:\-]\s*)/i, '')
+            .replace(/^.*?\b(?:are|were|include|includes|included|including)\s*[:\-]\s*/i, '')
+            .trim();
+    }
+
     item = item.replace(/\s*\([^)]*$/, '').replace(/\(\s*$/, '').trim();
+    item = item.replace(/\s+\d{1,2}$/g, '').trim(); // remove trailing footnote indices (e.g., "Dizziness 1")
 
     if (!item) return '';
     if (!/[a-z]/i.test(item)) return '';
     if (item.length < 3 || item.length > (field === 'indications_and_usage' ? 200 : 90)) return '';
     if (/^(clinical impact|intervention|placebo|none)$/i.test(item)) return '';
     if (/(boxed warning|warnings? and precautions?|more common than placebo|the following adverse reactions are also discussed elsewhere)/i.test(item)) return '';
+    if (/(see table|table \d|continued dosing)/i.test(item)) return '';
+    if (/\b(and|or|of|to|with|in|for|than)\.?$/i.test(item)) return '';
 
     if (field === 'adverse_reactions') {
+        if (/\b(mg|mcg|ml|tablet|capsule|dose|daily|day group|incidence)\b/i.test(item)) return '';
         if (/^(in patients|in adults|in pediatric|with type \d|metformin hydrochloride tablets)/i.test(item)) return '';
         return titleCasePhrase(item);
     }
@@ -1994,7 +2019,7 @@ function extractDelimitedTerms(segment, opts = {}) {
     const minLen = opts.minLen || 3;
     const maxLen = opts.maxLen || 40;
     const field = opts.field || '';
-    const splitPattern = opts.splitPattern || /,|\band\b|\bor\b|\//i;
+    const splitPattern = opts.splitPattern || /,|\band\b|\bor\b/i;
     const dedupe = new Set();
     const out = [];
     String(segment || '')
@@ -3216,6 +3241,7 @@ function handleAddMedication() {
 /* --- LOG TAB FUNCTIONS --- */
 function logMedicationTaken(medId, time, symptomData = null) {
     const logs = loadLogs();
+    const takenAt = new Date();
     const today = new Date().toISOString().slice(0, 10);
     const logKey = `${today}_${medId}_${time}`;
     if (!logs[current]) logs[current] = {};
@@ -3223,7 +3249,7 @@ function logMedicationTaken(medId, time, symptomData = null) {
 
     logs[current][logKey] = {
         medId: medId,
-        time: new Date().getTime(),
+        time: takenAt.getTime(),
         doseTime: time,
         taken: true,
         symptoms: symptomData 
@@ -3231,7 +3257,7 @@ function logMedicationTaken(medId, time, symptomData = null) {
     saveLogs(logs);
     renderLogList(loadMeds()); 
     updateAdherencePoints(1); 
-    syncMedEventToSupabase(medId, time, symptomData);
+    syncMedEventToSupabase(medId, time, symptomData, takenAt.toISOString());
 }
 
 function renderLogList(meds) {
@@ -3399,7 +3425,7 @@ async function getAdherenceDataForCharts() {
 
             const { data: evRows, error: evErr } = await window.supabaseClient
                 .from('med_events')
-                .select('medication_id,event_time,event_type,metadata')
+                .select('medication_id,event_time,true_time,logged_time,event_type,metadata')
                 .eq('user_key', resolvedUserKey)
                 .gte('event_time', startIso);
             if (evErr) throw evErr;
@@ -3413,6 +3439,7 @@ async function getAdherenceDataForCharts() {
             return {
                 medication_id: null,
                 event_time: new Date(entry.time || Date.now()).toISOString(),
+                true_time: new Date(entry.time || Date.now()).toISOString(),
                 event_type: entry.taken ? 'taken' : 'missed',
                 metadata: { dose_time: entry.doseTime, symptoms: entry.symptoms },
                 localMedId: entry.medId,
@@ -3438,7 +3465,9 @@ async function getAdherenceDataForCharts() {
     let pmTaken = 0;
     medEvents.forEach((ev) => {
         if (String(ev.event_type || '').toLowerCase() !== 'taken') return;
-        const dayKey = String(ev.event_time || '').slice(0, 10);
+        const effectiveEventTime = ev.true_time || ev.event_time || ev.logged_time;
+        if (!effectiveEventTime) return;
+        const dayKey = String(effectiveEventTime).slice(0, 10);
         const idx = dayKeyToIndex[dayKey];
         if (idx == null) return;
         dailyTaken[idx] += 1;
@@ -3446,7 +3475,7 @@ async function getAdherenceDataForCharts() {
         const key = ev.medication_id ?? ev.localMedId;
         if (key != null && medTakenCount[key] != null) medTakenCount[key] += 1;
 
-        const doseTime = inferDoseTimeFromEvent(ev.event_time, ev.metadata || {});
+        const doseTime = inferDoseTimeFromEvent(effectiveEventTime, ev.metadata || {});
         if (doseTime === 'am') amTaken += 1;
         else if (doseTime === 'pm') pmTaken += 1;
 
@@ -3711,42 +3740,43 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 </script>
         <footer class="site-footer">
-            <div class="container" style="max-width:1200px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;">
-                <div>
-                    <h3 style="color:#7dd3fc;font-size:1.25rem;margin-bottom:8px;">TYM</h3>
-                    <p style="color:#9ca3af;font-size:0.9rem;">Empowering better health through innovative medication adherence solutions.</p>
-                </div>
-                <div>
-                    <h4 style="font-weight:600;margin-bottom:8px;">Quick Links</h4>
-                    <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
-                        <li><a href="index.html#home">Home</a></li>
-                        <li><a href="index.html#about">About</a></li>
-                        <li><a href="index.html#solutions">Solutions</a></li>
-                        <li><a href="index.html#contact">Contact</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 style="font-weight:600;margin-bottom:8px;">Resources</h4>
-                    <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">Research</a></li>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Support</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 style="font-weight:600;margin-bottom:8px;">Contact Us</h4>
-                    <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
-                        <li>✉️ info@tym.health</li>
-                        <li>📞 (555) 123-4567</li>
-                        <li>📍 San Francisco, CA</li>
-                    </ul>
-                </div>
-            </div>
-            <div style="text-align:center;margin-top:24px;color:#94a3b8;">© 2026 Take Your Medicine Innovations. All rights reserved.</div>
-        </footer>
+  <div class="container" style="max-width:1200px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;">
+    <div>
+      <h3 style="color:#7dd3fc;font-size:1.25rem;margin-bottom:8px;">TYM</h3>
+      <p style="color:#9ca3af;font-size:0.9rem;">Empowering better health through innovative medication adherence solutions.</p>
+    </div>
+    <div>
+      <h4 style="font-weight:600;margin-bottom:8px;">Quick Links</h4>
+      <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
+        <li><a href="index.html#home">Home</a></li>
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#solutions">Solutions</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="font-weight:600;margin-bottom:8px;">Resources</h4>
+      <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Research</a></li>
+        <li><a href="#">FAQ</a></li>
+        <li><a href="#">Support</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="font-weight:600;margin-bottom:8px;">Contact Us</h4>
+      <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
+        <li>&#9993;&#65039; takeyourmeds25@gmail.com</li>
+        <li>&#128222; N/A</li>
+        <li>&#128205; College Station, TX</li>
+      </ul>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:24px;color:#94a3b8;">&copy; 2026 Take Your Medicine Innovations. All rights reserved.</div>
+</footer>
 </body>
 </html>
+
 
 
 
