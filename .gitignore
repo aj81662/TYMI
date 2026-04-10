@@ -2,6 +2,8 @@
 
 # dependencies
 node_modules/
+.origin-main-worktree/
+.tmp-target-main-web-sync/
 
 # Expo
 .expo/
