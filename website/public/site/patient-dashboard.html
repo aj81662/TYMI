@@ -1,0 +1,3786 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+<title>Patient Dashboard: Complete & Functional</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Glacial+Indifference&family=Hanken+Grotesk:wght@300;400;700&display=swap" rel="stylesheet"/>
+
+<style>
+/* ===== inlined: src/index.css (partial copy to match merged.html styles) ===== */
+:root{--color-blue-600:#2563eb;--color-blue-500:#3b82f6;--color-gray-900:#111827;--color-gray-600:#4b5563;--color-gray-400:#9ca3af;--color-white:#fff;--radius:.625rem;--spacing:.25rem;--container-7xl:80rem}
+html{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;}
+body{margin:0;background:var(--color-white);color:var(--color-gray-900);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.max-w-7xl{max-width:var(--container-7xl);margin-inline:auto;padding-inline:1rem}
+.px-4{padding-inline:1rem}.sm\:px-6{padding-inline:1.5rem}.lg\:px-8{padding-inline:2rem}
+.py-16{padding-block:4rem}.py-20{padding-block:5rem}
+.text-2xl{font-size:1.5rem}.text-3xl{font-size:1.875rem}.text-4xl{font-size:2.25rem}.text-5xl{font-size:3rem}
+.font-bold{font-weight:700}.font-semibold{font-weight:600}
+.text-gray-600{color:var(--color-gray-600)}.text-gray-400{color:var(--color-gray-400)}
+.text-blue-600{color:var(--color-blue-600)}.bg-blue-600{background:var(--color-blue-600)}.bg-blue-500{background:var(--color-blue-500)}
+.rounded-full{border-radius:9999px}.rounded-2xl{border-radius:1rem}
+.bg-white{background:var(--color-white)}.border{border:1px solid #e5e7eb}
+.shadow-sm{box-shadow:0 1px 2px rgba(0,0,0,.05)}.shadow-lg{box-shadow:0 10px 15px rgba(0,0,0,.08)}
+.hidden{display:none}.md\:flex{display:flex}.md\:hidden{display:none}
+.flex{display:flex}.items-center{align-items:center}.justify-between{justify-content:space-between}
+.h-16{height:4rem}.w-full{width:100%}
+.text-center{text-align:center}.mx-auto{margin-left:auto;margin-right:auto}
+.px-6{padding-inline:1.5rem}.py-3{padding-block:.75rem}
+.container{max-width:var(--container-7xl);margin:0 auto;padding:0 1rem}
+nav.site-nav{position:fixed;inset-inline:0;top:0;background:var(--color-white);box-shadow:0 1px 2px rgba(0,0,0,.04);z-index:50}
+.nav-row{display:flex;align-items:center;justify-content:space-between;height:64px;max-width:1200px;margin:0 auto;padding:0 16px}
+.logo{font-weight:700;color:var(--color-blue-600);font-size:1.25rem}
+.nav-links{display:flex;gap:20px;align-items:center}
+.nav-links a{color:var(--color-gray-600);text-decoration:none}
+.auth a{padding:8px 16px;border-radius:9999px;text-decoration:none}
+.auth .primary{background:var(--color-blue-600);color:var(--color-white)}
+.hero{padding-top:120px;padding-bottom:80px;background:linear-gradient(180deg,#f8fafc 0,#eef2ff 100%);text-align:center}
+.card{max-width:700px;margin:0 auto;background:var(--color-white);padding:32px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.06)}
+footer.site-footer{background:#0f172a;color:#cbd5e1;padding:48px 16px}
+.site-footer a{color:inherit;text-decoration:none}
+
+</style>
+
+<style>
+
+/* ------------------------------------------------ */
+/* --- START ESSENTIAL STYLES --- */
+/* ------------------------------------------------ */
+:root {
+    --deep-green: #3F1263;    /* primary */
+    --brick-red: #986EAD;    /* primary-variant */
+    --coral: #D8CBBB;        /* neutral */
+    --mustard: #986EAD;      /* accent */
+    --sky: #F2F2F2;          /* background */
+    --rose: #D8CBBB;         /* neutral */
+    --font-primary: 'Glacial Indifference', sans-serif;
+    --font-secondary: 'Hanken Grotesk', sans-serif;
+    --pet-fill: #2d9f6b; /* Green for health/pet fill */
+    --pet-empty: #eee;
+    /* Default Custom Pet Colors - will be overridden by JS */
+    --pet-body-color: #79f298; 
+    --pet-accent-color: #3F1263; 
+}
+
+body {
+  font-family: var(--font-secondary);
+  background: var(--sky);
+  color: #222;
+    margin: 0;
+        padding: 0;
+        padding-top: 72px; /* account for fixed header height so tabs are clickable */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header & Nav */
+header {
+  background-color: var(--deep-green);
+  color: white;
+  padding: 16px 10%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+header h1 {
+  font-family: var(--font-primary);
+  font-size: 1.6rem;
+  margin: 0;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  margin-left: 18px;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+nav a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+/* Main Content Area */
+.container {
+  flex: 1;
+  padding: 20px 10%;
+}
+
+.box {
+  background: #fff;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Tab Navigation */
+.tab-nav {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #eee;
+  flex-wrap: wrap; 
+}
+
+.tab-nav button {
+  padding: 10px 15px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  border-bottom: 3px solid transparent;
+  color: #555;
+  transition: all 0.2s;
+}
+
+.tab-nav button.active {
+  color: var(--deep-green);
+  border-bottom: 3px solid var(--deep-green);
+}
+
+.tab-content {
+  display: none;
+  padding-top: 10px;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* General styles */
+button{padding:8px 10px;border-radius:8px;border:0;background:#06b6d4;color:#ffffff;cursor:pointer;transition: background 0.3s;}
+button:hover{background:#0492af}
+.ghost{background:transparent;border:1px solid #ccc;color:#666}
+.ghost:hover{background:#f4f4f4}
+.danger{background:var(--brick-red)}
+.danger:hover{background:#6a2d2c}
+.smallbtn{padding:6px 8px;font-size:0.9rem}
+input,select,textarea{padding:8px;border-radius:6px;border:1px solid #ccc;background:#ffffff;color:#333;width:100%;box-sizing:border-box;margin-bottom:10px}
+.muted{color:#888;font-size:13px}
+.med-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    border-bottom: 1px dashed #eee;
+    padding: 10px 0;
+    flex-direction: column; 
+}
+.med-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+.med-item:last-child {
+    border-bottom: none;
+}
+.med-details-content {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    background: #f9f9f9; 
+    border-left: 3px solid var(--coral);
+}
+.med-details-content ul {
+    margin: 5px 0 0 0;
+    padding-left: 20px;
+    font-size: 0.9em;
+}
+
+
+/* Log Tab Specifics */
+.med-list-log {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px dashed #eee;
+}
+.log-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.log-item-symptoms {
+    font-size: 0.85rem;
+    color: var(--coral);
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+/* Schedule Tab */
+.schedule-topbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+.schedule-view-switch {
+    display: inline-flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.schedule-view-switch button {
+    background: #fff;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 999px;
+    padding: 6px 12px;
+}
+.schedule-view-switch button.active {
+    background: var(--deep-green);
+    border-color: var(--deep-green);
+    color: #fff;
+}
+.schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+    margin-bottom: 16px;
+}
+.schedule-panel {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 12px;
+}
+.schedule-panel h4 {
+    margin: 0 0 10px 0;
+}
+.schedule-timeline {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #fff;
+    overflow: hidden;
+}
+.schedule-day {
+    border-bottom: 1px solid #eef2f7;
+}
+.schedule-day:last-child {
+    border-bottom: 0;
+}
+.schedule-day-label {
+    padding: 10px 12px;
+    font-weight: 700;
+    background: #f8fafc;
+}
+.schedule-item {
+    display: grid;
+    grid-template-columns: 88px 1fr auto;
+    gap: 10px;
+    align-items: start;
+    padding: 10px 12px;
+    border-top: 1px solid #f1f5f9;
+}
+.schedule-item:first-child {
+    border-top: 0;
+}
+.schedule-item.medication .schedule-time {
+    color: var(--deep-green);
+}
+.schedule-item.meal .schedule-time {
+    color: #0f766e;
+}
+.schedule-time {
+    font-weight: 700;
+    font-family: var(--font-primary);
+}
+.schedule-meta {
+    margin-top: 4px;
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+.schedule-calendar {
+    padding: 10px;
+}
+.schedule-calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.schedule-weekday-label {
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.schedule-calendar-grid {
+    display: grid;
+    gap: 8px;
+}
+.schedule-cell {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    min-height: 120px;
+    padding: 8px;
+    background: #ffffff;
+}
+.schedule-cell.out-month {
+    background: #f8fafc;
+    opacity: 0.75;
+}
+.schedule-cell-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    margin-bottom: 6px;
+    font-size: 0.82rem;
+    color: #475569;
+}
+.schedule-day-number {
+    font-weight: 700;
+    color: #1e293b;
+}
+.schedule-chip {
+    border-radius: 8px;
+    padding: 6px 7px;
+    margin-bottom: 6px;
+    border: 1px solid #dbeafe;
+    background: #eff6ff;
+}
+.schedule-chip:last-child {
+    margin-bottom: 0;
+}
+.schedule-chip.medication {
+    border-color: #c7d2fe;
+    background: #eef2ff;
+}
+.schedule-chip.meal {
+    border-color: #a7f3d0;
+    background: #ecfdf5;
+}
+.schedule-chip-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+.schedule-chip-title {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.25;
+}
+.schedule-chip-sub {
+    margin-top: 2px;
+    font-size: 0.76rem;
+    color: #475569;
+    line-height: 1.25;
+}
+.schedule-chip .schedule-delete-btn {
+    padding: 0 6px;
+    min-width: auto;
+    line-height: 1.2;
+}
+
+/* Pet Status Styles (Pet Tab) */
+.pet-card {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    padding: 22px;
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 14px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(245,250,255,0.95));
+    box-shadow: 0 8px 24px rgba(16,24,40,0.06);
+}
+.pet-visual {
+    width: 140px;
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 140px;
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(240,248,255,0.6));
+    box-shadow: inset 0 -6px 18px rgba(50,80,100,0.03), 0 6px 20px rgba(16,24,40,0.05);
+}
+.pet-info {
+    flex-grow: 1;
+}
+.health-bar {
+    height: 20px;
+    background: var(--pet-empty);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 5px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+}
+.health-fill {
+    height: 100%;
+    background: var(--pet-fill);
+    transition: width 0.5s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 5px;
+    font-size: 0.8rem;
+    color: white;
+    font-weight: 600;
+}
+.pet-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.pet-customization-section {
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+.pet-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 8px;
+    margin-top: 10px;
+}
+.pet-option-btn {
+    font-size: 0.95rem;
+    padding: 8px 12px;
+    border: 2px solid transparent;
+    background: linear-gradient(180deg,#ffffff,#f7fbfd);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    font-weight: 700;
+    color: #2b2b2b;
+}
+.pet-option-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 18px rgba(16,24,40,0.06);
+}
+.pet-option-btn.selected {
+    border-color: var(--deep-green);
+    background: linear-gradient(180deg,var(--rose),#ffeef0);
+    box-shadow: 0 10px 28px rgba(147,65,63,0.08);
+    transform: translateY(-4px) scale(1.02);
+}
+.color-swatch {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* SVG Pet Styling and Animation */
+.animated-pet {
+    transform-origin: 50% 100%;
+    animation: subtle-float 4s ease-in-out infinite alternate;
+}
+@keyframes subtle-float {
+    0% { transform: translateY(0px) rotate(0deg); }
+    100% { transform: translateY(-5px) rotate(1deg); }
+}
+.pet-mouth {
+    transform-origin: 50% 50%;
+    animation: mouth-breathe 2s ease-in-out infinite alternate;
+}
+@keyframes mouth-breathe {
+    0% { transform: scaleY(1); }
+    100% { transform: scaleY(0.9); }
+}
+.low-health .pet-mouth {
+    transform: translateY(2px);
+    stroke: var(--brick-red);
+}
+.low-health .pet-eye {
+    fill: var(--brick-red);
+}
+.pet-ears {
+    fill: var(--pet-accent-color);
+}
+.low-health .pet-ears {
+    fill: var(--brick-red);
+}
+
+/* Symptom Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:998;display:flex;align-items:center;justify-content:center}
+.symptom-modal{width:360px;background:#fff;padding:16px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.12);z-index:999}
+.symptom-row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.symptom-btn{
+  padding:6px 10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  background:#fff;
+  cursor:pointer;
+  color:#333;
+  font-weight:600;
+  flex: 1 1 auto;
+}
+.symptom-btn:hover{
+  background:#e6f7fb;
+  color:#000;
+}
+.symptom-btn.active{
+  background:#06b6d4;
+  color:#fff;
+  border-color:#06b6d4;
+}
+.symptom-text{width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;resize:vertical}
+.hidden{display:none}
+/* ------------------------------------------------ */
+/* --- END ESSENTIAL STYLES --- */
+/* ------------------------------------------------ */
+
+/* --- CHAT STYLES --- */
+.chat-wrapper{display:flex;flex-direction:column;gap:12px}
+.chat-header{display:flex;align-items:center;gap:8px;justify-content:space-between;margin-bottom:6px}
+.chat-messages{height:320px;background:#fafafa;border:1px solid #eee;border-radius:10px;padding:12px;overflow:auto;display:flex;flex-direction:column;gap:8px}
+.chat-msg{max-width:78%;padding:8px 10px;border-radius:10px;font-size:0.95rem}
+.chat-msg.patient{align-self:flex-end;background:linear-gradient(180deg,#06b6d4,#0492af);color:#fff}
+.chat-msg.doctor{align-self:flex-start;background:#fff;border:1px solid #e6e6e6;color:#111}
+.chat-input-row{display:flex;gap:8px;align-items:center}
+.chat-input{flex:1;padding:8px;border-radius:8px;border:1px solid #ccc}
+.chat-send{padding:8px 12px;border-radius:8px;background:#29423B;color:#fff;border:0;cursor:pointer}
+.chat-meta{font-size:0.82rem;color:#777}
+
+</style>
+<style>
+/* Exact nav appearance overrides to match merged.html */
+nav.fixed{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif}
+nav.fixed .text-2xl{font-size:1.5rem;line-height:1;font-weight:700}
+nav.fixed a, nav.fixed button{background:transparent!important;border:0!important;box-shadow:none!important;text-decoration:none!important;color:inherit!important;padding:0.5rem 0.75rem;font-size:1rem}
+nav.fixed a:hover, nav.fixed button:hover{color:#2563eb!important}
+nav.fixed a:focus, nav.fixed button:focus{outline:none!important;box-shadow:none!important}
+
+/* Force dropdown vertical */
+#navLoginMenuPatient{position:absolute;right:0;top:100%;margin-top:0.5rem;width:11rem;background:#fff;border:1px solid #e5e7eb;border-radius:0.5rem;box-shadow:0 10px 15px rgba(0,0,0,.08);display:flex;flex-direction:column}
+#navLoginMenuPatient.hidden{display:none}
+#navLoginMenuPatient a{display:block;width:100%;padding:.5rem 1rem;text-align:left;color:var(--color-gray-700);text-decoration:none}
+#navLoginMenuPatient a:hover{background:#eff6ff;color:var(--color-blue-600)}
+</style>
+<style>
+/* Charts layout for better readability */
+.chart-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start;margin-top:12px;max-width:1040px;margin-left:auto;margin-right:auto}
+.chart-card{background:#fff;padding:14px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.04);min-height:260px;display:flex;flex-direction:column}
+.chart-card h4{margin:0 0 8px 0;font-size:1rem}
+.chart-card canvas{width:100%;height:260px !important;max-height:420px;display:block}
+.chart-card .chart-note{margin-top:8px;color:var(--color-gray-600);font-size:0.9rem}
+@media (max-width:900px){.chart-grid{grid-template-columns:1fr}.chart-card{min-height:300px}.chart-card canvas{height:300px !important}}
+.chart-card.feature-wide{grid-column:1/-1}
+</style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+  <script src="supabase-init.js"></script>
+  <script src="site-sync.js"></script>
+</head>
+
+<body>
+                <nav class="fixed top-0 left-0 right-0 bg-white shadow-sm z-50">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div class="flex items-center justify-between h-16">
+                            <div class="flex-shrink-0"><span class="text-2xl font-bold text-blue-600">TYM</span></div>
+
+                            <div class="flex items-center space-x-8">
+                                <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='index.html#home'">Home</button>
+                                <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='index.html#about'">About</button>
+                                <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='index.html#solutions'">Solutions</button>
+                                <button class="text-gray-700 hover:text-blue-600 transition-colors" onclick="location.href='index.html#contact'">Contact</button>
+                            </div>
+
+                            <div class="flex items-center space-x-4">
+                                <div class="relative">
+                                    <button id="navLoginBtnPatient" class="px-4 py-2 text-blue-600 hover:text-blue-700 transition-colors">Login ▾</button>
+                                    <div id="navLoginMenuPatient" class="hidden absolute right-0 mt-2 w-44 bg-white border rounded shadow-lg">
+                                        <a class="block px-4 py-2 text-gray-700 hover:bg-blue-50" href="patient-login.html">Patient Login</a>
+                                        <a class="block px-4 py-2 text-gray-700 hover:bg-blue-50" href="doctor-login.html">Doctor Login</a>
+                                    </div>
+                                </div>
+                                <a class="px-6 py-2 bg-blue-600 text-white rounded-full" href="create-account.html">Sign Up</a>
+                            </div>
+
+                            <div class="md:hidden">
+                                <button id="toggleBtnPatient" class="text-gray-700 hover:text-blue-600">☰</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="mobileMenuPatient" class="md:hidden bg-white border-t" style="display:none;">
+                        <div class="px-4 pt-2 pb-4 space-y-2">
+                            <button onclick="location.href='index.html#home'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">Home</button>
+                            <button onclick="location.href='index.html#about'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">About</button>
+                            <button onclick="location.href='index.html#solutions'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">Solutions</button>
+                            <button onclick="location.href='index.html#contact'" class="block w-full text-left px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded">Contact</button>
+                            <div class="pt-4 space-y-2">
+                                <a href="patient-login.html" class="block w-full px-4 py-2 text-blue-600 border border-blue-600 rounded-full hover:bg-blue-50">Patient Login</a>
+                                <a href="doctor-login.html" class="block w-full px-4 py-2 text-gray-700 border rounded-full hover:bg-blue-50">Doctor Login</a>
+                                <a href="create-account.html" class="block w-full px-4 py-2 bg-blue-600 text-white rounded-full">Sign Up</a>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+<script>
+;(function(){
+    const btn = document.getElementById('navLoginBtnPatient');
+    const menu = document.getElementById('navLoginMenuPatient');
+    let _close = null;
+    if (btn && menu) {
+        btn.setAttribute('aria-haspopup','true');
+        btn.setAttribute('aria-expanded','false');
+
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isHidden = menu.classList.contains('hidden');
+            if (isHidden) {
+                // make measurable and place using button coordinates
+                menu.classList.remove('hidden');
+                btn.setAttribute('aria-expanded','true');
+                menu.style.position = 'fixed';
+                menu.style.display = 'block';
+                menu.style.visibility = 'hidden';
+                menu.style.zIndex = '9999';
+                menu.style.background = '#fff';
+                menu.style.border = '1px solid #e5e7eb';
+                menu.style.boxShadow = '0 10px 15px rgba(0,0,0,.08)';
+                menu.style.padding = '0.25rem 0';
+                menu.style.minWidth = '11rem';
+                menu.style.flexDirection = 'column';
+
+                const btnRect = btn.getBoundingClientRect();
+                const measuredWidth = menu.offsetWidth || 176;
+                const left = Math.max(8, Math.min(window.innerWidth - measuredWidth - 8, btnRect.right - measuredWidth));
+                const top = btnRect.bottom + 6;
+                menu.style.left = left + 'px';
+                menu.style.top = top + 'px';
+                menu.style.visibility = 'visible';
+
+                // add outside click handler on next tick
+                _close = function outsideClickListener(ev) {
+                    if (!menu.contains(ev.target) && ev.target !== btn) {
+                        menu.classList.add('hidden');
+                        menu.style.display = 'none';
+                        menu.style.position = 'absolute';
+                        btn.setAttribute('aria-expanded','false');
+                        document.removeEventListener('click', _close);
+                        _close = null;
+                    }
+                };
+                setTimeout(() => document.addEventListener('click', _close));
+
+            } else {
+                menu.classList.add('hidden');
+                menu.style.display = 'none';
+                menu.style.position = 'absolute';
+                btn.setAttribute('aria-expanded','false');
+                if (_close) { document.removeEventListener('click', _close); _close = null; }
+            }
+            console.log('[nav] Patient toggle — open:', !isHidden, 'btnRect:', btn.getBoundingClientRect(), 'menuRect:', menu.getBoundingClientRect());
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !menu.classList.contains('hidden')) {
+                menu.classList.add('hidden');
+                menu.style.display = 'none';
+                menu.style.position = 'absolute';
+                btn.setAttribute('aria-expanded','false');
+                if (_close) { document.removeEventListener('click', _close); _close = null; }
+                console.log('[nav] Patient menu closed by Escape');
+            }
+        });
+    }
+    const toggleBtn = document.getElementById('toggleBtnPatient');
+    const mobile = document.getElementById('mobileMenuPatient');
+    if(toggleBtn && mobile){ toggleBtn.addEventListener('click', ()=>{ if(mobile.style.display==='none'){ mobile.style.display=''; toggleBtn.textContent='✕'; } else { mobile.style.display='none'; toggleBtn.textContent='☰'; }}); }
+})();
+</script>
+
+  <div class="container">
+    <div class="box">
+        <h2 id="heading">Patient Dashboard</h2>
+        <div id="info" class="muted"></div>
+        
+        <div style="margin-top:16px">
+            <button id="logout" class="danger smallbtn">Logout</button>
+        </div>
+
+        <div class="tab-nav" style="margin-top:20px;">
+            <button id="tabMedications" data-tab="medications" class="active">Medications</button>
+            <button id="tabLog" data-tab="log">Log</button>
+            <button id="tabSchedule" data-tab="schedule">Schedule</button>
+            <button id="tabPet" data-tab="pet">Pet 🌟</button>
+            <button id="tabData" data-tab="data">Data & Trends</button>
+            <button id="tabChat" data-tab="chat">Chat</button>
+            <button id="tabSettings" data-tab="settings">Settings</button>
+            <button id="refreshBtn" class="ghost smallbtn" style="margin-left:auto;">Refresh</button>
+        </div>
+
+        <div id="tabContent_medications" class="tab-content active">
+            <h3>Current Medications</h3>
+            <div id="medsWrap" class="med-list">
+                <p class="muted">Loading medications and drug details...</p>
+            </div>
+            
+            <h4 style="margin-top:20px">Add a medication</h4>
+            <div style="margin-top:8px">
+              <label>Medication name
+                <input id="medName" placeholder="e.g., Metformin" />
+              </label>
+              <label>Type
+                <select id="medType">
+                  <option value="pill">Pill</option><option value="liquid">Liquid</option><option value="injection">Injection</option><option value="other">Other</option>
+                </select>
+              </label>
+              <label>Dosage
+                <input id="medDose" placeholder="e.g., 500 mg" />
+              </label>
+              <label>Schedule
+                <select id="medSchedule">
+                  <option value="am">AM</option><option value="pm">PM</option><option value="both">Both</option><option value="custom">Custom</option>
+                </select>
+              </label>
+              <label>Instructions
+                <textarea id="medInstr" placeholder="Take with meal / empty stomach / etc." rows="2"></textarea>
+              </label>
+              <div style="margin-top:8px">
+                <button id="addMedBtn" class="smallbtn">Add Medication</button>
+              </div>
+            </div>
+        </div>
+
+        <div id="tabContent_log" class="tab-content">
+            <h3>Log Daily Intake & Symptoms</h3>
+
+            <div style="margin-bottom:15px">
+              <button id="markAmBtn" class="smallbtn">Mark All AM</button>
+              <button id="markPmBtn" class="smallbtn" style="margin-left:8px">Mark All PM</button>
+              <button id="markAllBtn" class="smallbtn" style="margin-left:8px">Mark All Assigned as Taken</button>
+            </div>
+            
+            <div id="logMedList">
+                </div>
+
+            <h4 style="margin-top:20px">Adherence History</h4>
+            <div id="history" class="muted"></div>
+        </div>
+
+        <div id="tabContent_schedule" class="tab-content">
+            <h3>Medication & Meal Schedule</h3>
+
+            <div class="schedule-topbar">
+                <div id="scheduleViewSwitch" class="schedule-view-switch" aria-label="Schedule range view">
+                    <button type="button" data-schedule-view="day" class="active">Day</button>
+                    <button type="button" data-schedule-view="week">Week</button>
+                    <button type="button" data-schedule-view="month">Month</button>
+                </div>
+                <label style="display:flex;align-items:center;gap:8px">
+                    <span>Anchor date</span>
+                    <input id="scheduleAnchorDate" type="date" style="margin:0;min-width:170px" />
+                </label>
+            </div>
+
+            <div class="schedule-grid">
+                <div class="schedule-panel">
+                    <h4>Add medication time</h4>
+                    <label>Medication
+                        <select id="scheduleMedicationSelect"></select>
+                    </label>
+                    <label>Date
+                        <input id="scheduleMedicationDate" type="date" />
+                    </label>
+                    <label>Time
+                        <input id="scheduleMedicationTime" type="time" />
+                    </label>
+                    <label>Repeats
+                        <select id="scheduleMedicationRepeat">
+                            <option value="once">One time</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </label>
+                    <label>Meal timing
+                        <select id="scheduleMedicationMealTiming">
+                            <option value="none">No meal requirement</option>
+                            <option value="with">Take with meal</option>
+                            <option value="before">Take before meal</option>
+                            <option value="after">Take after meal</option>
+                        </select>
+                    </label>
+                    <label>Notes
+                        <textarea id="scheduleMedicationNotes" rows="2" placeholder="e.g., with breakfast and water"></textarea>
+                    </label>
+                    <button id="addScheduleMedicationBtn" type="button" class="smallbtn">Add Medication Time</button>
+                </div>
+
+                <div class="schedule-panel">
+                    <h4>Add meal time</h4>
+                    <label>Meal
+                        <select id="scheduleMealType">
+                            <option value="Breakfast">Breakfast</option>
+                            <option value="Lunch">Lunch</option>
+                            <option value="Dinner">Dinner</option>
+                            <option value="Snack">Snack</option>
+                        </select>
+                    </label>
+                    <label>Date
+                        <input id="scheduleMealDate" type="date" />
+                    </label>
+                    <label>Time
+                        <input id="scheduleMealTime" type="time" />
+                    </label>
+                    <label>Repeats
+                        <select id="scheduleMealRepeat">
+                            <option value="once">One time</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </label>
+                    <label>Notes
+                        <textarea id="scheduleMealNotes" rows="2" placeholder="e.g., high-protein meal"></textarea>
+                    </label>
+                    <button id="addScheduleMealBtn" type="button" class="smallbtn">Add Meal Time</button>
+                </div>
+            </div>
+
+            <h4 id="scheduleRangeLabel">Schedule</h4>
+            <div id="scheduleTimeline" class="schedule-timeline">
+                <div style="padding:12px" class="muted">No schedule entries yet. Add medication and meal times above.</div>
+            </div>
+        </div>
+
+        <div id="tabContent_pet" class="tab-content">
+            <h3>Your Adherence Pet</h3>
+            
+            <div id="petStatus" class="pet-card">
+                <div id="petVisualSvg" class="pet-visual"></div>
+                <div id="petInfo" class="pet-info"></div>
+            </div>
+            
+            <div class="pet-customization-section">
+                <h4>Customize Pet: Body Shape</h4>
+                <div id="petBodyShapeOptions" class="pet-options"></div>
+
+                <h4>Customize Pet: Ears</h4>
+                <div id="petEarOptions" class="pet-options"></div>
+
+                <h4>Customize Pet: Colors</h4>
+                <div id="petColorOptions" class="pet-options"></div>
+
+                <h4>Customize Pet: Eyes</h4>
+                <div id="petEyeOptions" class="pet-options"></div>
+
+                <h4>Customize Pet: Mouth</h4>
+                <div id="petMouthOptions" class="pet-options"></div>
+            </div>
+
+            <h4 style="margin-top:20px">Pet Notes</h4>
+            <div class="muted">
+                <p>Earn **1 Adherence Point (AP)** for every scheduled medication dose you log as taken in the **Log** tab.</p>
+                <p>Spend AP to **feed** your pet and keep its health up. Health decays slowly over time, rewarding consistent logging!</p>
+            </div>
+        </div>
+
+
+        <div id="tabContent_data" class="tab-content">
+            <h3>📈 Adherence Data & Trends (Last 7 Days)</h3>
+            <div class="chart-grid">
+                <div class="chart-card feature-wide"><h4>Daily Trend (Assigned vs. Taken)</h4><canvas id="dailyTrendChart"></canvas></div>
+                <div class="chart-card"><h4>Total Taken vs Missed</h4><canvas id="takenMissedChart"></canvas></div>
+                <div class="chart-card"><h4>Adherence by Medication (%)</h4><canvas id="medBarChart"></canvas></div>
+                <div class="chart-card"><h4>AM vs PM Adherence (%)</h4><canvas id="amPmChart"></canvas></div>
+                <div class="chart-card"><h4>Avg Symptom Severity (Last 7 Days)</h4><canvas id="symptomSeverityChart"></canvas></div>
+            </div>
+
+            <h4 style="margin-top:12px">Dashboard Notes</h4>
+            <div class="muted">
+                <p>Medications added by doctors are labeled <strong>(Doctor)</strong>. Data reflects adherence over the last 7 days.</p>
+            </div>
+        </div>
+
+        <div id="tabContent_chat" class="tab-content">
+            <h3>Chat with Your Doctor</h3>
+            <div class="chat-wrapper">
+                <div class="chat-header">
+                    <div>
+                        <label class="chat-meta">Doctor:</label>
+                        <select id="chatDoctorSelect" style="margin-left:6px;padding:6px;border-radius:6px;border:1px solid #ccc;min-width:240px"></select>
+                    </div>
+                    <div>
+                        <button id="clearChat" class="ghost smallbtn">Refresh</button>
+                    </div>
+                </div>
+                <div class="chat-input-row">
+                    <select id="chatThreadSelect" class="chat-input" style="max-width:60%"></select>
+                    <input id="chatSubjectInput" class="chat-input" placeholder="New topic subject" />
+                    <button id="chatCreateThread" class="chat-send">New Topic</button>
+                </div>
+                <div id="chatMessages" class="chat-messages" aria-live="polite"></div>
+                <div class="chat-input-row">
+                    <input id="chatInput" class="chat-input" placeholder="Type a message..." />
+                    <button id="chatSend" class="chat-send">Send</button>
+                </div>
+            </div>
+        </div>
+        <div id="tabContent_settings" class="tab-content">
+            <h3>Settings</h3>
+            <div class="schedule-grid">
+                <div class="schedule-panel">
+                    <h4>Account Email</h4>
+                    <label>Email
+                        <input id="settingsEmail" type="email" placeholder="you@example.com" />
+                    </label>
+                    <button id="settingsSaveEmailBtn" class="smallbtn" type="button">Update Email</button>
+                    <div id="settingsAccountMsg" class="muted" style="margin-top:8px"></div>
+                </div>
+
+                <div class="schedule-panel">
+                    <h4>Change Password</h4>
+                    <label>Current password
+                        <input id="settingsCurrentPassword" type="password" placeholder="Current password" />
+                    </label>
+                    <label>New password
+                        <input id="settingsNewPassword" type="password" placeholder="New password" />
+                    </label>
+                    <label>Confirm new password
+                        <input id="settingsConfirmPassword" type="password" placeholder="Confirm new password" />
+                    </label>
+                    <button id="settingsChangePasswordBtn" class="smallbtn" type="button">Change Password</button>
+                    <div id="settingsPasswordMsg" class="muted" style="margin-top:8px"></div>
+                </div>
+
+                <div class="schedule-panel">
+                    <h4>Preferences</h4>
+                    <label style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+                        <input id="settingsEmailReminders" type="checkbox" style="width:auto;margin:0" />
+                        <span>Email reminders</span>
+                    </label>
+                    <label style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+                        <input id="settingsMealReminders" type="checkbox" style="width:auto;margin:0" />
+                        <span>Meal timing reminders</span>
+                    </label>
+                    <label>Reminder lead time
+                        <select id="settingsReminderLead">
+                            <option value="5">5 minutes before</option>
+                            <option value="15">15 minutes before</option>
+                            <option value="30">30 minutes before</option>
+                            <option value="60">60 minutes before</option>
+                        </select>
+                    </label>
+                    <button id="settingsSavePrefsBtn" class="smallbtn" type="button">Save Preferences</button>
+                    <div id="settingsPrefsMsg" class="muted" style="margin-top:8px"></div>
+                </div>
+
+                <div class="schedule-panel">
+                    <h4>Data Controls</h4>
+                    <p class="muted" style="margin-top:0">Export your medication, log, schedule, and preferences data or clear local dashboard data.</p>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap">
+                        <button id="settingsExportDataBtn" class="smallbtn" type="button">Export My Data</button>
+                        <button id="settingsClearLocalDataBtn" class="danger smallbtn" type="button">Clear Local Data</button>
+                    </div>
+                    <div id="settingsDataMsg" class="muted" style="margin-top:8px"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+<div id="symptomOverlay" class="modal-overlay hidden" aria-hidden="true">
+  <div class="symptom-modal" role="dialog" aria-modal="true" aria-labelledby="symptomTitle">
+    <h4 id="symptomTitle" style="margin:0 0 8px 0">Log symptoms (optional)</h4>
+    <div class="symptom-row" id="symptomButtons">
+      <button type="button" class="symptom-btn" data-symptom="Nausea">Nausea</button>
+      <button type="button" class="symptom-btn" data-symptom="Dizziness">Dizziness</button>
+      <button type="button" class="symptom-btn" data-symptom="Drowsiness">Drowsiness</button>
+      <button type="button" class="symptom-btn" data-symptom="Dry Mouth">Dry Mouth</button>
+      <button type="button" class="symptom-btn" data-symptom="Headache">Headache</button>
+      <button type="button" class="symptom-btn" data-symptom="Fatigue">Fatigue</button>
+    </div>
+        <textarea id="symptomText" class="symptom-text" rows="3" placeholder="Describe any other symptoms or notes..."></textarea>
+        <div class="symptom-row" style="align-items:center;margin-top:8px">
+            <label style="flex:1;display:flex;align-items:center;gap:8px">Severity:
+                <input id="symptomSeverity" type="range" min="0" max="10" value="0" style="flex:1" />
+                <span id="symptomSeverityValue" style="min-width:28px;text-align:center;display:inline-block">0</span>
+            </label>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px">
+            <button type="button" id="symptomClose" class="ghost">Cancel</button>
+            <button type="button" id="symptomCancel" class="ghost">Skip & Log</button>
+            <button type="button" id="symptomSubmit" class="">Submit</button>
+        </div>
+  </div>
+</div>
+<script>
+/* ------------------------------------------------ */
+/* --- GLOBAL VARIABLES --- */
+/* ------------------------------------------------ */
+let current = null;
+let currentUserKey = null;
+let currentLogEntry = null; 
+let selectedSymptoms = new Set(); 
+let symptomCallback = null; 
+
+/* ------------------------------------------------ */
+/* --- UTILITY FUNCTIONS --- */
+/* ------------------------------------------------ */
+function uid(){ return Math.random().toString(36).slice(2,9); }
+function loadLogs(){ try{ return JSON.parse(localStorage.getItem('adherenceLogs')||'{}'); } catch(e){ console.error(e); return {}; } }
+function saveLogs(l){ localStorage.setItem('adherenceLogs', JSON.stringify(l)); }
+function loadMeds(){ try{ return JSON.parse(localStorage.getItem('medications')||'{}'); } catch(e){ console.error(e); return {}; } }
+function saveMeds(m){ localStorage.setItem('medications', JSON.stringify(m)); }
+function getUserMedsFromStore(meds) {
+    if (!meds || typeof meds !== 'object') return [];
+    if (current && Array.isArray(meds[current])) return meds[current];
+    if (currentUserKey && Array.isArray(meds[currentUserKey])) return meds[currentUserKey];
+    return [];
+}
+function setUserMedsInStore(meds, userMeds) {
+    if (!meds || typeof meds !== 'object') return;
+    if (current) meds[current] = userMeds;
+    if (currentUserKey) meds[currentUserKey] = userMeds;
+}
+function loadAllPetStatus(){ try{ return JSON.parse(localStorage.getItem('petStatus')||'{}'); } catch(e){ return {}; } }
+function savePetStatus(s){ 
+    const petStore = loadAllPetStatus();
+    petStore[current] = s;
+    localStorage.setItem('petStatus', JSON.stringify(petStore));
+}
+
+/* --- SCHEDULE TAB HELPERS --- */
+let scheduleView = 'day';
+
+function getLocalDateKey(dateObj = new Date()) {
+    const y = dateObj.getFullYear();
+    const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const d = String(dateObj.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
+function getLocalTimeKey(dateObj = new Date()) {
+    const h = String(dateObj.getHours()).padStart(2, '0');
+    const m = String(dateObj.getMinutes()).padStart(2, '0');
+    return `${h}:${m}`;
+}
+
+function parseDateKey(dateStr) {
+    const parts = String(dateStr || '').split('-').map(Number);
+    if (parts.length !== 3 || parts.some((n) => Number.isNaN(n))) return null;
+    return new Date(parts[0], parts[1] - 1, parts[2]);
+}
+
+function addDays(dateObj, amount) {
+    const d = new Date(dateObj);
+    d.setDate(d.getDate() + amount);
+    return d;
+}
+
+function formatTimeLabel(timeStr) {
+    const [hRaw, mRaw] = String(timeStr || '').split(':');
+    const h = Number(hRaw);
+    const m = Number(mRaw);
+    if (!Number.isFinite(h) || !Number.isFinite(m)) return 'Time TBD';
+    const d = new Date();
+    d.setHours(h, m, 0, 0);
+    return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+}
+
+function escapeHtml(value) {
+    return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function loadScheduleStore(){ try{ return JSON.parse(localStorage.getItem('patientSchedule')||'{}'); } catch(e){ console.error(e); return {}; } }
+function saveScheduleStore(store){ localStorage.setItem('patientSchedule', JSON.stringify(store)); }
+function getUserScheduleEntriesFromStore(store) {
+    if (!store || typeof store !== 'object') return [];
+    if (current && Array.isArray(store[current])) return store[current];
+    if (currentUserKey && Array.isArray(store[currentUserKey])) return store[currentUserKey];
+    return [];
+}
+function setUserScheduleEntriesInStore(store, entries) {
+    if (!store || typeof store !== 'object') return;
+    if (current) store[current] = entries;
+    if (currentUserKey) store[currentUserKey] = entries;
+}
+
+function buildScheduleRange(anchorDateStr, view) {
+    const anchorDate = parseDateKey(anchorDateStr) || parseDateKey(getLocalDateKey());
+    if (!anchorDate) return { keys: [getLocalDateKey()], label: 'Today' };
+    let start = new Date(anchorDate);
+    let end = new Date(anchorDate);
+    if (view === 'week') {
+        const dayIndexMondayStart = (anchorDate.getDay() + 6) % 7;
+        start = addDays(anchorDate, -dayIndexMondayStart);
+        end = addDays(start, 6);
+    } else if (view === 'month') {
+        start = new Date(anchorDate.getFullYear(), anchorDate.getMonth(), 1);
+        end = new Date(anchorDate.getFullYear(), anchorDate.getMonth() + 1, 0);
+    }
+    const keys = [];
+    let cursor = new Date(start);
+    while (cursor <= end) {
+        keys.push(getLocalDateKey(cursor));
+        cursor = addDays(cursor, 1);
+    }
+    const fmt = (d) => d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    const label = view === 'day'
+        ? `Day View: ${fmt(start)}`
+        : view === 'week'
+            ? `Week View: ${fmt(start)} - ${fmt(end)}`
+            : `Month View: ${anchorDate.toLocaleDateString([], { month: 'long', year: 'numeric' })}`;
+    return { keys, label };
+}
+
+function entryOccursOnDate(entry, dateKey, dateObj) {
+    const startDate = parseDateKey(entry?.date);
+    if (!startDate || !dateObj) return false;
+    if (dateObj < startDate) return false;
+    const repeat = String(entry.repeat || 'once');
+    if (repeat === 'once') return dateKey === entry.date;
+    if (repeat === 'daily') return true;
+    if (repeat === 'weekly') return dateObj.getDay() === startDate.getDay();
+    if (repeat === 'monthly') return dateObj.getDate() === startDate.getDate();
+    return dateKey === entry.date;
+}
+
+function getRepeatLabel(repeat) {
+    if (repeat === 'daily') return 'Repeats daily';
+    if (repeat === 'weekly') return 'Repeats weekly';
+    if (repeat === 'monthly') return 'Repeats monthly';
+    return 'One time';
+}
+
+function getMealTimingLabel(value) {
+    if (value === 'with') return 'Take with meal';
+    if (value === 'before') return 'Take before meal';
+    if (value === 'after') return 'Take after meal';
+    return 'No meal requirement';
+}
+
+function inferMealTimingFromMedication(med) {
+    const text = String(med?.instructions || '').toLowerCase();
+    if (/with meal|with meals|with food/.test(text)) return 'with';
+    if (/before meal|before meals|empty stomach/.test(text)) return 'before';
+    if (/after meal|after meals|after food/.test(text)) return 'after';
+    return 'none';
+}
+
+function parseTimeFromText(text) {
+    const input = String(text || '').toLowerCase();
+    const hhmm = input.match(/\b([01]?\d|2[0-3]):([0-5]\d)\b/);
+    if (hhmm) {
+        return `${String(Number(hhmm[1])).padStart(2, '0')}:${hhmm[2]}`;
+    }
+    const ampm = input.match(/\b(1[0-2]|0?[1-9])(?::([0-5]\d))?\s*(am|pm)\b/i);
+    if (!ampm) return null;
+    let hour = Number(ampm[1]);
+    const minute = String(ampm[2] || '00');
+    const period = String(ampm[3] || '').toLowerCase();
+    if (period === 'pm' && hour !== 12) hour += 12;
+    if (period === 'am' && hour === 12) hour = 0;
+    return `${String(hour).padStart(2, '0')}:${minute}`;
+}
+
+function getPlannedDoseSlotsForMedication(med) {
+    const schedule = String(med?.schedule || '').toLowerCase();
+    const slots = [];
+    const addSlot = (key, time, label) => {
+        if (!slots.some((s) => s.key === key)) slots.push({ key, time, label });
+    };
+
+    const hasBoth = schedule.includes('both') || schedule.includes('twice') || schedule.includes('bid');
+    const hasAM = hasBoth || schedule.includes('am') || schedule.includes('morning');
+    const hasPM = hasBoth || schedule.includes('pm') || schedule.includes('evening') || schedule.includes('night') || schedule.includes('bed');
+
+    if (hasAM) addSlot('am', '08:00', 'AM planned dose');
+    if (hasPM) addSlot('pm', '20:00', 'PM planned dose');
+
+    if (!hasAM && !hasPM) {
+        const inferred = parseTimeFromText(med?.instructions || '');
+        if (inferred) addSlot('custom', inferred, 'Planned dose');
+        else if (schedule.includes('custom')) addSlot('custom', '12:00', 'Planned custom dose');
+        else addSlot('daily', '09:00', 'Planned daily dose');
+    }
+
+    return slots;
+}
+
+function buildPlannedMedicationEntries(rangeKeys) {
+    const meds = getUserMedsFromStore(loadMeds()) || [];
+    const planned = [];
+
+    meds.forEach((med) => {
+        const slots = getPlannedDoseSlotsForMedication(med);
+        const mealTiming = inferMealTimingFromMedication(med);
+        const scheduleLabel = String(med?.schedule || 'daily');
+        const medTitle = String(med?.name || 'Medication');
+        const medDose = String(med?.dosage || '').trim();
+
+        rangeKeys.forEach((dateKey) => {
+            slots.forEach((slot) => {
+                planned.push({
+                    id: `planned-${med.id}-${slot.key}-${dateKey}`,
+                    type: 'medication',
+                    medId: med.id,
+                    medName: medDose ? `${medTitle} (${medDose})` : medTitle,
+                    date: dateKey,
+                    time: slot.time,
+                    repeat: 'once',
+                    mealTiming,
+                    notes: med?.instructions || '',
+                    isPlannedMedication: true,
+                    plannedSlotLabel: slot.label,
+                    plannedScheduleText: scheduleLabel,
+                });
+            });
+        });
+    });
+
+    return planned;
+}
+
+function setScheduleView(nextView) {
+    if (!['day', 'week', 'month'].includes(nextView)) return;
+    scheduleView = nextView;
+    document.querySelectorAll('#scheduleViewSwitch [data-schedule-view]').forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.scheduleView === scheduleView);
+    });
+}
+
+function renderScheduleMedicationOptions() {
+    const select = document.getElementById('scheduleMedicationSelect');
+    if (!select) return;
+    const meds = getUserMedsFromStore(loadMeds()) || [];
+    if (meds.length === 0) {
+        select.innerHTML = '<option value="">No medications found</option>';
+        return;
+    }
+    select.innerHTML = meds.map((m) => (
+        `<option value="${escapeHtml(m.id)}">${escapeHtml(m.name)} (${escapeHtml(m.dosage || 'dosage')})</option>`
+    )).join('');
+}
+
+function renderScheduleEntryCard(item) {
+    const isMedication = item.type === 'medication';
+    const title = isMedication
+        ? `${escapeHtml(item.medName || 'Medication')}`
+        : `${escapeHtml(item.mealName || 'Meal')}`;
+    const timeTitle = `${escapeHtml(formatTimeLabel(item.time))} - ${title}`;
+    const subText = isMedication
+        ? `${item.isPlannedMedication ? 'Planned intake' : 'Custom intake'} | ${getMealTimingLabel(item.mealTiming)}${item.notes ? ` | ${escapeHtml(item.notes)}` : ''}`
+        : `${getRepeatLabel(item.repeat)}${item.notes ? ` | ${escapeHtml(item.notes)}` : ''}`;
+    const deleteAction = item.isPlannedMedication
+        ? ''
+        : `<button class="ghost smallbtn schedule-delete-btn" data-entry-id="${escapeHtml(item.id)}" type="button">x</button>`;
+
+    return `
+        <div class="schedule-chip ${isMedication ? 'medication' : 'meal'}">
+            <div class="schedule-chip-row">
+                <div class="schedule-chip-title">${timeTitle}</div>
+                ${deleteAction}
+            </div>
+            <div class="schedule-chip-sub">${subText}</div>
+        </div>
+    `;
+}
+
+function renderScheduleTimeline() {
+    const timelineEl = document.getElementById('scheduleTimeline');
+    const rangeLabelEl = document.getElementById('scheduleRangeLabel');
+    const anchorInput = document.getElementById('scheduleAnchorDate');
+    if (!timelineEl || !rangeLabelEl || !anchorInput) return;
+
+    const anchor = anchorInput.value || getLocalDateKey();
+    const range = buildScheduleRange(anchor, scheduleView);
+    rangeLabelEl.textContent = range.label;
+
+    const manualEntries = getUserScheduleEntriesFromStore(loadScheduleStore()) || [];
+    const plannedMedicationEntries = buildPlannedMedicationEntries(range.keys);
+    const entries = [...plannedMedicationEntries, ...manualEntries];
+    if (entries.length === 0) {
+        timelineEl.innerHTML = '<div style="padding:12px" class="muted">No planned medications or meals available yet.</div>';
+        return;
+    }
+
+    const grouped = {};
+    range.keys.forEach((dateKey) => { grouped[dateKey] = []; });
+
+    entries.forEach((entry) => {
+        range.keys.forEach((dateKey) => {
+            const dateObj = parseDateKey(dateKey);
+            if (!entryOccursOnDate(entry, dateKey, dateObj)) return;
+            grouped[dateKey].push({
+                ...entry,
+                occurrenceDate: dateKey,
+            });
+        });
+    });
+
+    const activeDays = range.keys.filter((k) => grouped[k] && grouped[k].length > 0);
+    if (activeDays.length === 0) {
+        timelineEl.innerHTML = '<div style="padding:12px" class="muted">No entries in this date range yet.</div>';
+        return;
+    }
+
+    activeDays.forEach((dateKey) => {
+        grouped[dateKey].sort((a, b) => String(a.time || '').localeCompare(String(b.time || '')));
+    });
+
+    if (scheduleView === 'month') {
+        const anchorDate = parseDateKey(anchor) || new Date();
+        const monthStart = new Date(anchorDate.getFullYear(), anchorDate.getMonth(), 1);
+        const monthEnd = new Date(anchorDate.getFullYear(), anchorDate.getMonth() + 1, 0);
+        const gridStart = addDays(monthStart, -monthStart.getDay());
+        const gridEnd = addDays(monthEnd, 6 - monthEnd.getDay());
+        const displayDates = [];
+        let cursor = new Date(gridStart);
+        while (cursor <= gridEnd) {
+            displayDates.push(new Date(cursor));
+            cursor = addDays(cursor, 1);
+        }
+
+        const weekdayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const weekdayRow = `
+            <div class="schedule-calendar-weekdays">
+                ${weekdayLabels.map((w) => `<div class="schedule-weekday-label">${w}</div>`).join('')}
+            </div>
+        `;
+
+        const cells = displayDates.map((dateObj) => {
+            const dateKey = getLocalDateKey(dateObj);
+            const dayEntries = grouped[dateKey] || [];
+            const inMonth = dateObj.getMonth() === anchorDate.getMonth();
+            const dayLabel = dateObj.toLocaleDateString([], { weekday: 'short' });
+            return `
+                <div class="schedule-cell ${inMonth ? '' : 'out-month'}">
+                    <div class="schedule-cell-head">
+                        <span class="schedule-day-number">${dateObj.getDate()}</span>
+                        <span>${dayLabel}</span>
+                    </div>
+                    <div>
+                        ${dayEntries.map(renderScheduleEntryCard).join('')}
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        timelineEl.innerHTML = `
+            <div class="schedule-calendar">
+                ${weekdayRow}
+                <div class="schedule-calendar-grid" style="grid-template-columns:repeat(7,minmax(0,1fr));">
+                    ${cells}
+                </div>
+            </div>
+        `;
+    } else {
+        const displayKeys = scheduleView === 'day' ? [range.keys[0]] : range.keys;
+        const columns = Math.max(1, displayKeys.length);
+        const cells = displayKeys.map((dateKey) => {
+            const dateObj = parseDateKey(dateKey);
+            const dayEntries = grouped[dateKey] || [];
+            const dayLabel = dateObj
+                ? dateObj.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' })
+                : dateKey;
+            return `
+                <div class="schedule-cell">
+                    <div class="schedule-cell-head">
+                        <span class="schedule-day-number">${escapeHtml(dayLabel)}</span>
+                    </div>
+                    <div>
+                        ${dayEntries.map(renderScheduleEntryCard).join('')}
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        timelineEl.innerHTML = `
+            <div class="schedule-calendar">
+                <div class="schedule-calendar-grid" style="grid-template-columns:repeat(${columns},minmax(0,1fr));">
+                    ${cells}
+                </div>
+            </div>
+        `;
+    }
+
+    timelineEl.querySelectorAll('.schedule-delete-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const entryId = btn.dataset.entryId;
+            if (!entryId) return;
+            const store = loadScheduleStore();
+            const entriesForUser = getUserScheduleEntriesFromStore(store) || [];
+            const filtered = entriesForUser.filter((entry) => entry.id !== entryId);
+            setUserScheduleEntriesInStore(store, filtered);
+            saveScheduleStore(store);
+            renderScheduleTimeline();
+        });
+    });
+}
+
+function renderScheduleTab() {
+    const anchorInput = document.getElementById('scheduleAnchorDate');
+    const medDateInput = document.getElementById('scheduleMedicationDate');
+    const mealDateInput = document.getElementById('scheduleMealDate');
+    const medTimeInput = document.getElementById('scheduleMedicationTime');
+    const mealTimeInput = document.getElementById('scheduleMealTime');
+
+    const todayKey = getLocalDateKey();
+    const nowTime = getLocalTimeKey();
+    if (anchorInput && !anchorInput.value) anchorInput.value = todayKey;
+    if (medDateInput && !medDateInput.value) medDateInput.value = todayKey;
+    if (mealDateInput && !mealDateInput.value) mealDateInput.value = todayKey;
+    if (medTimeInput && !medTimeInput.value) medTimeInput.value = nowTime;
+    if (mealTimeInput && !mealTimeInput.value) mealTimeInput.value = nowTime;
+
+    renderScheduleMedicationOptions();
+    setScheduleView(scheduleView);
+    renderScheduleTimeline();
+}
+
+function handleAddMedicationScheduleEntry() {
+    const medicationSelect = document.getElementById('scheduleMedicationSelect');
+    const dateInput = document.getElementById('scheduleMedicationDate');
+    const timeInput = document.getElementById('scheduleMedicationTime');
+    const repeatSelect = document.getElementById('scheduleMedicationRepeat');
+    const mealTimingSelect = document.getElementById('scheduleMedicationMealTiming');
+    const notesInput = document.getElementById('scheduleMedicationNotes');
+    if (!medicationSelect || !dateInput || !timeInput || !repeatSelect || !mealTimingSelect || !notesInput) return;
+
+    const medId = medicationSelect.value;
+    const option = medicationSelect.options[medicationSelect.selectedIndex];
+    const medName = option ? option.textContent : '';
+    const date = dateInput.value;
+    const time = timeInput.value;
+    if (!medId || !date || !time) {
+        alert('Please select a medication, date, and time.');
+        return;
+    }
+
+    const store = loadScheduleStore();
+    const entries = getUserScheduleEntriesFromStore(store) || [];
+    entries.push({
+        id: uid(),
+        type: 'medication',
+        medId,
+        medName,
+        date,
+        time,
+        repeat: repeatSelect.value || 'once',
+        mealTiming: mealTimingSelect.value || 'none',
+        notes: notesInput.value.trim(),
+        createdAt: Date.now(),
+    });
+    setUserScheduleEntriesInStore(store, entries);
+    saveScheduleStore(store);
+    notesInput.value = '';
+    renderScheduleTimeline();
+}
+
+function handleAddMealScheduleEntry() {
+    const mealTypeSelect = document.getElementById('scheduleMealType');
+    const dateInput = document.getElementById('scheduleMealDate');
+    const timeInput = document.getElementById('scheduleMealTime');
+    const repeatSelect = document.getElementById('scheduleMealRepeat');
+    const notesInput = document.getElementById('scheduleMealNotes');
+    if (!mealTypeSelect || !dateInput || !timeInput || !repeatSelect || !notesInput) return;
+
+    const mealName = mealTypeSelect.value;
+    const date = dateInput.value;
+    const time = timeInput.value;
+    if (!mealName || !date || !time) {
+        alert('Please choose a meal, date, and time.');
+        return;
+    }
+
+    const store = loadScheduleStore();
+    const entries = getUserScheduleEntriesFromStore(store) || [];
+    entries.push({
+        id: uid(),
+        type: 'meal',
+        mealName,
+        date,
+        time,
+        repeat: repeatSelect.value || 'once',
+        notes: notesInput.value.trim(),
+        createdAt: Date.now(),
+    });
+    setUserScheduleEntriesInStore(store, entries);
+    saveScheduleStore(store);
+    notesInput.value = '';
+    renderScheduleTimeline();
+}
+
+/* --- SETTINGS TAB HELPERS --- */
+function loadPatientPrefsStore(){ try{ return JSON.parse(localStorage.getItem('patientPreferences')||'{}'); } catch(e){ console.error(e); return {}; } }
+function savePatientPrefsStore(store){ localStorage.setItem('patientPreferences', JSON.stringify(store)); }
+function getUserPrefsFromStore(store) {
+    if (!store || typeof store !== 'object') return null;
+    if (current && store[current]) return store[current];
+    if (currentUserKey && store[currentUserKey]) return store[currentUserKey];
+    return null;
+}
+function setUserPrefsInStore(store, prefs) {
+    if (!store || typeof store !== 'object') return;
+    if (current) store[current] = prefs;
+    if (currentUserKey) store[currentUserKey] = prefs;
+}
+function getDefaultPatientPrefs() {
+    return {
+        emailReminders: true,
+        mealReminders: true,
+        reminderLeadMinutes: 15,
+    };
+}
+function getUserLogsFromStore(logStore) {
+    if (!logStore || typeof logStore !== 'object') return {};
+    if (current && logStore[current]) return logStore[current];
+    if (currentUserKey && logStore[currentUserKey]) return logStore[currentUserKey];
+    return {};
+}
+function setSettingsMessage(elementId, text, isError = false) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    el.style.color = isError ? '#b91c1c' : '#065f46';
+    el.textContent = text || '';
+}
+function removeCurrentUserScopedData(storageKey) {
+    try {
+        const parsed = JSON.parse(localStorage.getItem(storageKey) || '{}');
+        if (parsed && typeof parsed === 'object') {
+            if (current && Object.prototype.hasOwnProperty.call(parsed, current)) delete parsed[current];
+            if (currentUserKey && Object.prototype.hasOwnProperty.call(parsed, currentUserKey)) delete parsed[currentUserKey];
+            localStorage.setItem(storageKey, JSON.stringify(parsed));
+        }
+    } catch (_) {}
+}
+async function renderSettingsTab() {
+    const emailInput = document.getElementById('settingsEmail');
+    const prefsStore = loadPatientPrefsStore();
+    const prefs = Object.assign(getDefaultPatientPrefs(), getUserPrefsFromStore(prefsStore) || {});
+
+    const emailReminders = document.getElementById('settingsEmailReminders');
+    const mealReminders = document.getElementById('settingsMealReminders');
+    const reminderLead = document.getElementById('settingsReminderLead');
+    if (emailReminders) emailReminders.checked = !!prefs.emailReminders;
+    if (mealReminders) mealReminders.checked = !!prefs.mealReminders;
+    if (reminderLead) reminderLead.value = String(prefs.reminderLeadMinutes || 15);
+
+    setSettingsMessage('settingsAccountMsg', '');
+    setSettingsMessage('settingsPasswordMsg', '');
+    setSettingsMessage('settingsPrefsMsg', '');
+    setSettingsMessage('settingsDataMsg', '');
+
+    if (!emailInput) return;
+    emailInput.value = '';
+    try {
+        const sb = await ensureSupabaseClient();
+        if (!sb) return;
+        const { data } = await sb.auth.getUser();
+        const authEmail = String(data?.user?.email || '').trim();
+        if (authEmail) {
+            emailInput.value = authEmail;
+            return;
+        }
+        const key = currentUserKey || data?.user?.id || null;
+        if (!key) return;
+        const { data: row } = await sb.from('users').select('email').eq('user_key', key).maybeSingle();
+        if (row?.email) emailInput.value = String(row.email);
+    } catch (_) {}
+}
+async function handleSettingsSaveEmail() {
+    const emailInput = document.getElementById('settingsEmail');
+    const nextEmail = String(emailInput?.value || '').trim().toLowerCase();
+    if (!nextEmail || !nextEmail.includes('@')) {
+        setSettingsMessage('settingsAccountMsg', 'Please enter a valid email address.', true);
+        return;
+    }
+    try {
+        const sb = await ensureSupabaseClient();
+        if (!sb) throw new Error('Supabase client not available.');
+        const { data: authData } = await sb.auth.getUser();
+        const { error } = await sb.auth.updateUser({ email: nextEmail });
+        if (error) throw error;
+        if (authData?.user?.id) {
+            try {
+                await sb.from('users').update({ email: nextEmail, updated_at: new Date().toISOString() }).eq('user_key', authData.user.id);
+            } catch (_) {}
+        }
+        setSettingsMessage('settingsAccountMsg', 'Email update requested. Please check your inbox to confirm the change.');
+    } catch (err) {
+        setSettingsMessage('settingsAccountMsg', String(err?.message || 'Failed to update email.'), true);
+    }
+}
+async function handleSettingsChangePassword() {
+    const currentPassword = String(document.getElementById('settingsCurrentPassword')?.value || '');
+    const newPassword = String(document.getElementById('settingsNewPassword')?.value || '');
+    const confirmPassword = String(document.getElementById('settingsConfirmPassword')?.value || '');
+    if (!currentPassword || !newPassword || !confirmPassword) {
+        setSettingsMessage('settingsPasswordMsg', 'Please complete all password fields.', true);
+        return;
+    }
+    if (newPassword.length < 8) {
+        setSettingsMessage('settingsPasswordMsg', 'New password must be at least 8 characters.', true);
+        return;
+    }
+    if (newPassword !== confirmPassword) {
+        setSettingsMessage('settingsPasswordMsg', 'New password and confirmation do not match.', true);
+        return;
+    }
+    try {
+        const sb = await ensureSupabaseClient();
+        if (!sb) throw new Error('Supabase client not available.');
+        const { data: userData } = await sb.auth.getUser();
+        const currentEmail = String(userData?.user?.email || '').trim();
+        if (currentEmail) {
+            const { error: reauthError } = await sb.auth.signInWithPassword({ email: currentEmail, password: currentPassword });
+            if (reauthError) throw new Error('Current password is incorrect.');
+        }
+        const { error } = await sb.auth.updateUser({ password: newPassword });
+        if (error) throw error;
+        document.getElementById('settingsCurrentPassword').value = '';
+        document.getElementById('settingsNewPassword').value = '';
+        document.getElementById('settingsConfirmPassword').value = '';
+        setSettingsMessage('settingsPasswordMsg', 'Password updated successfully.');
+    } catch (err) {
+        setSettingsMessage('settingsPasswordMsg', String(err?.message || 'Failed to update password.'), true);
+    }
+}
+async function handleSettingsSavePreferences() {
+    const prefs = {
+        emailReminders: !!document.getElementById('settingsEmailReminders')?.checked,
+        mealReminders: !!document.getElementById('settingsMealReminders')?.checked,
+        reminderLeadMinutes: Number(document.getElementById('settingsReminderLead')?.value || 15),
+    };
+    const store = loadPatientPrefsStore();
+    setUserPrefsInStore(store, prefs);
+    savePatientPrefsStore(store);
+    try {
+        const sb = await ensureSupabaseClient();
+        if (sb) {
+            await sb.auth.updateUser({ data: { patient_preferences: prefs } });
+        }
+    } catch (_) {}
+    setSettingsMessage('settingsPrefsMsg', 'Preferences saved.');
+}
+function handleSettingsExportData() {
+    const medsStore = loadMeds();
+    const logsStore = loadLogs();
+    const scheduleStore = loadScheduleStore();
+    const prefsStore = loadPatientPrefsStore();
+    const exportPayload = {
+        exportedAt: new Date().toISOString(),
+        user: { current, currentUserKey },
+        medications: getUserMedsFromStore(medsStore),
+        adherenceLogs: getUserLogsFromStore(logsStore),
+        schedule: getUserScheduleEntriesFromStore(scheduleStore),
+        preferences: Object.assign(getDefaultPatientPrefs(), getUserPrefsFromStore(prefsStore) || {}),
+    };
+    const blob = new Blob([JSON.stringify(exportPayload, null, 2)], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `patient-data-${getLocalDateKey()}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+    setSettingsMessage('settingsDataMsg', 'Data export downloaded.');
+}
+function handleSettingsClearLocalData() {
+    const confirmed = window.confirm('Clear your local medications, logs, schedule, preferences, and pet progress on this device?');
+    if (!confirmed) return;
+    removeCurrentUserScopedData('medications');
+    removeCurrentUserScopedData('adherenceLogs');
+    removeCurrentUserScopedData('patientSchedule');
+    removeCurrentUserScopedData('patientPreferences');
+    removeCurrentUserScopedData('petStatus');
+    try {
+        if (current) {
+            Object.keys(localStorage).forEach((key) => {
+                if (key.startsWith(`chat_${current}_`)) localStorage.removeItem(key);
+            });
+        }
+    } catch (_) {}
+    setSettingsMessage('settingsDataMsg', 'Local data cleared for this patient profile on this device.');
+    renderMedicationList(loadMeds());
+    renderLogList(loadMeds());
+    renderScheduleTimeline();
+    renderSettingsTab();
+}
+
+async function getSupabaseAuthUser() {
+    try {
+        await ensureSupabaseClient();
+        if (!window.supabaseClient) return null;
+        const { data } = await window.supabaseClient.auth.getUser();
+        return data?.user || null;
+    } catch (_) {
+        return null;
+    }
+}
+
+async function ensureSupabaseClient() {
+    if (window.supabaseClient) return window.supabaseClient;
+    if (!window.supabase || typeof window.supabase.createClient !== 'function') {
+        return null;
+    }
+    const SUPABASE_URL = 'https://sxucfwshtvskoqvisbeu.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_asZW_2Wkn-ofTq_LsqUxhw_GvSv0J_K';
+    window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+    });
+    return window.supabaseClient;
+}
+
+function getSessionUserKeyFallback() {
+    try {
+        const active = JSON.parse(localStorage.getItem('TYMI_currentUser') || 'null');
+        if (active?.user_key) return active.user_key;
+    } catch (_) {}
+    return currentUserKey || null;
+}
+
+function inferDoseTimeFromEvent(eventTime, metadata) {
+    const explicit = metadata?.dose_time || metadata?.schedule || metadata?.doseTime || null;
+    if (explicit === 'am' || explicit === 'pm') return explicit;
+    const d = new Date(eventTime);
+    const h = d.getHours();
+    return h < 12 ? 'am' : 'pm';
+}
+
+async function syncFromSupabase() {
+    await ensureSupabaseClient();
+    const user = await getSupabaseAuthUser();
+    if (!current) return;
+    const resolvedUserKey = user?.id || getSessionUserKeyFallback();
+    if (!resolvedUserKey || !window.supabaseClient) return;
+    currentUserKey = resolvedUserKey;
+
+    try {
+        // Pull medications
+        const { data: medRows, error: medErr } = await window.supabaseClient
+            .from('medications')
+            .select('id,medication_key,drug_name,strength,route,instruction,frequency_text,added_by_role,is_active')
+            .eq('user_key', resolvedUserKey)
+            .eq('is_active', true)
+            .order('created_at', { ascending: false });
+        if (medErr) throw medErr;
+
+        const localMeds = (medRows || []).map((m) => ({
+            id: m.medication_key || `db-${m.id}`,
+            name: m.drug_name || 'Medication',
+            type: m.route || 'pill',
+            dosage: m.strength || '',
+            schedule: m.frequency_text || 'both',
+            instructions: m.instruction || '',
+            assignedBy: (m.added_by_role || 'doctor') === 'doctor' ? 'doctor' : 'patient',
+            dbMedicationId: m.id,
+            medication_key: m.medication_key || null,
+        }));
+
+        const medStore = loadMeds();
+        setUserMedsInStore(medStore, localMeds);
+        saveMeds(medStore);
+
+        // Pull med events -> local adherence logs
+        const { data: evRows, error: evErr } = await window.supabaseClient
+            .from('med_events')
+            .select('medication_id,event_time,true_time,logged_time,event_type,metadata')
+            .eq('user_key', resolvedUserKey)
+            .order('event_time', { ascending: false })
+            .limit(1000);
+        if (evErr) throw evErr;
+
+        const medIdToLocalKey = {};
+        localMeds.forEach((m) => {
+            if (m.dbMedicationId != null) medIdToLocalKey[m.dbMedicationId] = m.id;
+        });
+
+        const allLogs = loadLogs();
+        allLogs[current] = allLogs[current] || {};
+        (evRows || []).forEach((ev) => {
+            if (String(ev.event_type || '').toLowerCase() !== 'taken') return;
+            const effectiveEventTime = ev.true_time || ev.event_time || ev.logged_time;
+            if (!effectiveEventTime) return;
+            const localMedId = medIdToLocalKey[ev.medication_id] || `db-${ev.medication_id}`;
+            const day = String(effectiveEventTime).slice(0, 10);
+            const doseTime = inferDoseTimeFromEvent(effectiveEventTime, ev.metadata || {});
+            const key = `${day}_${localMedId}_${doseTime}`;
+            allLogs[current][key] = {
+                medId: localMedId,
+                time: new Date(effectiveEventTime).getTime(),
+                doseTime: doseTime,
+                taken: true,
+                symptoms: ev.metadata?.symptoms || null,
+            };
+        });
+        saveLogs(allLogs);
+    } catch (e) {
+        console.warn('Supabase sync (patient dashboard) failed, using local data:', e);
+    }
+}
+
+async function syncMedicationToSupabase(newMed) {
+    const user = await getSupabaseAuthUser();
+    const resolvedUserKey = user?.id || getSessionUserKeyFallback();
+    if (!resolvedUserKey || !window.siteSync) return;
+    currentUserKey = resolvedUserKey;
+    try {
+        await window.siteSync.createMedication(resolvedUserKey, {
+            medication_key: newMed.id,
+            drug_name: newMed.name,
+            strength: newMed.dosage,
+            route: newMed.type,
+            instruction: newMed.instructions,
+            frequency_text: newMed.schedule,
+            is_active: true,
+            added_by_role: 'patient',
+            added_by_user_key: resolvedUserKey,
+        });
+    } catch (e) {
+        console.warn('Failed to sync medication to Supabase:', e);
+    }
+}
+
+async function syncMedEventToSupabase(medId, doseTime, symptomData = null, takenAtIso = null) {
+    await ensureSupabaseClient();
+    const user = await getSupabaseAuthUser();
+    const resolvedUserKey = user?.id || getSessionUserKeyFallback();
+    if (!resolvedUserKey || !window.supabaseClient) return;
+    currentUserKey = resolvedUserKey;
+    try {
+        // Resolve FK medication_id via medication_key
+        let dbMedId = null;
+        const { data: medRow } = await window.supabaseClient
+            .from('medications')
+            .select('id')
+            .eq('user_key', resolvedUserKey)
+            .eq('medication_key', medId)
+            .maybeSingle();
+        dbMedId = medRow?.id || null;
+        if (!dbMedId) return;
+
+        const trueTimeIso = takenAtIso || new Date().toISOString();
+        const loggedTimeIso = new Date().toISOString();
+        const payload = {
+            user_key: resolvedUserKey,
+            medication_id: dbMedId,
+            event_time: trueTimeIso,
+            true_time: trueTimeIso,
+            logged_time: loggedTimeIso,
+            event_type: 'taken',
+            source: 'patient-dashboard',
+            metadata: {
+                dose_time: doseTime,
+                symptoms: symptomData || null,
+            },
+        };
+        const { error } = await window.supabaseClient.from('med_events').insert(payload);
+        if (error) throw error;
+    } catch (e) {
+        console.warn('Failed to sync med event to Supabase:', e);
+    }
+}
+
+// --- REAL API INTEGRATION (FDA) ---
+const CACHE_LIFESPAN_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+const DRUG_DETAILS_PARSER_VERSION = 3;
+
+function cleanFdaText(raw) {
+    return String(raw || '')
+        .replace(/\[[^\]]*\]/g, ' ')
+        .replace(/\(\s*\d+(\.\d+)?\s*\)/g, ' ')
+        .replace(/[_*`~]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .replace(/^\s*\d+\s+/, '')
+        .trim();
+}
+
+function splitIntoSentences(raw) {
+    return cleanFdaText(raw)
+        .split(/\.|\;|\n/)
+        .map(s => s.trim())
+        .filter(s => s.length >= 8);
+}
+
+function titleCasePhrase(s) {
+    return String(s || '')
+        .split(/\s+/)
+        .map((w) => {
+            if (!w) return w;
+            if (/^[A-Z0-9-]{2,6}$/.test(w)) return w;
+            if (/^[a-z]{1,3}\d+[a-z0-9-]*$/i.test(w)) return w.toUpperCase();
+            const lower = w.toLowerCase();
+            return lower[0].toUpperCase() + lower.slice(1);
+        })
+        .join(' ');
+}
+
+function normalizeMedicationName(name) {
+    return String(name || '')
+        .toLowerCase()
+        .replace(/\([^)]*\)/g, ' ')
+        .replace(/\b\d+(\.\d+)?\s*(mg|mcg|g|ml|units?)\b/gi, ' ')
+        .replace(/\b(am|pm|both|daily|bid|tid|qid|prn)\b/gi, ' ')
+        .replace(/[^a-z0-9\s-]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function sanitizeMedicalListItem(rawItem, field = '') {
+    let item = cleanFdaText(rawItem)
+        .replace(/^examples?\s*:\s*/i, '')
+        .replace(/^\s*(the|other|including)\s+/i, '')
+        .replace(/^\s*(has|have)\s+included?\s*/i, '')
+        .replace(/^\s*%+\s*(are|is|were|include|includes?)\s*/i, '')
+        .replace(/^\s*(\(?\d+[a-z]?\)?[.):]?|[ivxlcdm]+\.)\s*/i, '')
+        .replace(/^most common adverse reactions?\s*(are|include)?\s*/i, '')
+        .replace(/^adverse reactions?\s*(are|include)?\s*/i, '')
+        .replace(/^drug interactions?\s*/i, '')
+        .replace(/^indications?\s*(?:and|&)\s*usage\s*/i, '')
+        .replace(/^warnings? and precautions?\s*/i, '')
+        .replace(/^boxed warning(?:s)?(?: and warnings and precautions)?\s*/i, '')
+        .replace(/^\s*[\-:;,/]+|[\-:;,/]+\s*$/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    if (field === 'adverse_reactions') {
+        item = item
+            .replace(/^(adults?|children|pediatric(?:\s+patients?)?)\s*[:\-]\s*/i, '')
+            .replace(/^(incidence[^:]{0,160}(?:are|were|include|includes|included|including)?\s*[:\-]\s*)/i, '')
+            .replace(/^.*?\b(?:are|were|include|includes|included|including)\s*[:\-]\s*/i, '')
+            .trim();
+    }
+
+    item = item.replace(/\s*\([^)]*$/, '').replace(/\(\s*$/, '').trim();
+    item = item.replace(/\s+\d{1,2}$/g, '').trim(); // remove trailing footnote indices (e.g., "Dizziness 1")
+
+    if (!item) return '';
+    if (!/[a-z]/i.test(item)) return '';
+    if (item.length < 3 || item.length > (field === 'indications_and_usage' ? 200 : 90)) return '';
+    if (/^(clinical impact|intervention|placebo|none)$/i.test(item)) return '';
+    if (/(boxed warning|warnings? and precautions?|more common than placebo|the following adverse reactions are also discussed elsewhere)/i.test(item)) return '';
+    if (/(see table|table \d|continued dosing)/i.test(item)) return '';
+    if (/\b(and|or|of|to|with|in|for|than)\.?$/i.test(item)) return '';
+
+    if (field === 'adverse_reactions') {
+        if (/\b(mg|mcg|ml|tablet|capsule|dose|daily|day group|incidence)\b/i.test(item)) return '';
+        if (/^(in patients|in adults|in pediatric|with type \d|metformin hydrochloride tablets)/i.test(item)) return '';
+        return titleCasePhrase(item);
+    }
+
+    if (field === 'drug_interactions') {
+        if (/^[a-z0-9\s/-]+$/.test(item)) return titleCasePhrase(item);
+        return item;
+    }
+
+    return item;
+}
+
+function reparseCachedDrugDetails(cachedData, medicationName) {
+    if (!cachedData || typeof cachedData !== 'object') return null;
+    const rawSideEffects = cachedData.rawSideEffects || '';
+    const rawInteractions = cachedData.rawInteractions || '';
+    const rawRecommendations = cachedData.rawRecommendations || '';
+    if (!rawSideEffects && !rawInteractions && !rawRecommendations) return null;
+
+    const label = {
+        adverse_reactions: rawSideEffects ? [rawSideEffects] : [],
+        drug_interactions: rawInteractions ? [rawInteractions] : [],
+        indications_and_usage: rawRecommendations ? [rawRecommendations] : [],
+    };
+
+    return {
+        name: medicationName,
+        rawSideEffects: rawSideEffects || `No raw data available for the FDA field: adverse_reactions`,
+        rawInteractions: rawInteractions || `No raw data available for the FDA field: drug_interactions`,
+        rawRecommendations: rawRecommendations || `No raw data available for the FDA field: indications_and_usage`,
+        sideEffects: getCleanedSection('adverse_reactions', label, medicationName),
+        interactions: getCleanedSection('drug_interactions', label, medicationName),
+        recommendations: getCleanedSection('indications_and_usage', label, medicationName),
+    };
+}
+
+function extractDelimitedTerms(segment, opts = {}) {
+    const minLen = opts.minLen || 3;
+    const maxLen = opts.maxLen || 40;
+    const field = opts.field || '';
+    const splitPattern = opts.splitPattern || /,|\band\b|\bor\b/i;
+    const dedupe = new Set();
+    const out = [];
+    String(segment || '')
+        .split(splitPattern)
+        .map(t => t.trim())
+        .map(t => t.replace(/^[\-:\s]+|[\-:\s]+$/g, ''))
+        .forEach((term) => {
+            const cleaned = sanitizeMedicalListItem(term, field);
+            if (!cleaned) return;
+            if (cleaned.length < minLen || cleaned.length > maxLen) return;
+            const key = cleaned.toLowerCase();
+            if (dedupe.has(key)) return;
+            dedupe.add(key);
+            out.push(cleaned);
+        });
+    return out;
+}
+
+function summarizeFdaSection(field, rawText) {
+    const text = cleanFdaText(rawText);
+    const sentences = splitIntoSentences(text);
+    const results = [];
+    const pushUnique = (item, punctuate = false) => {
+        let s = sanitizeMedicalListItem(item, field);
+        if (!s) return;
+        if (punctuate && !/[.!?]$/.test(s)) s = `${s}.`;
+        const key = s.toLowerCase();
+        if (results.find(x => x.toLowerCase() === key)) return;
+        results.push(s);
+    };
+
+    if (field === 'adverse_reactions') {
+        const listPatterns = [
+            /most common adverse reactions(?:[^:.;]{0,120})[:\s]+([^.;]{10,360})/i,
+            /common adverse reactions(?:[^:.;]{0,120})[:\s]+([^.;]{10,360})/i,
+            /adverse reactions include[:\s]+([^.;]{10,360})/i,
+            /more common than placebo(?:[^:.;]{0,120})[:\s]+([^.;]{10,360})/i,
+        ];
+        for (const re of listPatterns) {
+            const m = text.match(re);
+            if (m && m[1]) {
+                extractDelimitedTerms(m[1], { minLen: 4, maxLen: 48, field: 'adverse_reactions' }).forEach(t => pushUnique(t));
+            }
+        }
+        if (results.length === 0) {
+            const symptomWords = /(nausea|vomiting|diarrhea|fatigue|headache|dizziness|somnolence|insomnia|dry mouth|rash|hypoglycemia)/i;
+            sentences.forEach((s) => {
+                if (!symptomWords.test(s)) return;
+                extractDelimitedTerms(
+                    s.replace(/^the most common adverse reactions (are|include)\s*/i, ''),
+                    { minLen: 4, maxLen: 48, field: 'adverse_reactions' }
+                ).forEach(t => pushUnique(t));
+            });
+        }
+        return results.slice(0, 5);
+    }
+
+    if (field === 'drug_interactions') {
+        const exampleMatches = text.match(/Examples:\s*[^.]{4,200}\./gi) || [];
+        exampleMatches.forEach((match) => {
+            const list = match.replace(/^Examples:\s*/i, '').replace(/\.$/, '');
+            extractDelimitedTerms(list, { minLen: 3, maxLen: 60, field: 'drug_interactions', splitPattern: /,|\band\b|\bor\b/i })
+                .forEach(t => pushUnique(t));
+        });
+
+        const interactionSignals = /(concomitant use|interaction|may increase|avoid|contraindicated|serotonin syndrome|qt prolongation|bleeding risk|monitor|coadministration|inhibitor|inducer)/i;
+        sentences.forEach((s) => {
+            if (!interactionSignals.test(s)) return;
+            let c = s
+                .replace(/^clinical impact:\s*/i, '')
+                .replace(/^intervention:\s*/i, '')
+                .replace(/^concomitant use of\s*/i, 'Use with ')
+                .replace(/\s+/g, ' ')
+                .trim();
+            if (c.length > 140) c = `${c.slice(0, 137)}...`;
+            pushUnique(c, true);
+        });
+        return results.slice(0, 5);
+    }
+
+    if (field === 'indications_and_usage') {
+        const recSignals = /(indicated|recommended|not recommended|limitations of use|contraindicated|for treatment of|for the treatment of)/i;
+        sentences.forEach((s) => {
+            if (!recSignals.test(s)) return;
+            let c = s
+                .replace(/^indications and usage\s*/i, '')
+                .replace(/^limitations of use:\s*/i, 'Limitations: ')
+                .replace(/\s+/g, ' ')
+                .trim();
+            if (c.length > 140) c = `${c.slice(0, 137)}...`;
+            pushUnique(c, true);
+        });
+        return results.slice(0, 4);
+    }
+
+    return [];
+}
+
+// This helper function cleans the text
+const getCleanedSection = (field, label, medicationName) => {
+    const rawText = label[field] && label[field].length > 0 ? label[field][0] : "";
+    if (rawText === "") return ["No specific details found in this section."];
+
+    const text = cleanFdaText(rawText);
+    let extractedItems = [];
+    const pushUnique = (item) => {
+        const cleaned = sanitizeMedicalListItem(item, field);
+        if (!cleaned) return;
+        if (!extractedItems.find(x => x.toLowerCase() === cleaned.toLowerCase())) {
+            extractedItems.push(cleaned);
+        }
+    };
+
+    const medNameLc = normalizeMedicationName(medicationName);
+    const isLexaproFamily = medNameLc.includes('lexapro') || medNameLc.includes('escitalopram');
+    const isMetformin = medNameLc.includes('metformin');
+    const isLisinopril = medNameLc.includes('lisinopril');
+    const isInsulin = medNameLc.includes('insulin');
+
+    if (field === 'adverse_reactions') {
+        if (isLexaproFamily) {
+            [
+                'Nausea',
+                'Insomnia',
+                'Somnolence',
+                'Fatigue',
+                'Headache',
+                'Dry mouth',
+                'Sexual dysfunction'
+            ].forEach((effect) => {
+                const re = new RegExp(effect.replace(' ', '\\s*'), 'i');
+                if (re.test(text)) pushUnique(effect);
+            });
+            if (extractedItems.length > 0) return extractedItems.slice(0, 5);
+        }
+
+        if (isMetformin) {
+            const commonMetformin = text.match(/most common adverse reactions(?:[^:.;]{0,100})[:\s]+([^.;]{10,360})/i);
+            if (commonMetformin && commonMetformin[1]) {
+                extractDelimitedTerms(commonMetformin[1], { minLen: 4, maxLen: 48, field: 'adverse_reactions' })
+                    .forEach(pushUnique);
+            }
+            ['Diarrhea', 'Nausea', 'Vomiting', 'Flatulence', 'Abdominal discomfort'].forEach((term) => {
+                if (new RegExp(`\\b${term.replace(' ', '\\s*')}\\b`, 'i').test(text)) pushUnique(term);
+            });
+            if (extractedItems.length > 0) return extractedItems.slice(0, 5);
+        }
+
+        if (isLisinopril) {
+            const commonMatch = text.match(/(dizziness|headache|cough|fatigue|orthostatic effects|diarrhea|nausea)/gi) || [];
+            commonMatch.forEach(item => pushUnique(item));
+            const severeMatch = text.match(/(Angioedema|Hypotension|Acute Renal Failure|Pancreatitis)/gi) || [];
+            severeMatch.forEach(item => pushUnique(item));
+            if (extractedItems.length > 0) return extractedItems.slice(0, 5);
+        }
+
+        if (isInsulin) {
+            ['Hypoglycemia', 'Weight gain', 'Injection site reaction', 'Lipodystrophy'].forEach((term) => {
+                if (new RegExp(term.replace(' ', '\\s*'), 'i').test(text)) pushUnique(term);
+            });
+            if (extractedItems.length === 0) {
+                return ['Hypoglycemia', 'Weight gain', 'Injection site reaction'];
+            }
+            return extractedItems.slice(0, 5);
+        }
+
+        const genericEffects = summarizeFdaSection('adverse_reactions', text);
+        if (genericEffects.length > 0) return genericEffects;
+    }
+
+    if (field === 'drug_interactions') {
+        if (isLexaproFamily) {
+            const lexaproInteractions = [
+                { label: 'MAOIs (risk of serotonin syndrome)', re: /\bMAOI|monoamine oxidase\b/i },
+                { label: 'Other serotonergic drugs (serotonin syndrome risk)', re: /\bserotonergic|SSRI|SNRI|triptan|tricyclic|lithium|buspirone|st\.?\s*john/i },
+                { label: 'Pimozide / QT-prolonging drugs', re: /\bpimozide|QT prolong/i },
+                { label: 'Antiplatelets or anticoagulants (bleeding risk)', re: /\bantiplatelet|anticoagulant|bleed/i },
+            ];
+            lexaproInteractions.forEach((it) => {
+                if (it.re.test(text)) pushUnique(it.label);
+            });
+            if (extractedItems.length > 0) return extractedItems.slice(0, 5);
+        }
+
+        const genericInteractions = summarizeFdaSection('drug_interactions', text);
+        genericInteractions.forEach(pushUnique);
+
+        if (isLisinopril && extractedItems.length < 3) {
+            pushUnique('Potassium supplements / potassium-sparing diuretics');
+            pushUnique('Non-steroidal anti-inflammatory drugs (NSAIDs)');
+        }
+        if (isInsulin && extractedItems.length < 3) {
+            pushUnique('Beta-blockers (can mask hypoglycemia symptoms)');
+            pushUnique('Corticosteroids (may increase blood glucose)');
+        }
+        if (extractedItems.length > 0) return extractedItems.slice(0, 5);
+    }
+
+    if (field === 'indications_and_usage') {
+        if (isLexaproFamily) {
+            if (/major depressive disorder|depression/i.test(text)) {
+                pushUnique('Indicated for major depressive disorder (MDD).');
+            }
+            if (/generalized anxiety disorder|GAD/i.test(text)) {
+                pushUnique('Indicated for generalized anxiety disorder (GAD).');
+            }
+            if (extractedItems.length > 0) return extractedItems.slice(0, 3);
+        }
+
+        if (isInsulin) {
+            const indicationMatch = text.match(/(insulin is indicated to improve glycemic control in adult and pediatric patients with diabetes mellitus)/i) ||
+                text.match(/(insulin is indicated as an adjunct to diet and exercise to improve glycemic control in patients with diabetes mellitus)/i);
+            if (indicationMatch && indicationMatch[1]) pushUnique(`${indicationMatch[1]}.`);
+            if (extractedItems.length > 0) return extractedItems.slice(0, 3);
+        }
+
+        const genericRecs = summarizeFdaSection('indications_and_usage', text);
+        if (genericRecs.length > 0) return genericRecs;
+        return ["No recommendations or limitations found in this section."];
+    }
+
+    const fallbackParts = splitIntoSentences(text)
+        .map(s => sanitizeMedicalListItem(s, field))
+        .filter(Boolean);
+    if (fallbackParts.length > 0) {
+        return fallbackParts.slice(0, 4).map(s => (/[.!?]$/.test(s) ? s : `${s}.`));
+    }
+    return ["No concise details available for this section."];
+};
+
+
+async function fetchDrugDetails(medicationName) {
+    // 1. SAFETY CHECK: Get User ID safely
+    let userId = null;
+    try {
+        const sessionUserRaw = localStorage.getItem('TYMI_currentUser');
+        const sessionUser = sessionUserRaw ? JSON.parse(sessionUserRaw) : null;
+        userId = sessionUser?.user_key || null;
+    } catch (_) {}
+    if (!userId) {
+        const legacyRaw = localStorage.getItem('loggedInUser');
+        if (legacyRaw) {
+            try { userId = JSON.parse(legacyRaw)?.id || null; } catch (_) {}
+        }
+    }
+    if (!userId) return { name: medicationName, error: "User not logged in" };
+
+    const cacheKey = `drugDetailsCache_${userId}`;
+    let cache = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+    
+    // 2. CHECK CACHE
+    const cachedEntry = cache[medicationName];
+    const now = new Date().getTime();
+    const isCurrentParserCache = !!(cachedEntry && cachedEntry.parserVersion === DRUG_DETAILS_PARSER_VERSION);
+
+    if (cachedEntry && !isCurrentParserCache) {
+        const upgraded = reparseCachedDrugDetails(cachedEntry.data, medicationName);
+        if (upgraded) {
+            cache[medicationName] = {
+                fetchedTime: now,
+                parserVersion: DRUG_DETAILS_PARSER_VERSION,
+                data: upgraded
+            };
+            localStorage.setItem(cacheKey, JSON.stringify(cache));
+            console.log(`[Cache Upgrade] Reparsed details for ${medicationName} with parser v${DRUG_DETAILS_PARSER_VERSION}`);
+            return upgraded;
+        }
+    }
+
+    if (cachedEntry && isCurrentParserCache && (now - cachedEntry.fetchedTime) < CACHE_LIFESPAN_MS) {
+        console.log(`[Cache Hit] Returning details for ${medicationName}`);
+        return cachedEntry.data;
+    }
+
+    // 3. FETCH FROM API (multi-query fallback for brand/generic recognition)
+    console.log(`[Cache Miss] Fetching details for ${medicationName} from FDA API...`);
+
+    const cleanedName = String(medicationName || '')
+        .replace(/\([^)]*\)/g, ' ')
+        .replace(/\b\d+(\.\d+)?\s*(mg|mcg|g|ml|units?)\b/gi, ' ')
+        .replace(/\b(am|pm|both|daily|bid|tid|qid|prn)\b/gi, ' ')
+        .replace(/[^a-z0-9\s-]/gi, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .toLowerCase();
+    const firstToken = cleanedName.split(' ')[0] || cleanedName;
+    const candidateNames = Array.from(new Set([cleanedName, firstToken].filter(Boolean)));
+
+    const searchQueries = [];
+    candidateNames.forEach((n) => {
+        searchQueries.push(`openfda.brand_name:"${n}"`);
+        searchQueries.push(`openfda.generic_name:"${n}"`);
+        searchQueries.push(`openfda.substance_name:"${n}"`);
+        searchQueries.push(`openfda.brand_name:${n}`);
+        searchQueries.push(`openfda.generic_name:${n}`);
+    });
+    
+    try {
+        let label = null;
+        let lastStatus = null;
+
+        for (const query of searchQueries) {
+            const apiUrl = `https://api.fda.gov/drug/label.json?search=${encodeURIComponent(query)}&limit=1`;
+            const response = await fetch(apiUrl);
+            if (!response.ok) {
+                lastStatus = response.status;
+                continue;
+            }
+            const data = await response.json();
+            if (data && Array.isArray(data.results) && data.results.length > 0) {
+                label = data.results[0];
+                break;
+            }
+        }
+
+        if (!label) {
+            if (cachedEntry) {
+                const reparsed = reparseCachedDrugDetails(cachedEntry.data, medicationName);
+                if (reparsed) return reparsed;
+                return cachedEntry.data;
+            }
+            if (lastStatus) return { name: medicationName, error: `Details not found (Status ${lastStatus})` };
+            return { name: medicationName, error: "Details not available in the API database." };
+        }
+
+        // 4. CAPTURE RAW DATA AND CLEANED DATA
+        const getRaw = (field) => label[field] && label[field].length > 0 ? label[field][0] : `No raw data available for the FDA field: ${field}`;
+        
+        const parsedDetails = { 
+            name: medicationName, 
+            
+            // --- RAW DATA CAPTURE ---
+            rawSideEffects: getRaw('adverse_reactions'),
+            rawInteractions: getRaw('drug_interactions'),
+            rawRecommendations: getRaw('indications_and_usage'),
+            
+            // --- CLEANED DATA (using the enhanced helper function) ---
+            sideEffects: getCleanedSection('adverse_reactions', label, medicationName), 
+            interactions: getCleanedSection('drug_interactions', label, medicationName), 
+            recommendations: getCleanedSection('indications_and_usage', label, medicationName), 
+        };
+
+        // 5. STORE IN CACHE
+        cache[medicationName] = {
+            fetchedTime: now,
+            parserVersion: DRUG_DETAILS_PARSER_VERSION,
+            data: parsedDetails
+        };
+        localStorage.setItem(cacheKey, JSON.stringify(cache));
+
+        return parsedDetails;
+
+    } catch (e) {
+        console.error(`Failed to fetch or parse details for ${medicationName}:`, e);
+        if (cachedEntry) {
+            const reparsed = reparseCachedDrugDetails(cachedEntry.data, medicationName);
+            if (reparsed) return reparsed;
+            console.log(`[Parsing Error] Returning last good cache for ${medicationName}.`);
+            return cachedEntry.data;
+        }
+        return { name: medicationName, error: "Network or parsing error. The FDA API may be unavailable." };
+    }
+}
+
+// Sample meds for patient1
+const sampleMeds_patient1 = [
+  { id: "med1", name: "Metformin", type: "pill", dosage: "500 mg", schedule: "am", instructions: "Take with breakfast", assignedBy: "doctor" },
+  { id: "med2", name: "Lisinopril", type: "pill", dosage: "10 mg", schedule: "pm", instructions: "Take before bed", assignedBy: "doctor" },
+  { id: "med3", name: "Insulin", type: "injection", dosage: "5 units", schedule: "both", instructions: "Inject with meals", assignedBy: "doctor" },
+];
+
+/* ------------------------------------------------ */
+/* --- PET CONFIG & STATUS FUNCTIONS --- */
+/* ------------------------------------------------ */
+const PET_COLORS = {
+    body: ['#79f298', '#f9f871', '#ffc7a3', '#a3a6ff', '#ffa3e5', '#a3fff8'],
+    accent: ['#29423B', '#FF6B6B', '#333333', '#8e44ad', '#f39c12', '#e74c3c']
+};
+const PET_BODIES = { 'blob': 'M20,30 C5,35 0,60 20,80 C40,95 60,95 80,80 C100,60 95,35 80,30 C60,5 40,5 20,30 Z', 'round': 'M50,5 C25,5 5,25 5,50 C5,75 25,95 50,95 C75,95 95,75 95,50 C95,25 75,5 50,5 Z', 'square': 'M15,15 H85 V85 H15 Z' };
+const PET_EARS = { 'none': '', 'bunny': '<ellipse cx="30" cy="15" rx="10" ry="25" /><ellipse cx="70" cy="15" rx="10" ry="25" />', 'cat': '<path d="M10,10 L25,-10 L40,10 Z M60,10 L75,-10 L90,10 Z" class="pet-ears" />', 'bear': '<circle cx="15" cy="10" r="10" class="pet-ears" /><circle cx="85" cy="10" r="10" class="pet-ears" />' };
+const PET_EYES = { 'circle': '<circle cx="30" cy="50" r="8" /><circle cx="70" cy="50" r="8" />', 'oval': '<ellipse cx="30" cy="50" rx="6" ry="10" /><ellipse cx="70" cy="50" rx="6" ry="10" />', 'dot': '<circle cx="30" cy="50" r="3" /><circle cx="70" cy="50" r="3" />'};
+const PET_MOUTHS = { 'smile': 'M40,75 C50,85 50,85 60,75', 'straight': 'M35,75 L65,75', 'o': 'M45,75 A5,5 0 1,1 55,75 A5,5 0 1,1 45,75' };
+const DEFAULT_PET_STATUS = {
+    health: 100, adherencePoints: 50, lastUpdate: new Date().getTime(),
+    bodyColor: PET_COLORS.body[0], accentColor: PET_COLORS.accent[0],
+    bodyShape: Object.keys(PET_BODIES)[0], earType: Object.keys(PET_EARS)[0],
+    eyeType: Object.keys(PET_EYES)[0], mouthType: Object.keys(PET_MOUTHS)[0]
+};
+const PET_FEED_COST = 5;
+const PET_HEALTH_GAIN = 10;
+const PET_DECAY_RATE_MS = 24 * 60 * 60 * 1000; 
+const PET_DECAY_AMOUNT = 5; 
+
+function loadPetStatus(){ 
+    try{
+        const petStore = loadAllPetStatus();
+        let status = petStore[current] || DEFAULT_PET_STATUS;
+        status = { ...DEFAULT_PET_STATUS, ...status }; 
+        
+        const now = new Date().getTime();
+        const elapsed = now - status.lastUpdate;
+        const decayCycles = Math.floor(elapsed / PET_DECAY_RATE_MS);
+        
+        if (decayCycles > 0) {
+            status.health = Math.max(0, status.health - (decayCycles * PET_DECAY_AMOUNT));
+            status.lastUpdate = now;
+            savePetStatus(status);
+        }
+        return status;
+    } catch(e){ 
+        console.error(e); 
+        return DEFAULT_PET_STATUS; 
+    } 
+}
+function updateAdherencePoints(points) {
+    let petStatus = loadPetStatus();
+    petStatus.adherencePoints = (petStatus.adherencePoints || 0) + points;
+    savePetStatus(petStatus);
+    renderPetStatus();
+}
+function generatePetSvg(petStatus) {
+    const { health, bodyColor, accentColor, bodyShape, earType, eyeType, mouthType } = petStatus;
+    
+    let currentEyeType = eyeType;
+    let currentMouthType = mouthType;
+    let petFill = bodyColor;
+    let petAccent = accentColor;
+    let healthClass = '';
+
+    const normalizedHealth = Math.max(0, Math.min(100, health)); 
+
+    if (normalizedHealth < 60) { 
+        currentEyeType = 'dot'; 
+        currentMouthType = 'straight';
+        healthClass = 'low-health';
+    } 
+    if (normalizedHealth < 30) { 
+        currentEyeType = 'dot';
+        currentMouthType = 'o';
+        healthClass = 'critical-health';
+    }
+    if (normalizedHealth === 0) {
+        petFill = '#ccc';
+        petAccent = '#888';
+        currentEyeType = 'dot';
+        currentMouthType = 'straight';
+        healthClass = 'deceased';
+    }
+
+    const bodyPath = PET_BODIES[bodyShape] || PET_BODIES['blob'];
+    const earPath = PET_EARS[earType] || PET_EARS['none'];
+    const eyePath = PET_EYES[currentEyeType] || PET_EYES['circle'];
+    const mouthPath = PET_MOUTHS[currentMouthType] || PET_MOUTHS['smile'];
+
+    // create a gradient id based on color to avoid collisions
+    const gradId = 'petGrad';
+    const shadowId = 'petShadow';
+    return `
+        <svg viewBox="0 -20 100 120" width="140" height="140" class="animated-pet ${healthClass}" preserveAspectRatio="xMidYMid meet">
+            <defs>
+                <linearGradient id="${gradId}" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stop-color="${lightenColor(petFill,18)}" />
+                    <stop offset="60%" stop-color="${petFill}" />
+                    <stop offset="100%" stop-color="${darkenColor(petFill,8)}" />
+                </linearGradient>
+                <filter id="${shadowId}" x="-50%" y="-50%" width="200%" height="200%">
+                    <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#0b1720" flood-opacity="0.12"/>
+                </filter>
+            </defs>
+            <g filter="url(#${shadowId})">
+                <path class="pet-body" d="${bodyPath}" fill="url(#${gradId})" stroke="rgba(0,0,0,0.08)" stroke-width="1.5" />
+            </g>
+            <g class="pet-ears" transform="translate(0,0)">${earPath}</g>
+            <g class="pet-eyes">${addEyeHighlights(eyePath)}</g>
+            <path d="${mouthPath}" class="pet-mouth" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke="${petAccent}" />
+        </svg>
+    `;
+}
+
+// Small helpers for SVG color manipulation and eye highlights
+function lightenColor(hex, percent) {
+    try {
+        const c = hex.replace('#','');
+        const num = parseInt(c,16);
+        let r = (num >> 16) + Math.round(255 * (percent/100));
+        let g = ((num >> 8) & 0x00FF) + Math.round(255 * (percent/100));
+        let b = (num & 0x0000FF) + Math.round(255 * (percent/100));
+        r = Math.min(255, r); g = Math.min(255, g); b = Math.min(255, b);
+        return `#${(r<<16 | g<<8 | b).toString(16).padStart(6,'0')}`;
+    } catch (e) { return hex; }
+}
+function darkenColor(hex, percent) {
+    try {
+        const c = hex.replace('#','');
+        const num = parseInt(c,16);
+        let r = (num >> 16) - Math.round(255 * (percent/100));
+        let g = ((num >> 8) & 0x00FF) - Math.round(255 * (percent/100));
+        let b = (num & 0x0000FF) - Math.round(255 * (percent/100));
+        r = Math.max(0, r); g = Math.max(0, g); b = Math.max(0, b);
+        return `#${(r<<16 | g<<8 | b).toString(16).padStart(6,'0')}`;
+    } catch (e) { return hex; }
+}
+
+function addEyeHighlights(eyeSvg) {
+    // Insert small white circle highlights for common eye types
+    if (!eyeSvg) return eyeSvg;
+    // simple heuristic: append small white ellipse highlights near typical eye positions
+    const highlight = '<g fill="#ffffff" opacity="0.85"><ellipse cx="27" cy="47" rx="2" ry="3" /><ellipse cx="73" cy="47" rx="2" ry="3" /></g>';
+    return eyeSvg + highlight;
+}
+
+function renderPetStatus() {
+    const petStatus = loadPetStatus();
+    document.getElementById('petInfo').innerHTML = `
+        <h4 style="margin: 0;">Pet Name (Level X)</h4>
+        <p class="muted" style="margin: 5px 0 10px 0;">Your health companion!</p>
+        <label>Health: ${petStatus.health}%</label>
+        <div class="health-bar"><div id="healthFill" class="health-fill" style="width: ${petStatus.health}%">${petStatus.health}%</div></div>
+        <p style="margin: 10px 0 0 0;">Adherence Points (AP): <strong id="adherencePoints">${petStatus.adherencePoints}</strong></p>
+        <div class="pet-actions">
+            <button id="feedPetBtn">Feed Pet (${PET_FEED_COST} AP)</button>
+            <span id="feedMessage" class="muted" style="margin-left:10px;"></span>
+        </div>
+    `;
+    document.getElementById('petVisualSvg').innerHTML = generatePetSvg(petStatus);
+    const feedBtn = document.getElementById('feedPetBtn');
+    if (feedBtn) feedBtn.onclick = handleFeedPet;
+}
+
+function handlePetCustomization(event) {
+    const { type, value } = event.currentTarget.dataset;
+    let petStatus = loadPetStatus();
+    petStatus[type] = value;
+    savePetStatus(petStatus);
+    renderPetStatus();
+    renderCustomizationOptions();
+}
+
+function handleFeedPet() {
+    let petStatus = loadPetStatus();
+    const feedMessage = document.getElementById('feedMessage');
+    if (petStatus.adherencePoints < PET_FEED_COST) {
+        feedMessage.textContent = 'Not enough AP!';
+        return;
+    }
+    if (petStatus.health >= 100) {
+        feedMessage.textContent = 'Pet is already full!';
+        return;
+    }
+    petStatus.adherencePoints -= PET_FEED_COST;
+    petStatus.health = Math.min(100, petStatus.health + PET_HEALTH_GAIN);
+    petStatus.lastUpdate = new Date().getTime(); 
+    savePetStatus(petStatus);
+    feedMessage.textContent = `Fed! Health +${PET_HEALTH_GAIN}!`;
+    renderPetStatus(); 
+}
+
+function renderCustomizationOptions() {
+    const petStatus = loadPetStatus();
+    const renderOptions = (containerId, options, type, values = null) => {
+        const container = document.getElementById(containerId);
+        if (!container) return; 
+        container.innerHTML = '';
+        const keys = values || Object.keys(options);
+        keys.forEach(key => {
+            const value = (type === 'bodyColor' || type === 'accentColor') ? key : key;
+            const isSelected = petStatus[type] === value;
+            const button = document.createElement('button');
+            button.className = `pet-option-btn ${isSelected ? 'selected' : ''}`;
+            button.dataset.value = value;
+            button.dataset.type = type;
+            button.onclick = handlePetCustomization;
+            if (type === 'bodyColor' || type === 'accentColor') {
+                button.innerHTML = `<div class="color-swatch" style="background-color:${value}"></div>`;
+            } else {
+                button.textContent = key.charAt(0).toUpperCase() + key.slice(1);
+            }
+            container.appendChild(button);
+        });
+    };
+    renderOptions('petBodyShapeOptions', PET_BODIES, 'bodyShape');
+    renderOptions('petEarOptions', PET_EARS, 'earType');
+    renderOptions('petEyeOptions', PET_EYES, 'eyeType');
+    renderOptions('petMouthOptions', PET_MOUTHS, 'mouthType');
+    renderOptions('petColorOptions', null, 'bodyColor', PET_COLORS.body);
+    renderOptions('petColorOptions', null, 'accentColor', PET_COLORS.accent);
+}
+
+/* ------------------------------------------------ */
+/* --- SYMPTOM LOGGING FUNCTIONS --- */
+/* ------------------------------------------------ */
+function showSymptomModal(medId, time, callback) {
+    currentLogEntry = { medId, time };
+    symptomCallback = callback; 
+    selectedSymptoms.clear();
+    document.getElementById('symptomText').value = '';
+    document.querySelectorAll('#symptomButtons .symptom-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    // init severity display
+    try {
+        document.querySelectorAll('#symptomButtons .symptom-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        const sevEl = document.getElementById('symptomSeverity');
+        const sevVal = document.getElementById('symptomSeverityValue');
+        if (sevEl) {
+            sevEl.value = 0;
+            if (sevVal) sevVal.textContent = sevEl.value;
+            sevEl.oninput = (e) => { if (sevVal) sevVal.textContent = e.target.value; };
+        }
+    } catch (e) {
+        console.error('Symptom modal init error', e);
+    }
+    document.getElementById('symptomOverlay').classList.remove('hidden');
+}
+
+function toggleSymptom(event) {
+    const btn = event.target.closest('.symptom-btn');
+    if (!btn) return;
+    event.preventDefault();
+    const symptom = btn.dataset.symptom;
+    if (!symptom) return;
+    if (selectedSymptoms.has(symptom)) {
+        selectedSymptoms.delete(symptom);
+        btn.classList.remove('active');
+    } else {
+        selectedSymptoms.add(symptom);
+        btn.classList.add('active');
+    }
+}
+
+function submitSymptoms() {
+    const customText = document.getElementById('symptomText').value.trim();
+    let finalSymptoms = Array.from(selectedSymptoms);
+    if (customText) finalSymptoms.push(`Note: ${customText}`);
+    const textData = finalSymptoms.length > 0 ? finalSymptoms.join('; ') : null;
+    const severity = Number(document.getElementById('symptomSeverity')?.value ?? 0);
+    const symptomPayload = {
+        text: textData,
+        severity: Number.isFinite(severity) ? severity : 0
+    };
+    if (symptomCallback && currentLogEntry) {
+        symptomCallback(currentLogEntry.medId, currentLogEntry.time, symptomPayload);
+    }
+    document.getElementById('symptomOverlay').classList.add('hidden');
+    currentLogEntry = null;
+    symptomCallback = null;
+    selectedSymptoms.clear();
+}
+
+function cancelSymptoms() {
+    if (symptomCallback && currentLogEntry) {
+        symptomCallback(currentLogEntry.medId, currentLogEntry.time, { text: null, severity: 0 });
+    }
+    document.getElementById('symptomOverlay').classList.add('hidden');
+    currentLogEntry = null;
+    symptomCallback = null;
+    selectedSymptoms.clear();
+}
+
+// Close modal without logging the dose (cancel action)
+function closeSymptomModal() {
+    const overlay = document.getElementById('symptomOverlay');
+    if (overlay) overlay.classList.add('hidden');
+    currentLogEntry = null;
+    symptomCallback = null;
+    if (typeof selectedSymptoms !== 'undefined' && typeof selectedSymptoms.clear === 'function') selectedSymptoms.clear();
+}
+
+/* ------------------------------------------------ */
+/* --- MAIN DASHBOARD LOGIC --- */
+/* ------------------------------------------------ */
+async function loadData() {
+    const sessionUser = localStorage.getItem('TYMI_currentUser');
+    const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser') || 'null');
+    let activeUser = null;
+    try { activeUser = JSON.parse(sessionUser || 'null'); } catch (_) {}
+
+    if (!activeUser && !loggedInUser) {
+        document.getElementById('heading').textContent = 'Please Log In';
+        document.getElementById('info').textContent = 'You are not authenticated.';
+        document.getElementById('logout').classList.add('hidden');
+        return;
+    }
+    current = activeUser?.username || loggedInUser?.id;
+    currentUserKey = activeUser?.user_key || null;
+    const userName = activeUser?.username || loggedInUser?.firstName || 'Patient';
+    document.getElementById('heading').textContent = `${userName}'s Dashboard`;
+    document.getElementById('info').textContent = `Welcome back, ${userName}!`;
+    document.getElementById('logout').classList.remove('hidden');
+
+    await syncFromSupabase();
+    const activeTab = document.querySelector('.tab-nav button.active').dataset.tab;
+    await handleTabRendering(activeTab);
+}
+
+function handleTabClick(event) {
+    const button = event.target.closest('[data-tab]');
+    if (!button || !button.dataset.tab) return; 
+
+    const targetTab = button.dataset.tab;
+    document.querySelectorAll('.tab-nav button').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+    button.classList.add('active');
+    document.getElementById(`tabContent_${targetTab}`).classList.add('active');
+    handleTabRendering(targetTab);
+}
+
+async function handleTabRendering(tab) {
+    switch (tab) {
+        case 'medications':
+            await syncFromSupabase();
+            await renderMedicationList(loadMeds());
+            break;
+        case 'log':
+            await syncFromSupabase();
+            renderLogList(loadMeds());
+            break;
+        case 'schedule':
+            await syncFromSupabase();
+            renderScheduleTab();
+            break;
+        case 'pet':
+            renderPetStatus();
+            renderCustomizationOptions();
+            break;
+        case 'chat':
+            renderChat();
+            break;
+        case 'settings':
+            await renderSettingsTab();
+            break;
+        case 'data':
+            await renderCharts(); 
+            break;
+    }
+}
+
+/* ------------------------------------------------ */
+/* --- CHAT FUNCTIONS (Supabase threads + realtime) --- */
+/* ------------------------------------------------ */
+const chatState = {
+    doctors: [],
+    threads: [],
+    activeDoctorKey: null,
+    activeThreadKey: null,
+    channel: null,
+    fallbackMode: false,
+};
+
+function slugifySubject(v) {
+    return String(v || '')
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 80);
+}
+
+function buildThreadKey(patientKey, doctorKey, subject) {
+    return `pt_${patientKey}__dr_${doctorKey}__${slugifySubject(subject) || 'general'}`;
+}
+
+function getLegacyChatKey(doctorKey) {
+    return `chat_${current || getSessionUserKeyFallback() || 'patient'}_${doctorKey || 'doctor1'}`;
+}
+
+async function fetchDoctorDirectoryByKeys(keys) {
+    if (!window.supabaseClient || !Array.isArray(keys) || keys.length === 0) return [];
+    const uniqueKeys = Array.from(new Set(keys.map((k) => String(k || '').trim()).filter(Boolean)));
+    if (uniqueKeys.length === 0) return [];
+
+    let usersRows = [];
+    try {
+        const { data, error } = await window.supabaseClient
+            .from('users')
+            .select('user_key,display_name,email,doctor_specialties_text')
+            .in('user_key', uniqueKeys);
+        if (!error && Array.isArray(data)) usersRows = data;
+    } catch (_) {}
+
+    let doctorsRows = [];
+    try {
+        let data = null;
+        let error = null;
+        ({ data, error } = await window.supabaseClient
+            .from('doctors')
+            .select('user_key,display_name,email,specialties_text,specialty')
+            .in('user_key', uniqueKeys));
+        if (!error && Array.isArray(data)) doctorsRows = data;
+    } catch (_) {}
+
+    const byKey = {};
+    usersRows.forEach((r) => {
+        byKey[r.user_key] = {
+            user_key: r.user_key,
+            name: r.display_name || (r.email ? String(r.email).split('@')[0] : r.user_key),
+            specialty: r.doctor_specialties_text || '',
+        };
+    });
+    doctorsRows.forEach((r) => {
+        const existing = byKey[r.user_key] || { user_key: r.user_key, name: r.display_name || r.user_key, specialty: '' };
+        existing.name = r.display_name || existing.name || (r.email ? String(r.email).split('@')[0] : r.user_key);
+        existing.specialty = r.specialties_text || r.specialty || existing.specialty || '';
+        byKey[r.user_key] = existing;
+    });
+
+    return uniqueKeys.map((k) => byKey[k] || { user_key: k, name: k, specialty: '' });
+}
+
+async function getMyDoctorKeys() {
+    const patientKey = getSessionUserKeyFallback();
+    if (!window.supabaseClient || !patientKey) return [];
+    const keys = [];
+
+    try {
+        const { data, error } = await window.supabaseClient
+            .from('users')
+            .select('preferred_doctor_user_key,assigned_doctor_user_key')
+            .eq('user_key', patientKey)
+            .maybeSingle();
+        if (!error && data) {
+            if (data.preferred_doctor_user_key) keys.push(String(data.preferred_doctor_user_key));
+            if (data.assigned_doctor_user_key) keys.push(String(data.assigned_doctor_user_key));
+        }
+    } catch (_) {}
+
+    try {
+        const { data, error } = await window.supabaseClient
+            .from('doctor_patient_access')
+            .select('doctor_user_key,is_active')
+            .eq('patient_user_key', patientKey)
+            .eq('is_active', true);
+        if (!error && Array.isArray(data)) {
+            data.forEach((r) => { if (r.doctor_user_key) keys.push(String(r.doctor_user_key)); });
+        }
+    } catch (_) {}
+
+    return Array.from(new Set(keys.filter(Boolean)));
+}
+
+async function populatePatientDoctorSelect() {
+    const sel = document.getElementById('chatDoctorSelect');
+    if (!sel) return;
+    const myDoctorKeys = await getMyDoctorKeys();
+    chatState.doctors = await fetchDoctorDirectoryByKeys(myDoctorKeys);
+    sel.innerHTML = '';
+
+    if (!chatState.doctors.length) {
+        chatState.fallbackMode = true;
+        const opt = document.createElement('option');
+        opt.value = 'doctor1';
+        opt.textContent = 'doctor1';
+        sel.appendChild(opt);
+        chatState.activeDoctorKey = 'doctor1';
+        return;
+    }
+
+    chatState.fallbackMode = false;
+    chatState.doctors.forEach((d) => {
+        const opt = document.createElement('option');
+        opt.value = d.user_key;
+        opt.textContent = d.specialty ? `${d.name} (${d.specialty})` : d.name;
+        sel.appendChild(opt);
+    });
+    chatState.activeDoctorKey = chatState.doctors[0].user_key;
+    sel.value = chatState.activeDoctorKey;
+}
+
+async function loadChatThreadsForDoctor(doctorKey) {
+    const sel = document.getElementById('chatThreadSelect');
+    if (!sel) return;
+    sel.innerHTML = '';
+    chatState.threads = [];
+    chatState.activeThreadKey = null;
+    const patientKey = getSessionUserKeyFallback();
+    if (!window.supabaseClient || !doctorKey || !patientKey || chatState.fallbackMode) {
+        const legacyKey = getLegacyChatKey(doctorKey);
+        const opt = document.createElement('option');
+        opt.value = legacyKey;
+        opt.textContent = 'General';
+        sel.appendChild(opt);
+        chatState.activeThreadKey = legacyKey;
+        sel.value = legacyKey;
+        await renderChatMessages();
+        return;
+    }
+
+    try {
+        const { data, error } = await window.supabaseClient
+            .from('chat_threads')
+            .select('thread_key,subject,updated_at')
+            .eq('patient_user_key', patientKey)
+            .eq('doctor_user_key', doctorKey)
+            .order('updated_at', { ascending: false });
+        if (error) throw error;
+        chatState.threads = Array.isArray(data) ? data : [];
+    } catch (e) {
+        console.warn('chat_threads query failed; switching fallback mode', e);
+        chatState.fallbackMode = true;
+        await loadChatThreadsForDoctor(doctorKey);
+        return;
+    }
+
+    if (!chatState.threads.length) {
+        const defaultSubject = 'General';
+        await createChatThread(defaultSubject);
+        return;
+    }
+
+    chatState.threads.forEach((t) => {
+        const opt = document.createElement('option');
+        opt.value = t.thread_key;
+        opt.textContent = t.subject || 'General';
+        sel.appendChild(opt);
+    });
+    chatState.activeThreadKey = chatState.threads[0].thread_key;
+    sel.value = chatState.activeThreadKey;
+    await renderChatMessages();
+    subscribeToChatRealtime();
+}
+
+async function createChatThread(subjectInput) {
+    const subject = String(subjectInput || '').trim();
+    if (!subject) return;
+    const patientKey = getSessionUserKeyFallback();
+    const doctorKey = chatState.activeDoctorKey;
+    if (!doctorKey || !patientKey) return;
+    if (chatState.fallbackMode || !window.supabaseClient) {
+        chatState.activeThreadKey = getLegacyChatKey(doctorKey);
+        await renderChatMessages();
+        return;
+    }
+
+    const threadKey = buildThreadKey(patientKey, doctorKey, subject);
+    try {
+        const { error } = await window.supabaseClient
+            .from('chat_threads')
+            .upsert({
+                thread_key: threadKey,
+                patient_user_key: patientKey,
+                doctor_user_key: doctorKey,
+                subject: subject,
+                created_by_user_key: patientKey,
+                updated_at: new Date().toISOString(),
+            }, { onConflict: 'thread_key' });
+        if (error) throw error;
+        await loadChatThreadsForDoctor(doctorKey);
+        const sel = document.getElementById('chatThreadSelect');
+        if (sel) sel.value = threadKey;
+        chatState.activeThreadKey = threadKey;
+        await renderChatMessages();
+        subscribeToChatRealtime();
+    } catch (e) {
+        console.warn('create chat thread failed:', e);
+    }
+}
+
+async function loadChatMessages() {
+    const doctorKey = chatState.activeDoctorKey;
+    if (!doctorKey) return [];
+    if (chatState.fallbackMode || !window.supabaseClient) {
+        try {
+            const key = chatState.activeThreadKey || getLegacyChatKey(doctorKey);
+            return JSON.parse(localStorage.getItem(key) || '[]');
+        } catch (_) { return []; }
+    }
+    if (!chatState.activeThreadKey) return [];
+    try {
+        const { data, error } = await window.supabaseClient
+            .from('chat_messages')
+            .select('id,sender_user_key,sender_role,body,created_at')
+            .eq('thread_key', chatState.activeThreadKey)
+            .order('created_at', { ascending: true });
+        if (error) throw error;
+        return (data || []).map((m) => ({
+            id: m.id,
+            sender: m.sender_role === 'doctor' ? 'doctor' : 'patient',
+            text: m.body,
+            time: new Date(m.created_at).getTime(),
+        }));
+    } catch (e) {
+        console.warn('chat_messages query failed:', e);
+        return [];
+    }
+}
+
+async function renderChatMessages() {
+    const container = document.getElementById('chatMessages');
+    if (!container) return;
+    const msgs = await loadChatMessages();
+    container.innerHTML = '';
+    msgs.forEach(m => {
+        const el = document.createElement('div');
+        el.className = `chat-msg ${m.sender === 'patient' ? 'patient' : 'doctor'}`;
+        el.innerHTML = `<div>${m.text}</div><div class="chat-meta" style="margin-top:6px">${new Date(m.time).toLocaleString()}</div>`;
+        container.appendChild(el);
+    });
+    container.scrollTop = container.scrollHeight;
+}
+
+async function sendChatMessage(text) {
+    if (!text || !text.trim()) return;
+    const doctorKey = chatState.activeDoctorKey;
+    if (!doctorKey) return;
+
+    if (chatState.fallbackMode || !window.supabaseClient) {
+        const key = chatState.activeThreadKey || getLegacyChatKey(doctorKey);
+        let msgs = [];
+        try { msgs = JSON.parse(localStorage.getItem(key) || '[]'); } catch (_) {}
+        msgs.push({ id: uid(), sender: 'patient', text: text.trim(), time: new Date().getTime() });
+        localStorage.setItem(key, JSON.stringify(msgs));
+        await renderChatMessages();
+        return;
+    }
+
+    const patientKey = getSessionUserKeyFallback();
+    if (!patientKey || !chatState.activeThreadKey) return;
+    try {
+        const { error } = await window.supabaseClient
+            .from('chat_messages')
+            .insert({
+                thread_key: chatState.activeThreadKey,
+                sender_user_key: patientKey,
+                sender_role: 'patient',
+                body: text.trim(),
+            });
+        if (error) throw error;
+        await window.supabaseClient
+            .from('chat_threads')
+            .update({ updated_at: new Date().toISOString() })
+            .eq('thread_key', chatState.activeThreadKey);
+        await renderChatMessages();
+    } catch (e) {
+        console.warn('send chat failed:', e);
+    }
+}
+
+function stopChatRealtime() {
+    try {
+        if (chatState.channel && window.supabaseClient) {
+            window.supabaseClient.removeChannel(chatState.channel);
+        }
+    } catch (_) {}
+    chatState.channel = null;
+}
+
+function subscribeToChatRealtime() {
+    stopChatRealtime();
+    if (chatState.fallbackMode || !window.supabaseClient || !chatState.activeThreadKey) return;
+    chatState.channel = window.supabaseClient
+        .channel(`chat-thread-${chatState.activeThreadKey}`)
+        .on('postgres_changes', {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'chat_messages',
+            filter: `thread_key=eq.${chatState.activeThreadKey}`
+        }, async () => {
+            await renderChatMessages();
+        })
+        .subscribe();
+}
+
+async function clearChatHistory() {
+    await renderChatMessages();
+}
+
+async function renderChat() {
+    await ensureSupabaseClient();
+    await populatePatientDoctorSelect();
+    const doctorSel = document.getElementById('chatDoctorSelect');
+    if (doctorSel && doctorSel.value) chatState.activeDoctorKey = doctorSel.value;
+    await loadChatThreadsForDoctor(chatState.activeDoctorKey);
+}
+
+/* --- MEDICATION TAB FUNCTIONS --- */
+async function renderMedicationList(meds) {
+    const medsWrap = document.getElementById('medsWrap');
+    const userMeds = getUserMedsFromStore(meds);
+    
+    // Add try/catch block to ensure we catch errors and clear "Loading..."
+    try {
+        if (userMeds.length === 0) {
+            medsWrap.innerHTML = '<p class="muted">No medications assigned yet.</p>';
+            return;
+        }
+        medsWrap.innerHTML = '<p class="muted">Loading medication details... <span style="font-size:1.2em;">⏳</span></p>';
+
+        const detailedMedsPromises = userMeds.map(async med => {
+            const details = await fetchDrugDetails(med.name);
+            return { ...med, details };
+        });
+        
+        const detailedMeds = await Promise.all(detailedMedsPromises);
+        medsWrap.innerHTML = ''; 
+
+        detailedMeds.forEach(med => {
+            const drugDetails = med.details;
+            const hasDetails = !drugDetails.error;
+            let infoHtml = '';
+
+            // START: DISPLAY CLEANED DATA (Default view)
+            if (hasDetails) {
+                // Formatting Recommendations list to include prefix only if necessary
+                const formatRecommendations = (recs) => {
+                    // This function is no longer needed since the parsing function now handles the prefixing/stripping.
+                    // We simply render the cleaned items.
+                    return recs.map(r => `<li>${r}</li>`).join('');
+                };
+                
+                infoHtml = `
+                    <div class="med-details-toggle" onclick="this.nextElementSibling.classList.toggle('hidden')">
+                        <span style="font-size:0.9em; color: var(--deep-green); cursor:pointer; font-weight: 600;">
+                            <i style="margin-right:5px;">ℹ️</i> View Drug Details
+                        </span>
+                    </div>
+                    <div class="med-details-content hidden">
+                        ${drugDetails.sideEffects && drugDetails.sideEffects.length > 0 ? `
+                            <p style="font-weight:600; margin-bottom:5px;">Common Side Effects:</p>
+                            <ul>${drugDetails.sideEffects.map(s => `<li>${s}</li>`).join('')}</ul>` : ''}
+                        ${drugDetails.interactions && drugDetails.interactions.length > 0 ? `
+                            <p style="font-weight:600; margin:10px 0 5px 0;">Key Interactions:</p>
+                            <ul>${drugDetails.interactions.map(i => `<li>${i}</li>`).join('')}</ul>` : ''}
+                        ${drugDetails.recommendations && drugDetails.recommendations.length > 0 ? `
+                            <p style="font-weight:600; margin:10px 0 5px 0;">Recommendations:</p>
+                            <ul>${formatRecommendations(drugDetails.recommendations)}</ul>` : ''}
+                        <div class="muted" style="margin-top:10px;">Disclaimer: This information is for educational purposes only.</div>
+                        
+                        <div class="med-details-toggle" style="margin-top: 15px;" onclick="this.nextElementSibling.classList.toggle('hidden'); this.scrollIntoView(true);">
+                            <span style="font-size:0.8em; color: var(--brick-red); cursor:pointer; font-weight: 600;">
+                                <i style="margin-right:5px;">⚠️</i> View RAW Drug Data (Technical)
+                            </span>
+                        </div>
+                        <div class="med-details-content hidden" style="white-space: pre-wrap; font-family: monospace; font-size: 0.8em; background: #f0f0f0; padding: 10px; border: 1px solid #ccc; max-height: 400px; overflow-y: scroll;">
+                            <h3 style="margin-top:0;">RAW SIDE EFFECTS</h3>
+                            <p>${drugDetails.rawSideEffects}</p>
+                            <hr>
+                            <h3>RAW INTERACTIONS</h3>
+                            <p>${drugDetails.rawInteractions}</p>
+                            <hr>
+                            <h3>RAW RECOMMENDATIONS</h3>
+                            <p>${drugDetails.rawRecommendations}</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                infoHtml = `<div class="muted" style="margin-top:5px; color: var(--brick-red);">⚠️ ${drugDetails.error}</div>`;
+            }
+            // END: DISPLAY CLEANED DATA
+
+            const medEl = document.createElement('div');
+            medEl.className = 'med-item';
+            medEl.innerHTML = `
+                <div class="med-item-header">
+                    <div>
+                        <strong>${med.name} (${med.dosage})</strong> 
+                        <span class="muted">${med.schedule.toUpperCase()}</span>
+                        ${med.assignedBy === 'doctor' ? '<span style="font-size:0.8em; color: var(--brick-red); font-weight:700;">(Doctor)</span>' : ''}
+                        <div class="muted">${med.instructions}</div>
+                    </div>
+                    <button class="danger smallbtn delete-med" data-id="${med.id}">Delete</button>
+                </div>
+                ${infoHtml}
+            `;
+            medsWrap.appendChild(medEl);
+        });
+
+        document.querySelectorAll('.delete-med').forEach(button => {
+            button.addEventListener('click', handleDeleteMedication);
+        });
+    } catch (err) {
+        console.error("Error rendering medication list:", err);
+        medsWrap.innerHTML = '<p class="danger">Error loading medications. Please try again later.</p>';
+    }
+}
+
+function handleDeleteMedication(event) {
+    const medIdToDelete = event.target.dataset.id;
+    let meds = loadMeds();
+    const userMeds = getUserMedsFromStore(meds);
+    const updated = userMeds.filter(med => med.id !== medIdToDelete);
+    setUserMedsInStore(meds, updated);
+    saveMeds(meds);
+    renderMedicationList(meds);
+    renderLogList(meds);
+    renderScheduleMedicationOptions();
+    renderScheduleTimeline();
+}
+
+function handleAddMedication() {
+    const name = document.getElementById('medName').value.trim();
+    const type = document.getElementById('medType').value;
+    const dose = document.getElementById('medDose').value.trim();
+    const schedule = document.getElementById('medSchedule').value;
+    const instructions = document.getElementById('medInstr').value.trim();
+
+    if (!name || !dose) {
+        alert("Please enter a medication name and dosage.");
+        return;
+    }
+    const newMed = { id: uid(), name, type, dosage: dose, schedule, instructions, assignedBy: 'patient' };
+    let meds = loadMeds();
+    const userMeds = getUserMedsFromStore(meds);
+    userMeds.push(newMed);
+    setUserMedsInStore(meds, userMeds);
+    saveMeds(meds);
+    document.getElementById('medName').value = '';
+    document.getElementById('medDose').value = '';
+    document.getElementById('medInstr').value = '';
+    renderMedicationList(meds);
+    renderLogList(meds);
+    renderScheduleMedicationOptions();
+    renderScheduleTimeline();
+    syncMedicationToSupabase(newMed);
+}
+
+/* --- LOG TAB FUNCTIONS --- */
+function logMedicationTaken(medId, time, symptomData = null) {
+    const logs = loadLogs();
+    const takenAt = new Date();
+    const today = new Date().toISOString().slice(0, 10);
+    const logKey = `${today}_${medId}_${time}`;
+    if (!logs[current]) logs[current] = {};
+    if (logs[current][logKey] && logs[current][logKey].taken) return; 
+
+    logs[current][logKey] = {
+        medId: medId,
+        time: takenAt.getTime(),
+        doseTime: time,
+        taken: true,
+        symptoms: symptomData 
+    };
+    saveLogs(logs);
+    renderLogList(loadMeds()); 
+    updateAdherencePoints(1); 
+    syncMedEventToSupabase(medId, time, symptomData, takenAt.toISOString());
+}
+
+function renderLogList(meds) {
+    const logMedList = document.getElementById('logMedList');
+    logMedList.innerHTML = '';
+    const userMeds = getUserMedsFromStore(meds);
+    const logs = loadLogs()[current] || {};
+    const today = new Date().toISOString().slice(0, 10);
+    // Helper to format symptom display (handles legacy string and new {text,severity} payloads)
+    const formatSymptomsDisplay = (sym) => {
+        if (!sym) return '';
+        if (typeof sym === 'string') return `<div class="log-item-symptoms">Symptoms: ${sym}</div>`;
+        const txt = sym.text || '';
+        const sev = (typeof sym.severity === 'number' && !isNaN(sym.severity)) ? ` (Severity: ${sym.severity}/10)` : '';
+        const displayText = txt ? `${txt}${sev}` : `Severity: ${sym.severity}/10`;
+        return `<div class="log-item-symptoms">Symptoms: ${displayText}</div>`;
+    };
+    
+    if (userMeds.length === 0) {
+        logMedList.innerHTML = '<p class="muted">No medications to log. Please add some in the Medications tab.</p>';
+        return;
+    }
+
+    userMeds.forEach(med => {
+        const amKey = `${today}_${med.id}_am`;
+        const pmKey = `${today}_${med.id}_pm`;
+        const isAmLogged = logs[amKey] && logs[amKey].taken;
+        const isPmLogged = logs[pmKey] && logs[pmKey].taken;
+        
+        const amSymptoms = isAmLogged && logs[amKey].symptoms ? formatSymptomsDisplay(logs[amKey].symptoms) : '';
+        const pmSymptoms = isPmLogged && logs[pmKey].symptoms ? formatSymptomsDisplay(logs[pmKey].symptoms) : '';
+
+        const amButton = med.schedule.includes('am') || med.schedule.includes('both') ? 
+            `<button class="smallbtn ${isAmLogged ? 'ghost' : ''}" data-id="${med.id}" data-time="am" onclick="handleLogClick(this, 'am', ${isAmLogged})">${isAmLogged ? 'AM Logged' : 'Log AM'}</button>` : '';
+        const pmButton = med.schedule.includes('pm') || med.schedule.includes('both') ? 
+            `<button class="smallbtn ${isPmLogged ? 'ghost' : ''}" data-id="${med.id}" data-time="pm" onclick="handleLogClick(this, 'pm', ${isPmLogged})">${isPmLogged ? 'PM Logged' : 'Log PM'}</button>` : '';
+
+        logMedList.innerHTML += `
+            <div class="med-list-log">
+                <div><strong>${med.name} (${med.dosage})</strong>${amSymptoms}${pmSymptoms}</div>
+                <div class="log-controls">${amButton}${pmButton}</div>
+            </div>`;
+    });
+}
+
+function handleLogClick(button, time, isLogged) {
+    if (isLogged) {
+        alert("This dose is already logged for today.");
+        return;
+    }
+    const medId = button.dataset.id;
+    showSymptomModal(medId, time, (id, t, symptoms) => {
+        logMedicationTaken(id, t, symptoms);
+    });
+}
+
+function handleBulkLog(time) {
+    const meds = loadMeds()[current] || [];
+    let dosesToLog = [];
+    
+    meds.forEach(med => {
+        let doses = [];
+        if (time === 'am' && (med.schedule.includes('am') || med.schedule.includes('both'))) doses.push('am');
+        else if (time === 'pm' && (med.schedule.includes('pm') || med.schedule.includes('both'))) doses.push('pm');
+        else if (time === 'all') {
+            if (med.schedule.includes('am') || med.schedule.includes('both')) doses.push('am');
+            if (med.schedule.includes('pm') || med.schedule.includes('both')) doses.push('pm');
+        }
+        
+        doses.forEach(doseTime => {
+            if (!isDoseLogged(med.id, doseTime)) {
+                dosesToLog.push({ medId: med.id, time: doseTime });
+            }
+        });
+    });
+
+    if (dosesToLog.length === 0) {
+        alert(`No unlogged doses found for ${time === 'am' ? 'AM' : (time === 'pm' ? 'PM' : 'Today')}.`);
+        return;
+    }
+
+    // Trigger modal for bulk logging (pass null for medId)
+    showSymptomModal(null, time, (ignoredId, ignoredTime, symptomData) => {
+        let loggedCount = 0;
+        dosesToLog.forEach(dose => {
+            logMedicationTaken(dose.medId, dose.time, symptomData);
+            loggedCount++;
+        });
+        if (loggedCount > 0) {
+            alert(`${loggedCount} doses logged for ${time.toUpperCase()} with symptoms.`);
+        }
+    });
+}
+
+function isDoseLogged(medId, time) {
+    const logs = loadLogs()[current] || {};
+    const today = new Date().toISOString().slice(0, 10);
+    const logKey = `${today}_${medId}_${time}`;
+    return logs[logKey] && logs[logKey].taken;
+}
+
+/* --- CHART FUNCTIONS --- */
+function dosesPerDayFromSchedule(s) {
+    const schedule = String(s || '').toLowerCase();
+    if (schedule.includes('both')) return 2;
+    if (schedule.includes('am') || schedule.includes('pm')) return 1;
+    return 1;
+}
+
+function scheduleHasAM(s) {
+    const schedule = String(s || '').toLowerCase();
+    return schedule.includes('both') || schedule.includes('am');
+}
+
+function scheduleHasPM(s) {
+    const schedule = String(s || '').toLowerCase();
+    return schedule.includes('both') || schedule.includes('pm');
+}
+
+function buildLast7DayMeta() {
+    const today = new Date();
+    const labels = [];
+    const dayKeys = [];
+    for (let i = 6; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        labels.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+        dayKeys.push(d.toISOString().slice(0, 10));
+    }
+    return { labels, dayKeys, startIso: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 6).toISOString() };
+}
+
+async function getAdherenceDataForCharts() {
+    const { labels, dayKeys, startIso } = buildLast7DayMeta();
+    const dailyAssigned = Array(7).fill(0);
+    const dailyTaken = Array(7).fill(0);
+    const dayKeyToIndex = {};
+    dayKeys.forEach((k, i) => { dayKeyToIndex[k] = i; });
+
+    const symptomKeys = ['Nausea','Dizziness','Drowsiness','Dry Mouth','Headache','Fatigue','Unspecified'];
+    const perSym = {};
+    symptomKeys.forEach(k => perSym[k] = Array.from({length:7}, () => []));
+
+    let meds = getUserMedsFromStore(loadMeds()) || [];
+    let medEvents = [];
+
+    try {
+        await ensureSupabaseClient();
+        const user = await getSupabaseAuthUser();
+        const resolvedUserKey = user?.id || getSessionUserKeyFallback();
+        if (window.supabaseClient && resolvedUserKey) {
+            const { data: medRows, error: medErr } = await window.supabaseClient
+                .from('medications')
+                .select('id,medication_key,drug_name,frequency_text,is_active')
+                .eq('user_key', resolvedUserKey)
+                .eq('is_active', true);
+            if (medErr) throw medErr;
+
+            meds = (medRows || []).map((m) => ({
+                id: m.medication_key || `db-${m.id}`,
+                dbMedicationId: m.id,
+                name: m.drug_name || 'Medication',
+                schedule: m.frequency_text || 'both',
+            }));
+
+            const { data: evRows, error: evErr } = await window.supabaseClient
+                .from('med_events')
+                .select('medication_id,event_time,true_time,logged_time,event_type,metadata')
+                .eq('user_key', resolvedUserKey)
+                .gte('event_time', startIso);
+            if (evErr) throw evErr;
+            medEvents = evRows || [];
+        }
+    } catch (e) {
+        console.warn('Chart Supabase query failed, using local cache:', e);
+        const logs = loadLogs()[current] || {};
+        medEvents = Object.keys(logs).map((k) => {
+            const entry = logs[k];
+            return {
+                medication_id: null,
+                event_time: new Date(entry.time || Date.now()).toISOString(),
+                true_time: new Date(entry.time || Date.now()).toISOString(),
+                event_type: entry.taken ? 'taken' : 'missed',
+                metadata: { dose_time: entry.doseTime, symptoms: entry.symptoms },
+                localMedId: entry.medId,
+            };
+        });
+    }
+
+    const medNames = meds.map(m => m.name);
+    const medAdherence = [];
+    const medTakenCount = {};
+    meds.forEach(m => { medTakenCount[m.dbMedicationId ?? m.id] = 0; });
+
+    let amAssigned = 0;
+    let pmAssigned = 0;
+    meds.forEach(m => {
+        const d = dosesPerDayFromSchedule(m.schedule);
+        for (let i = 0; i < 7; i++) dailyAssigned[i] += d;
+        if (scheduleHasAM(m.schedule)) amAssigned += 7;
+        if (scheduleHasPM(m.schedule)) pmAssigned += 7;
+    });
+
+    let amTaken = 0;
+    let pmTaken = 0;
+    medEvents.forEach((ev) => {
+        if (String(ev.event_type || '').toLowerCase() !== 'taken') return;
+        const effectiveEventTime = ev.true_time || ev.event_time || ev.logged_time;
+        if (!effectiveEventTime) return;
+        const dayKey = String(effectiveEventTime).slice(0, 10);
+        const idx = dayKeyToIndex[dayKey];
+        if (idx == null) return;
+        dailyTaken[idx] += 1;
+
+        const key = ev.medication_id ?? ev.localMedId;
+        if (key != null && medTakenCount[key] != null) medTakenCount[key] += 1;
+
+        const doseTime = inferDoseTimeFromEvent(effectiveEventTime, ev.metadata || {});
+        if (doseTime === 'am') amTaken += 1;
+        else if (doseTime === 'pm') pmTaken += 1;
+
+        const s = ev.metadata?.symptoms;
+        if (!s) return;
+        let severity = null;
+        if (typeof s === 'object' && typeof s.severity === 'number') severity = s.severity;
+        else if (typeof s === 'string') {
+            const m = s.match(/Severity[:\s]*?(\d{1,2})\/?10?/i);
+            if (m && m[1]) severity = Number(m[1]);
+        }
+        if (severity === null || !Number.isFinite(severity)) return;
+
+        let tokens = [];
+        if (typeof s === 'object' && s.text) tokens = String(s.text).split(';').map(t => t.trim()).filter(Boolean);
+        else if (typeof s === 'string') tokens = s.split(';').map(t => t.trim()).filter(Boolean);
+
+        if (tokens.length === 0) {
+            perSym['Unspecified'][idx].push(severity);
+            return;
+        }
+        tokens.forEach((tok) => {
+            if (/^Note:/i.test(tok)) {
+                perSym['Unspecified'][idx].push(severity);
+                return;
+            }
+            const normalized = tok.replace(/^Note:\s*/i, '').trim();
+            if (symptomKeys.includes(normalized)) perSym[normalized][idx].push(severity);
+            else perSym['Unspecified'][idx].push(severity);
+        });
+    });
+
+    meds.forEach((m) => {
+        const assigned = 7 * dosesPerDayFromSchedule(m.schedule);
+        const key = m.dbMedicationId ?? m.id;
+        const taken = medTakenCount[key] || 0;
+        medAdherence.push(assigned > 0 ? Math.round((taken / assigned) * 100) : 0);
+    });
+
+    const totalTaken = dailyTaken.reduce((a, b) => a + b, 0);
+    const totalAssigned = dailyAssigned.reduce((a, b) => a + b, 0);
+    const totalMissed = Math.max(0, totalAssigned - totalTaken);
+    const amAdherence = amAssigned > 0 ? Math.round((amTaken / amAssigned) * 100) : 0;
+    const pmAdherence = pmAssigned > 0 ? Math.round((pmTaken / pmAssigned) * 100) : 0;
+
+    const symptomAverages = {};
+    symptomKeys.forEach(k => {
+        symptomAverages[k] = perSym[k].map(arr => arr.length === 0 ? null : Math.round((arr.reduce((a,b)=>a+b,0)/arr.length)*10)/10);
+    });
+
+    return {
+        dailyLabels: labels,
+        dailyAssigned,
+        dailyTaken,
+        totalTaken,
+        totalMissed,
+        medNames,
+        medAdherence,
+        amAdherence,
+        pmAdherence,
+        symptomLabels: labels,
+        symptomKeys,
+        symptomAverages
+    };
+}
+
+let charts = {};
+async function renderCharts() {
+    const data = await getAdherenceDataForCharts();
+    const destroyChart = (id) => { if (charts[id]) { charts[id].destroy(); delete charts[id]; } };
+    
+    destroyChart('dailyTrendChart');
+    charts.dailyTrendChart = new Chart(document.getElementById('dailyTrendChart').getContext('2d'), {
+        type: 'line',
+        data: { labels: data.dailyLabels, datasets: [{ label: 'Taken', data: data.dailyTaken, borderColor: '#4BC0C0', fill: true }, { label: 'Assigned', data: data.dailyAssigned, borderColor: '#FF6384', borderDash: [5,5] }] },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'top', labels: { font: { size: 12 } } } },
+            scales: { x: { ticks: { font: { size: 12 } } }, y: { ticks: { font: { size: 12 } } } }
+        }
+    });
+
+    destroyChart('takenMissedChart');
+    charts.takenMissedChart = new Chart(document.getElementById('takenMissedChart').getContext('2d'), {
+        type: 'doughnut',
+        data: { labels: ['Taken', 'Missed'], datasets: [{ data: [data.totalTaken, data.totalMissed], backgroundColor: ['#4BC0C0', '#FF6384'] }] },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { font: { size: 12 } } } }
+        }
+    });
+
+    destroyChart('medBarChart');
+    charts.medBarChart = new Chart(document.getElementById('medBarChart').getContext('2d'), {
+        type: 'bar',
+        data: { labels: data.medNames, datasets: [{ label: 'Adherence (%)', data: data.medAdherence, backgroundColor: '#36A2EB' }] },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, max: 100, ticks: { font: { size: 12 } } }, x: { ticks: { font: { size: 12 } } } }
+        }
+    });
+
+    destroyChart('amPmChart');
+    charts.amPmChart = new Chart(document.getElementById('amPmChart').getContext('2d'), {
+        type: 'polarArea',
+        data: { labels: ['AM', 'PM'], datasets: [{ data: [data.amAdherence, data.pmAdherence], backgroundColor: ['#FFCD56', '#4BC0C0'] }] },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { font: { size: 12 } } } }
+        }
+    });
+
+    // Symptom severity chart (average severity per day for each symptom over last 7 days)
+    const symptomKeys = data.symptomKeys || ['Nausea','Dizziness','Drowsiness','Dry Mouth','Headache','Fatigue','Unspecified'];
+    const symptomColors = ['#e74c3c','#f39c12','#9b59b6','#3498db','#2ecc71','#e67e22','#95a5a6'];
+    const datasets = symptomKeys.map((sym, idx) => ({
+        label: sym,
+        data: (data.symptomAverages && data.symptomAverages[sym]) ? data.symptomAverages[sym] : Array(7).fill(null),
+        borderColor: symptomColors[idx],
+        backgroundColor: symptomColors[idx].replace('#', '0x') ? `rgba(0,0,0,0)` : 'rgba(0,0,0,0)',
+        spanGaps: true,
+        tension: 0.2
+    }));
+
+    destroyChart('symptomSeverityChart');
+    charts.symptomSeverityChart = new Chart(document.getElementById('symptomSeverityChart').getContext('2d'), {
+        type: 'line',
+        data: { labels: data.symptomLabels || data.dailyLabels, datasets: datasets },
+        options: { responsive:true, maintainAspectRatio:false, scales: { y: { beginAtZero: true, min: 0, max: 10, ticks:{ font:{ size:12 } } }, x: { ticks:{ font:{ size:12 } } } }, plugins: { legend: { position: 'bottom', labels:{ font:{ size:11 } } } } }
+    });
+}
+
+/* --- INITIALIZATION --- */
+function seedData() {
+    if (window.supabaseClient) return; // DB-backed mode should not seed local demo accounts
+    const patientId = "patient1";
+    if (!localStorage.getItem('users')) {
+        const users = [
+            { id: patientId, firstName: "Patient1", lastName: "Sample", email: "alex@test.com", password: "password", role: 'patient' },
+            { id: 'doctor1', firstName: "Doctor", lastName: "Care", email: "doc@test.com", password: "password", role: 'doctor' }
+        ];
+        localStorage.setItem('users', JSON.stringify(users));
+        localStorage.setItem('loggedInUser', JSON.stringify({ id: patientId, firstName: "Patient1", lastName: "Sample" }));
+
+        // Seed a starter chat between patient and doctor
+        const chatKey = `chat_${patientId}_doctor1`;
+        const sampleChat = [
+            { id: uid(), sender: 'doctor', text: 'Hello — I can see your adherence. Let me know any concerns.', time: new Date().getTime() - 1000 * 60 * 60 },
+            { id: uid(), sender: 'patient', text: 'Thanks, I logged my meds today.', time: new Date().getTime() - 1000 * 60 * 30 }
+        ];
+        localStorage.setItem(chatKey, JSON.stringify(sampleChat));
+    }
+    let meds = loadMeds();
+    if (!meds[patientId] || meds[patientId].length === 0) {
+        meds[patientId] = sampleMeds_patient1; 
+        saveMeds(meds);
+    }
+    let petStatusStore = loadAllPetStatus();
+    if (!petStatusStore[patientId]) {
+        petStatusStore[patientId] = DEFAULT_PET_STATUS;
+        localStorage.setItem('petStatus', JSON.stringify(petStatusStore));
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    seedData(); 
+    await loadData();
+
+    document.querySelectorAll('.tab-nav button').forEach(button => button.addEventListener('click', handleTabClick));
+    document.getElementById('logout').addEventListener('click', () => {
+        localStorage.removeItem('loggedInUser');
+        localStorage.removeItem('TYMI_currentUser');
+        localStorage.removeItem('TYMI_currentRole');
+        window.location.reload();
+    });
+    document.getElementById('refreshBtn').addEventListener('click', loadData);
+    document.getElementById('addMedBtn').addEventListener('click', handleAddMedication);
+    
+    document.getElementById('markAmBtn').addEventListener('click', () => handleBulkLog('am'));
+    document.getElementById('markPmBtn').addEventListener('click', () => handleBulkLog('pm'));
+    document.getElementById('markAllBtn').addEventListener('click', () => handleBulkLog('all'));
+
+    document.querySelectorAll('#scheduleViewSwitch [data-schedule-view]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            setScheduleView(btn.dataset.scheduleView);
+            renderScheduleTimeline();
+        });
+    });
+    const scheduleAnchorDate = document.getElementById('scheduleAnchorDate');
+    if (scheduleAnchorDate) {
+        scheduleAnchorDate.addEventListener('change', renderScheduleTimeline);
+    }
+    const addScheduleMedicationBtn = document.getElementById('addScheduleMedicationBtn');
+    if (addScheduleMedicationBtn) {
+        addScheduleMedicationBtn.addEventListener('click', handleAddMedicationScheduleEntry);
+    }
+    const addScheduleMealBtn = document.getElementById('addScheduleMealBtn');
+    if (addScheduleMealBtn) {
+        addScheduleMealBtn.addEventListener('click', handleAddMealScheduleEntry);
+    }
+
+    const settingsSaveEmailBtn = document.getElementById('settingsSaveEmailBtn');
+    if (settingsSaveEmailBtn) settingsSaveEmailBtn.addEventListener('click', handleSettingsSaveEmail);
+    const settingsChangePasswordBtn = document.getElementById('settingsChangePasswordBtn');
+    if (settingsChangePasswordBtn) settingsChangePasswordBtn.addEventListener('click', handleSettingsChangePassword);
+    const settingsSavePrefsBtn = document.getElementById('settingsSavePrefsBtn');
+    if (settingsSavePrefsBtn) settingsSavePrefsBtn.addEventListener('click', handleSettingsSavePreferences);
+    const settingsExportDataBtn = document.getElementById('settingsExportDataBtn');
+    if (settingsExportDataBtn) settingsExportDataBtn.addEventListener('click', handleSettingsExportData);
+    const settingsClearLocalDataBtn = document.getElementById('settingsClearLocalDataBtn');
+    if (settingsClearLocalDataBtn) settingsClearLocalDataBtn.addEventListener('click', handleSettingsClearLocalData);
+
+    document.getElementById('symptomSubmit').addEventListener('click', submitSymptoms);
+    document.getElementById('symptomCancel').addEventListener('click', cancelSymptoms);
+    document.getElementById('symptomClose').addEventListener('click', closeSymptomModal);
+    document.querySelectorAll('#symptomButtons .symptom-btn').forEach(btn => btn.addEventListener('click', toggleSymptom));
+    // clicking outside the modal will now cancel (do not log)
+    document.getElementById('symptomOverlay').addEventListener('click', (e) => { if (e.target.id === 'symptomOverlay') closeSymptomModal(); });
+
+    // Chat listeners
+    const chatDoctorSelect = document.getElementById('chatDoctorSelect');
+    const chatThreadSelect = document.getElementById('chatThreadSelect');
+    const chatCreateThread = document.getElementById('chatCreateThread');
+    const chatSubjectInput = document.getElementById('chatSubjectInput');
+    const chatSend = document.getElementById('chatSend');
+    const chatInput = document.getElementById('chatInput');
+    const clearChatBtn = document.getElementById('clearChat');
+    if (chatDoctorSelect) {
+        chatDoctorSelect.addEventListener('change', async (e) => {
+            chatState.activeDoctorKey = e.target.value || null;
+            await loadChatThreadsForDoctor(chatState.activeDoctorKey);
+        });
+    }
+    if (chatThreadSelect) {
+        chatThreadSelect.addEventListener('change', async (e) => {
+            chatState.activeThreadKey = e.target.value || null;
+            await renderChatMessages();
+            subscribeToChatRealtime();
+        });
+    }
+    if (chatCreateThread) {
+        chatCreateThread.addEventListener('click', async () => {
+            const subject = (chatSubjectInput?.value || '').trim();
+            if (!subject) return;
+            await createChatThread(subject);
+            if (chatSubjectInput) chatSubjectInput.value = '';
+        });
+    }
+    if (chatSend && chatInput) {
+        chatSend.addEventListener('click', async () => { await sendChatMessage(chatInput.value); chatInput.value = ''; });
+        chatInput.addEventListener('keydown', async (e) => { if (e.key === 'Enter') { e.preventDefault(); await sendChatMessage(chatInput.value); chatInput.value = ''; } });
+    }
+    if (clearChatBtn) clearChatBtn.addEventListener('click', async () => { await clearChatHistory(); });
+
+    // Ensure realtime subscription stops when leaving the page
+    window.addEventListener('beforeunload', stopChatRealtime);
+});
+</script>
+        <footer class="site-footer">
+  <div class="container" style="max-width:1200px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;">
+    <div>
+      <h3 style="color:#7dd3fc;font-size:1.25rem;margin-bottom:8px;">TYM</h3>
+      <p style="color:#9ca3af;font-size:0.9rem;">Empowering better health through innovative medication adherence solutions.</p>
+    </div>
+    <div>
+      <h4 style="font-weight:600;margin-bottom:8px;">Quick Links</h4>
+      <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
+        <li><a href="index.html#home">Home</a></li>
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#solutions">Solutions</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="font-weight:600;margin-bottom:8px;">Resources</h4>
+      <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Research</a></li>
+        <li><a href="#">FAQ</a></li>
+        <li><a href="#">Support</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="font-weight:600;margin-bottom:8px;">Contact Us</h4>
+      <ul style="list-style:none;padding:0;margin:0;color:#93c5fd;">
+        <li>&#9993;&#65039; takeyourmeds25@gmail.com</li>
+        <li>&#128222; N/A</li>
+        <li>&#128205; College Station, TX</li>
+      </ul>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:24px;color:#94a3b8;">&copy; 2026 Take Your Medicine Innovations. All rights reserved.</div>
+</footer>
+</body>
+</html>
+
+
+
+
+
+
+
+

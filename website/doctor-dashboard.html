@@ -1,0 +1,2476 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <script src="global-polyfills.js"></script>
+    <script>
+        (function () {
+            try {
+                if (!window.crypto) window.crypto = window.msCrypto || {};
+                if (typeof window.crypto.randomUUID !== 'function') {
+                    window.crypto.randomUUID = function () {
+                        var bytes = (window.crypto.getRandomValues && window.crypto.getRandomValues(new Uint8Array(16))) || new Uint8Array(16);
+                        bytes[6] = (bytes[6] & 0x0f) | 0x40;
+                        bytes[8] = (bytes[8] & 0x3f) | 0x80;
+                        var hex = Array.from(bytes).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+                        return hex.substr(0, 8) + '-' + hex.substr(8, 4) + '-' + hex.substr(12, 4) + '-' + hex.substr(16, 4) + '-' + hex.substr(20, 12);
+                    };
+                }
+            } catch (e) {}
+        })();
+    </script>
+    <script>
+        (function(){
+            try {
+                if (!window.crypto) window.crypto = window.msCrypto || {};
+                if (typeof window.crypto.randomUUID !== 'function') {
+                    window.crypto.randomUUID = function () {
+                        var bytes = (window.crypto.getRandomValues && window.crypto.getRandomValues(new Uint8Array(16))) || new Uint8Array(16);
+                        bytes[6] = (bytes[6] & 0x0f) | 0x40;
+                        bytes[8] = (bytes[8] & 0x3f) | 0x80;
+                        var hex = Array.from(bytes).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+                        return hex.substr(0, 8) + '-' + hex.substr(8, 4) + '-' + hex.substr(12, 4) + '-' + hex.substr(16, 4) + '-' + hex.substr(20, 12);
+                    };
+                }
+            } catch (e) {}
+        })();
+    </script>
+ 
+<title>Doctor Dashboard</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Glacial+Indifference&family=Hanken+Grotesk:wght@300;400&display=swap" rel="stylesheet"/>
+
+<style>
+:root {
+    --deep-green: #3F1263;    /* primary */
+    --brick-red: #986EAD;    /* primary-variant */
+    --coral: #D8CBBB;        /* neutral */
+    --mustard: #986EAD;      /* accent */
+    --sky: #F2F2F2;          /* background */
+    --rose: #D8CBBB;         /* neutral */
+    --font-primary: 'Glacial Indifference', sans-serif;
+    --font-secondary: 'Hanken Grotesk', sans-serif;
+}
+
+body {
+  font-family: var(--font-secondary);
+  background: var(--sky);
+    color: #222;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+
+  color: #222;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header */
+header {
+  background-color: var(--deep-green);
+  color: white;
+  padding: 16px 10%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+header h1 {
+  font-family: var(--font-primary);
+  font-size: 1.6rem;
+  margin: 0;
+}
+
+header .site-logo {
+    height: 44px;
+    width: auto;
+    margin-right: 12px;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  margin-left: 18px;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+nav a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+/* Login Box */
+.container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.box {
+  background: #fff;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  width: 340px;
+  text-align: center;
+}
+
+.box h3 {
+  font-family: var(--font-primary);
+  color: var(--brick-red);
+  margin-bottom: 20px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-family: var(--font-secondary);
+}
+
+button {
+  margin-top: 20px;
+  padding: 12px;
+  width: 100%;
+  background: var(--deep-green);
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: var(--font-secondary);
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: var(--brick-red);
+}
+
+#msg {
+  color: var(--brick-red);
+  margin-top: 12px;
+  font-size: 0.9rem;
+}
+
+footer {
+  text-align: center;
+  padding: 16px;
+  background: var(--rose);
+  color: #333;
+  font-size: 0.9rem;
+}
+
+    .wrap{max-width:1200px;margin:0 auto}
+    /* UPDATED: Changed card background to white, border to light gray */
+    .card{background:#ffffff;padding:16px;border-radius:10px;margin-bottom:12px;border:1px solid #e0e0e0}
+    /* Kept buttons similar, but adjusted text color for better contrast on light theme */
+    button{padding:8px 10px;border-radius:8px;border:0;background:#06b6d4;color:#ffffff;cursor:pointer}
+    /* UPDATED: Ghost button colors for light theme */
+    .ghost{background:transparent;border:1px solid #ccc;color:#666}
+    table{width:100%;border-collapse:collapse;margin-top:8px}
+    /* UPDATED: Table border and text color for light theme */
+    th,td{padding:8px;text-align:left;border-bottom:1px dashed #eee;color:#333}
+    /* UPDATED: Input field colors for light theme */
+    input,select,textarea{padding:8px;border-radius:6px;border:1px solid #ccc;background:#ffffff;color:#333}
+    /* UPDATED: Muted color for light theme */
+    .muted{color:#888;font-size:13px}
+    .med-form{display:flex;gap:8px;flex-wrap:wrap}
+    .med-form > * { flex:1 1 220px; }
+    .row{display:flex;gap:12px;align-items:center}
+    .flex-1{flex:1}
+    #chartWrap{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+    /* UPDATED: Chart background for light theme */
+    canvas{background:#fafafa; border-radius: 4px; padding: 6px;} 
+    /* UPDATED: Panel background for light theme */
+    .panel{background:#f0f3f5;padding:12px;border-radius:8px;margin-top:8px;border:1px solid #ddd}
+    .small{font-size:13px}
+    .hidden{display:none}
+    .chat-messages{height:320px;overflow:auto;padding:10px;background:#fafafa;border-radius:8px;border:1px solid #eee;display:flex;flex-direction:column;gap:8px}
+    .chat-msg{max-width:78%;padding:8px 10px;border-radius:8px;font-size:0.95rem}
+    .chat-msg.doctor{align-self:flex-end;background:linear-gradient(180deg,#06b6d4,#0492af);color:#fff}
+    .chat-msg.patient{align-self:flex-start;background:#fff;border:1px solid #e6e6e6}
+    .chat-input-row{display:flex;gap:8px;align-items:center;margin-top:8px}
+    .chat-input{flex:1;padding:8px;border-radius:8px;border:1px solid #ccc}
+    .chat-wrapper{display:flex;flex-direction:column;gap:12px}
+    .chat-header{display:flex;align-items:center;gap:8px;justify-content:space-between;margin-bottom:6px}
+    .chat-send{padding:8px 12px;border-radius:8px;background:#29423B;color:#fff;border:0;cursor:pointer}
+    .chat-meta{font-size:0.82rem;color:#777}
+    .tab-nav{display:flex;gap:8px;flex-wrap:wrap}
+    .tab-nav button.active{background:#29423B;color:#fff}
+
+    /* Patient Details Resizable Grid */
+    .pd-grid {
+      display: grid;
+      grid-template-columns: var(--pd-col-1-width) var(--pd-col-2-width);
+      gap: 12px;
+      position: relative;
+      user-select: none;
+      --pd-col-1-width: 50%; /* Default split */
+      --pd-col-2-width: 50%;
+    }
+
+    /* Splitter style */
+    .pd-splitter {
+      width: 12px;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: var(--pd-col-1-width);
+      transform: translateX(-50%);
+      cursor: col-resize;
+      z-index: 10;
+      /* UPDATED: Splitter colors for light theme */
+      background: rgba(0, 0, 0, 0.05);
+      border-left: 1px solid #ccc;
+      border-right: 1px solid #ccc;
+    }
+    
+    /* Chart Container Styling */
+    .patient-chart-container {
+        margin-top: 12px;
+        margin-bottom: 12px;
+    }
+
+    /* Responsive stacking for patient details */
+    @media (max-width: 768px) {
+      .pd-grid {
+        grid-template-columns: 1fr;
+      }
+      .pd-splitter {
+        display: none;
+      }
+    }
+ 
+</style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        if (!window.crypto) window.crypto = window.msCrypto || {};
+        if (typeof window.crypto.randomUUID !== 'function') {
+            window.crypto.randomUUID = function() {
+                var bytes = (window.crypto.getRandomValues && window.crypto.getRandomValues(new Uint8Array(16))) || new Uint8Array(16);
+                bytes[6] = (bytes[6] & 0x0f) | 0x40;
+                bytes[8] = (bytes[8] & 0x3f) | 0x80;
+                var hex = Array.from(bytes).map(function(b){ return b.toString(16).padStart(2, '0'); }).join('');
+                return hex.substr(0,8) + '-' + hex.substr(8,4) + '-' + hex.substr(12,4) + '-' + hex.substr(16,4) + '-' + hex.substr(20,12);
+            };
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+    <script>
+        (function () {
+            function ensureSupabaseClient() {
+                if (window.supabaseClient) return window.supabaseClient;
+                if (!window.supabase || typeof window.supabase.createClient !== 'function') return null;
+                window.supabaseClient = window.supabase.createClient(
+                    'https://sxucfwshtvskoqvisbeu.supabase.co',
+                    'sb_publishable_asZW_2Wkn-ofTq_LsqUxhw_GvSv0J_K',
+                    { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } }
+                );
+                return window.supabaseClient;
+            }
+
+            const sb = ensureSupabaseClient();
+            if (!window.siteSync && sb) {
+                window.siteSync = {
+                    async createMedicationForPatient(patientIdentifier, medPayload = {}) {
+                        const id = String(patientIdentifier || '').trim();
+                        if (!id) throw new Error('Patient identifier is required');
+                        const looksLikeUserKey = id.indexOf('-') > -1 && id.length > 20;
+                        const email = `${id}@local.example`;
+                        let userRow = null;
+                        if (looksLikeUserKey) {
+                            const { data, error } = await sb.from('users').select('user_key').eq('user_key', id).maybeSingle();
+                            if (error) throw error;
+                            userRow = data;
+                        } else {
+                            const { data, error } = await sb
+                                .from('users')
+                                .select('user_key,email,display_name')
+                                .or(`display_name.eq.${id},email.eq.${email}`)
+                                .maybeSingle();
+                            if (error) throw error;
+                            userRow = data;
+                        }
+                        if (!userRow?.user_key) throw new Error(`User not found for '${id}'`);
+                        const body = {
+                            user_key: userRow.user_key,
+                            medication_key: medPayload.medication_key || `med_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+                            label_name: medPayload.label_name || medPayload.name || null,
+                            drug_name: medPayload.drug_name || medPayload.name || null,
+                            strength: medPayload.strength || medPayload.dose || medPayload.dosage || null,
+                            route: medPayload.route || medPayload.type || null,
+                            instruction: medPayload.instruction || medPayload.instructions || null,
+                            frequency_text: medPayload.frequency_text || medPayload.schedule || null,
+                            qty_text: medPayload.qty_text || medPayload.qty || null,
+                            refills_text: medPayload.refills_text || medPayload.refills || null,
+                            is_active: typeof medPayload.is_active === 'boolean' ? medPayload.is_active : true,
+                            added_by_role: medPayload.added_by_role || 'doctor',
+                            added_by_user_key: medPayload.added_by_user_key || null
+                        };
+                        const { data, error } = await sb.from('medications').insert(body).select().single();
+                        if (error) throw error;
+                        return data;
+                    },
+                    async resolveMedicationKeyForPatient(patientIdentifier, medHint = {}) {
+                        const id = String(patientIdentifier || '').trim();
+                        if (!id) throw new Error('Patient identifier is required');
+                        const looksLikeUserKey = id.indexOf('-') > -1 && id.length > 20;
+                        const email = `${id}@local.example`;
+                        let userRow = null;
+                        if (looksLikeUserKey) {
+                            const { data, error } = await sb.from('users').select('user_key').eq('user_key', id).maybeSingle();
+                            if (error) throw error;
+                            userRow = data;
+                        } else {
+                            const { data, error } = await sb
+                                .from('users')
+                                .select('user_key,email,display_name')
+                                .or(`display_name.eq.${id},email.eq.${email}`)
+                                .maybeSingle();
+                            if (error) throw error;
+                            userRow = data;
+                        }
+                        if (!userRow?.user_key) throw new Error(`User not found for '${id}'`);
+                        const { data: rows, error } = await sb
+                            .from('medications')
+                            .select('medication_key,drug_name,strength,frequency_text,instruction,created_at')
+                            .eq('user_key', userRow.user_key)
+                            .order('created_at', { ascending: false })
+                            .limit(200);
+                        if (error) throw error;
+                        const norm = (v) => String(v || '').trim().toLowerCase();
+                        const target = rows?.find((r) => norm(r.drug_name) === norm(medHint.name)) || rows?.[0];
+                        return target?.medication_key || null;
+                    },
+                    async updateMedicationForPatient(patientIdentifier, medicationIdentifier, updates = {}) {
+                        const id = String(patientIdentifier || '').trim();
+                        if (!id) throw new Error('Patient identifier is required');
+                        const mid = String(medicationIdentifier || '').trim();
+                        if (!mid) throw new Error('Medication identifier is required');
+                        const looksLikeUserKey = id.indexOf('-') > -1 && id.length > 20;
+                        const email = `${id}@local.example`;
+                        let userRow = null;
+                        if (looksLikeUserKey) {
+                            const { data, error } = await sb.from('users').select('user_key').eq('user_key', id).maybeSingle();
+                            if (error) throw error;
+                            userRow = data;
+                        } else {
+                            const { data, error } = await sb
+                                .from('users')
+                                .select('user_key,email,display_name')
+                                .or(`display_name.eq.${id},email.eq.${email}`)
+                                .maybeSingle();
+                            if (error) throw error;
+                            userRow = data;
+                        }
+                        if (!userRow?.user_key) throw new Error(`User not found for '${id}'`);
+                        const body = {
+                            drug_name: updates.drug_name || updates.name || null,
+                            strength: updates.strength || updates.dosage || null,
+                            route: updates.route || updates.type || null,
+                            instruction: updates.instruction || updates.instructions || null,
+                            frequency_text: updates.frequency_text || updates.schedule || null,
+                            updated_at: new Date().toISOString()
+                        };
+                        const { data, error } = await sb
+                            .from('medications')
+                            .update(body)
+                            .eq('user_key', userRow.user_key)
+                            .eq('medication_key', mid)
+                            .select()
+                            .maybeSingle();
+                        if (error) throw error;
+                        return data;
+                    },
+                    async deleteMedicationForPatient(patientIdentifier, medicationIdentifier) {
+                        const id = String(patientIdentifier || '').trim();
+                        if (!id) throw new Error('Patient identifier is required');
+                        const mid = String(medicationIdentifier || '').trim();
+                        if (!mid) throw new Error('Medication identifier is required');
+                        const looksLikeUserKey = id.indexOf('-') > -1 && id.length > 20;
+                        const email = `${id}@local.example`;
+                        let userRow = null;
+                        if (looksLikeUserKey) {
+                            const { data, error } = await sb.from('users').select('user_key').eq('user_key', id).maybeSingle();
+                            if (error) throw error;
+                            userRow = data;
+                        } else {
+                            const { data, error } = await sb
+                                .from('users')
+                                .select('user_key,email,display_name')
+                                .or(`display_name.eq.${id},email.eq.${email}`)
+                                .maybeSingle();
+                            if (error) throw error;
+                            userRow = data;
+                        }
+                        if (!userRow?.user_key) throw new Error(`User not found for '${id}'`);
+                        const { error } = await sb
+                            .from('medications')
+                            .delete()
+                            .eq('user_key', userRow.user_key)
+                            .eq('medication_key', mid);
+                        if (error) throw error;
+                        return { ok: true };
+                    }
+                };
+            }
+        })();
+    </script>
+</head>
+
+<body>
+    <header>
+        <img class="site-logo" src="./Logo.png" alt="logo" />
+        <h1>Take Your Medicine Innovations: Doctor Dashboard</h1>
+        <nav>
+      <a href="index.html">Home</a>
+      <a href="doctor-login.html">Doctor Portal</a>
+      <a href="patient-login.html">Patient Portal</a>
+      <a href="change-password.html">Change Password</a>
+      <a href="create-account.html">Create Account</a>
+    </nav>
+  </header>
+
+
+
+  <div class="wrap">
+    <div class="card" id="doctorTopCard">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <h2 style="margin:0">Doctor Dashboard</h2>
+          <div id="who" class="muted"></div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button id="refresh" class="ghost">Refresh</button>
+          <button id="logout" class="ghost">Logout</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="doctorTabNav">
+      <div class="tab-nav">
+        <button id="docTabDashboard" data-tab="dashboard" class="active">Dashboard</button>
+        <button id="docTabChat" data-tab="chat">Chat</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+        <div style="flex:1;min-width:320px">
+          <h3 style="margin:0">Overall Adherence (All Assigned Patients)</h3>
+          <div id="chartWrap">
+            <div style="width:260px;height:260px">
+              <canvas id="overallChart"></canvas>
+            </div>
+            <div class="flex-1">
+              <div class="muted">Totals (Assigned Patients)</div>
+              <table style="max-width:420px">
+                <tr><th>Metric</th><th>Value</th></tr>
+                <tr><td>Total Patients</td><td id="totalPatients">0</td></tr>
+                <tr><td>Total Events</td><td id="totalEvents">0</td></tr>
+                <tr><td>Taken</td><td id="totalTaken">0</td></tr>
+                <tr><td>Missed (proxy)</td><td id="totalMissed">0</td></tr>
+                <tr><td>Avg adherence (proxy)</td><td id="avgAdherence">—</td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div style="width:320px;min-width:260px">
+          <h3 style="margin:0">Select Patient</h3>
+          <div style="margin-top:8px;display:flex;gap:8px">
+            <select id="patientSelector" style="flex:1;padding:8px;border-radius:6px;background:#ffffff;color:#333;border:1px solid #ccc"></select>
+            <button id="viewPatient" title="Open patient details">View</button>
+          </div>
+          <div class="muted" style="margin-top:8px">Choose an approved patient assigned to you.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="approvals">
+      <h3 style="margin:0">Pending Patient Approvals</h3>
+      <div id="pendingWrap" style="margin-top:10px" class="muted">Loading...</div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3 style="margin:0">Patient Details</h3>
+        <div class="muted" id="detailNote">Select a patient and click <strong>View</strong></div>
+      </div>
+
+      <div id="patientPanel" class="panel hidden">
+        <div class="pd-grid">
+          <div id="pd-col-1" style="min-width:260px">
+            <div class="muted">Patient</div>
+            <div id="pd_name" style="font-weight:700;font-size:18px">—</div>
+            <div class="muted" id="pd_assigned">Assigned doctor: —</div>
+            <div class="muted" id="pd_specialists" style="margin-top:4px">Specialist access: none</div>
+            <div style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <select id="specialistDoctorSelector" style="min-width:220px">
+                <option value="">-- select specialist doctor --</option>
+              </select>
+              <button id="grantSpecialistAccess" class="ghost">Grant Specialist Access</button>
+              <button id="revokeSpecialistAccess" class="ghost">Revoke Specialist Access</button>
+            </div>
+            <div style="margin-top:10px">
+              <button id="exportPatientCSV" class="ghost">Export Patient CSV</button>
+              <button id="closePatient" class="ghost" style="margin-left:8px">Close</button>
+            </div>
+
+            <div class="patient-chart-container">
+              <div class="muted" id="pd_stats" style="margin-bottom:6px"></div>
+              
+              <h4 style="margin:8px 0">Taken vs Missed (7d)</h4>
+              <div style="width:180px;height:180px;"><canvas id="patientPieChart"></canvas></div>
+
+              <h4 style="margin:12px 0 8px 0">Daily Trend (7d)</h4>
+              <canvas id="patientDailyTrendChart"></canvas>
+
+              <h4 style="margin:12px 0 8px 0">Adherence by Medication (7d)</h4>
+              <canvas id="patientMedBarChart"></canvas>
+              
+              <h4 style="margin:12px 0 8px 0">AM vs PM Adherence (7d)</h4>
+              <canvas id="patientAmPmChart"></canvas>
+            </div>
+          </div>
+
+          <div id="pd-splitter" class="pd-splitter"></div>
+
+          <div id="pd-col-2" style="min-width:260px;overflow:hidden">
+            <div class="muted">Medications</div>
+            <div id="pd_meds" style="margin-top:8px"></div>
+
+            <div style="margin-top:12px">
+              <div class="muted">Recent Events</div>
+              <div id="pd_events" style="margin-top:8px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0">Add Medication for a Patient</h3>
+      <div style="margin-top:8px" class="med-form">
+        <select id="selectPatient"><option value="">-- select patient --</option></select>
+        <input id="d_medName" placeholder="Medication name" />
+        <select id="d_medType"><option value="pill">Pill</option><option value="liquid">Liquid</option><option value="injection">Injection</option><option value="other">Other</option></select>
+        <input id="d_medDose" placeholder="Dosage (e.g., 10 mg)" />
+        <select id="d_medSchedule"><option value="am">AM</option><option value="pm">PM</option><option value="both">Both</option><option value="custom">Custom</option></select>
+        <input id="d_medInstr" placeholder="Instructions (take with meal...)" />
+        <button id="d_addMedBtn">Add Medication (doctor)</button>
+      </div>
+      <div class="muted" style="margin-top:8px">Doctors can assign meds to any approved patient assigned to them.</div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0">Patients & Med Summary (Assigned)</h3>
+      <div id="patientSummary" style="margin-top:8px"></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0">Medication Management (Edit/Delete)</h3>
+      <div id="medManagement" style="margin-top:8px"></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0">Adherence Logs (Assigned Patients)</h3>
+      <div id="logs" style="margin-top:8px"></div>
+    </div>
+
+    <div class="card hidden" id="doctorChatCard">
+      <h3 style="margin:0">Chat with Patients</h3>
+      <div class="chat-wrapper" style="margin-top:8px">
+        <div class="chat-header">
+          <div>
+            <label class="chat-meta">Patient:</label>
+            <select id="docChatPatientSelect" style="margin-left:6px;padding:6px;border-radius:6px;border:1px solid #ccc;min-width:240px"></select>
+          </div>
+          <div>
+            <button id="docChatRefresh" class="ghost">Refresh</button>
+          </div>
+        </div>
+        <div class="chat-input-row">
+          <select id="docChatThreadSelect" class="chat-input" style="max-width:60%"></select>
+          <input id="docChatSubjectInput" class="chat-input" placeholder="New topic subject" />
+          <button id="docChatCreateThread" class="chat-send">New Topic</button>
+        </div>
+        <div id="docChatMessages" class="chat-messages" aria-live="polite"></div>
+        <div class="chat-input-row">
+          <input id="docChatInput" class="chat-input" placeholder="Type a message..." />
+          <button id="docChatSend" class="chat-send">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<script>
+/* Inlined _storage.js to avoid bundler 404/MIME issues when loaded inside WebView */
+
+/* ============================================================
+ * storage.js
+ * FINAL FIX FOR REDECLARATION ERROR
+ * ============================================================ */
+
+// 1. Internal Constant Declaration (This must be the only place it is declared)
+const STORAGE_KEY_PREFIX = 'TYMI_'; 
+
+// 2. SAFELY determine the execution environment
+const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
+const isReactNativeWebView = isBrowser && !!window.ReactNativeWebView;
+
+// 3. Promise Queue for Asynchronous getItem Resolution (WebView only)
+const nativeStorageQueue = {}; 
+
+function generateTransactionId() {
+    return Math.random().toString(36).substring(2, 15);
+}
+
+// Global function called by the React Native side 
+function resolveNativeStorageResponse(message) {
+    if (message.type !== 'STORAGE_RESPONSE') return;
+    const { txId, value, error } = message;
+    const promiseHandlers = nativeStorageQueue[txId];
+
+    if (promiseHandlers) {
+        delete nativeStorageQueue[txId];
+        if (error) {
+            console.error(`WebView Storage Error (Tx:${txId}):`, error);
+            promiseHandlers.reject(new Error(error));
+        } else {
+            promiseHandlers.resolve(value); 
+        }
+    }
+}
+
+// Sends a storage operation request to the native side
+function sendNativeStorageRequest(action, key, value = null) {
+    if (!isReactNativeWebView) {
+        return Promise.reject(new Error("Attempted native storage outside WebView."));
+    }
+
+    const txId = generateTransactionId();
+
+    return new Promise((resolve, reject) => {
+        // 🔑 FIX: Store ALL promises in the queue, regardless of action.
+        // This forces the JS to wait until the native side sends a response.
+        nativeStorageQueue[txId] = { resolve, reject };
+
+        try {
+            console.log(`[WebView] Sending ${action} request for key: ${key}, TxID: ${txId}`);
+            
+            window.ReactNativeWebView.postMessage(
+                JSON.stringify({
+                    type: "STORAGE_OPERATION",
+                    action: action,
+                    key: key,
+                    value: value,
+                    txId: txId, 
+                })
+            );
+        } catch (e) {
+            // Clean up the promise queue if the postMessage itself failed
+            if (nativeStorageQueue[txId]) delete nativeStorageQueue[txId]; 
+            console.error("Failed to send native storage request:", e);
+            reject(e);
+        }
+    });
+}
+
+
+/* ------------------------------------------------ */
+/* --- EXPORTED ASYNCHRONOUS FUNCTIONS --- */
+/* ------------------------------------------------ */
+
+async function getItem(key) {
+    const fullKey = STORAGE_KEY_PREFIX + key;
+    if (!isBrowser) return null;
+    
+    if (isReactNativeWebView) {
+        return sendNativeStorageRequest('getItem', fullKey);
+    } else {
+        return Promise.resolve(localStorage.getItem(fullKey));
+    }
+}
+
+async function setItem(key, value) {
+    const fullKey = STORAGE_KEY_PREFIX + key;
+    if (!isBrowser) return;
+
+    if (isReactNativeWebView) {
+        return sendNativeStorageRequest('setItem', fullKey, value);
+    } else {
+        localStorage.setItem(fullKey, value);
+        return Promise.resolve();
+    }
+}
+
+async function removeItem(key) {
+    const fullKey = STORAGE_KEY_PREFIX + key;
+    if (!isBrowser) return;
+
+    if (isReactNativeWebView) {
+        return sendNativeStorageRequest('removeItem', fullKey);
+    } else {
+        localStorage.removeItem(fullKey);
+        return Promise.resolve();
+    }
+}
+
+/* ------------------------------------------------ */
+/* --- GLOBAL SCOPE INITIALIZATION (Client Only) --- */
+/* ------------------------------------------------ */
+
+// 4. Create a global Storage object for easy access in other dashboard scripts
+if (isBrowser) {
+    // Assign the exports to the global window object for use in the static HTML file
+    window.Storage = {
+        getItem: getItem,
+        setItem: setItem,
+        removeItem: removeItem,
+    };
+
+    // Attach the global listener for native replies
+    if (isReactNativeWebView) {
+    // ⚠️ CRITICAL FIX: Listen on the window object for the event dispatched by RN.
+    window.addEventListener('message', (event) => {
+        try {
+            // event.data may be a JSON string or already an object depending on
+            // how the native side injected the message. Handle both.
+            let data = event.data;
+            if (typeof data === 'string') {
+                data = JSON.parse(data);
+            }
+
+            if (data && data.type === 'STORAGE_RESPONSE') {
+                resolveNativeStorageResponse(data);
+            }
+        } catch (e) {
+            console.error("Error parsing native response in listener:", e);
+        }
+    });
+}
+}
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+/* -------------------------
+    Storage helpers (Async Proxy)
+    ------------------------- */
+function uid(){ return Math.random().toString(36).slice(2,9); }
+
+function normalizeDoctorKeyList(value) {
+    if (!value) return [];
+    let arr = value;
+    if (typeof arr === 'string') {
+        try { arr = JSON.parse(arr); } catch (_) { arr = arr.split(',').map((s) => s.trim()).filter(Boolean); }
+    }
+    if (!Array.isArray(arr)) return [];
+    return Array.from(new Set(arr.map((v) => String(v || '').trim()).filter(Boolean)));
+}
+
+function patientAccessMapKey(u) {
+    return String(u?.user_key || u?.username || '');
+}
+
+function looksLikeUserKey(value) {
+    const v = String(value || '').trim();
+    return v.length > 20 && v.indexOf('-') > -1;
+}
+
+async function loadSpecialistAccessMap() {
+    try {
+        const raw = await window.Storage.getItem('patientSpecialistAccess');
+        const parsed = JSON.parse(raw || '{}');
+        return parsed && typeof parsed === 'object' ? parsed : {};
+    } catch (_) {
+        return {};
+    }
+}
+
+async function saveSpecialistAccessMap(map) {
+    await window.Storage.setItem('patientSpecialistAccess', JSON.stringify(map || {}));
+}
+
+async function loadDoctorSpecialtiesMap() {
+    try {
+        const raw = await window.Storage.getItem('doctorSpecialties');
+        const parsed = JSON.parse(raw || '{}');
+        return parsed && typeof parsed === 'object' ? parsed : {};
+    } catch (_) {
+        return {};
+    }
+}
+
+async function saveDoctorSpecialtiesMap(map) {
+    await window.Storage.setItem('doctorSpecialties', JSON.stringify(map || {}));
+}
+
+function readLegacyLocalStorageJson(key, fallbackValue) {
+    try {
+        if (typeof localStorage === 'undefined') return fallbackValue;
+        const raw = localStorage.getItem(key);
+        if (!raw) return fallbackValue;
+        const parsed = JSON.parse(raw);
+        return parsed ?? fallbackValue;
+    } catch (_) {
+        return fallbackValue;
+    }
+}
+
+function normalizeStoredUser(u, doctorSpecialtiesMap, specialistAccessMap) {
+    const normalizedRole = String(u?.role || '').toLowerCase();
+    const legacyApproved = typeof u?.approved === 'boolean' ? u.approved : null;
+    const accountStatus = String(u?.accountStatus || '').toLowerCase() ||
+        (legacyApproved === false ? 'pending' : (legacyApproved === true ? 'approved' : ''));
+    const approved = accountStatus ? accountStatus === 'approved' : (legacyApproved !== null ? legacyApproved : true);
+    const preferredDoctorUserKey = u?.preferredDoctorUserKey || (looksLikeUserKey(u?.preferredDoctor) ? String(u?.preferredDoctor) : null);
+    const assignedDoctorUserKey = u?.assignedDoctorUserKey || (looksLikeUserKey(u?.assignedDoctor) ? String(u?.assignedDoctor) : null);
+    const preferredDoctor = preferredDoctorUserKey && looksLikeUserKey(u?.preferredDoctor) ? null : (u?.preferredDoctor || null);
+    const assignedDoctor = assignedDoctorUserKey && looksLikeUserKey(u?.assignedDoctor) ? null : (u?.assignedDoctor || null);
+    return {
+        ...u,
+        role: normalizedRole || u?.role,
+        accountStatus,
+        approved,
+        legacyApproved,
+        preferredDoctorUserKey,
+        assignedDoctorUserKey,
+        preferredDoctor,
+        assignedDoctor,
+        doctorSpecialties: u?.doctorSpecialties || doctorSpecialtiesMap[String(u?.user_key || u?.username)] || '',
+        specialistDoctorUserKeys: normalizeDoctorKeyList(
+            u?.specialistDoctorUserKeys || specialistAccessMap[patientAccessMapKey(u)]
+        ),
+    };
+}
+
+// All storage functions are now ASYNCHRONOUS and use window.Storage
+async function loadUsers(){ 
+    // Prefer DB-backed users when Supabase client is available.
+    try {
+        const specialistAccessMap = await loadSpecialistAccessMap();
+        const doctorSpecialtiesMap = await loadDoctorSpecialtiesMap();
+        const sb = await getSupabaseDataClient();
+        if (sb) {
+            let rows = null;
+            let error = null;
+
+            ({ data: rows, error } = await sb
+                .from('users')
+                .select('user_key,email,display_name,username,role,account_status,preferred_doctor_user_key,assigned_doctor_user_key,doctor_specialties_text'));
+
+            if (error) {
+                // Fallback for schemas without doctor_specialties_text.
+                ({ data: rows, error } = await sb
+                    .from('users')
+                    .select('user_key,email,display_name,username,role,account_status,preferred_doctor_user_key,assigned_doctor_user_key'));
+            }
+
+            if (error) {
+                ({ data: rows, error } = await sb
+                    .from('users')
+                    .select('user_key,email,display_name,username,role,account_status'));
+            }
+
+            if (error) {
+                ({ data: rows, error } = await sb
+                    .from('users')
+                    .select('user_key,email,display_name,username,role'));
+            }
+
+            if (error) {
+                // Final fallback for minimal schema projects.
+                ({ data: rows, error } = await sb
+                    .from('users')
+                    .select('user_key,email,display_name'));
+            }
+
+            if (!error && Array.isArray(rows)) {
+                const accessByPatient = {};
+                try {
+                    const { data: linkRows, error: linkErr } = await sb
+                        .from('doctor_patient_access')
+                        .select('patient_user_key,doctor_user_key,is_active')
+                        .eq('is_active', true);
+                    if (!linkErr && Array.isArray(linkRows)) {
+                        linkRows.forEach((l) => {
+                            const p = String(l.patient_user_key || '');
+                            const d = String(l.doctor_user_key || '');
+                            if (!p || !d) return;
+                            if (!Array.isArray(accessByPatient[p])) accessByPatient[p] = [];
+                            accessByPatient[p].push(d);
+                        });
+                    }
+                } catch (_) {}
+                const keyToName = {};
+                rows.forEach((r) => {
+                    const name = r.display_name || (r.email ? String(r.email).split('@')[0] : r.user_key);
+                    if ((r.role || '').toLowerCase() === 'doctor') keyToName[r.user_key] = name;
+                });
+                try {
+                    let docs = null;
+                    let docsErr = null;
+                    const specialtyByKey = {};
+                    ({ data: docs, error: docsErr } = await sb.from('doctors').select('user_key,display_name,email'));
+                    if (!docsErr) {
+                        let specRows = null;
+                        let specErr = null;
+                        ({ data: specRows, error: specErr } = await sb.from('doctors').select('user_key,specialties_text'));
+                        if (!specErr && Array.isArray(specRows)) {
+                            specRows.forEach((r) => {
+                                const spec = r.specialties_text || '';
+                                if (spec) specialtyByKey[r.user_key] = spec;
+                            });
+                        }
+                    }
+                    (docs || []).forEach((d) => {
+                        keyToName[d.user_key] = d.display_name || (d.email ? String(d.email).split('@')[0] : d.user_key);
+                        const spec = specialtyByKey[d.user_key] || '';
+                        if (spec) doctorSpecialtiesMap[d.user_key] = spec;
+                    });
+                } catch (_) {}
+                await saveDoctorSpecialtiesMap(doctorSpecialtiesMap);
+
+                const dbUsers = rows.map((r) => {
+                    const username = r.display_name || r.username || (r.email ? String(r.email).split('@')[0] : r.user_key);
+                    const inferredRole = keyToName[r.user_key]
+                        ? 'doctor'
+                        : ((currentUserKey && String(r.user_key) === String(currentUserKey)) || (current && username === current) ? 'doctor' : 'patient');
+                    const userRole = String(r.role || inferredRole).toLowerCase();
+                    const normalizedStatus = String(r.account_status || '').toLowerCase();
+                    const approved = normalizedStatus === 'approved';
+                    return {
+                        user_key: r.user_key,
+                        username,
+                        role: userRole,
+                        accountStatus: normalizedStatus,
+                        approved,
+                        preferredDoctorUserKey: r.preferred_doctor_user_key || null,
+                        assignedDoctorUserKey: r.assigned_doctor_user_key || null,
+                        preferredDoctor: keyToName[r.preferred_doctor_user_key] || null,
+                        assignedDoctor: keyToName[r.assigned_doctor_user_key] || null,
+                        doctorSpecialties: doctorSpecialtiesMap[String(r.user_key)] || r.doctor_specialties_text || '',
+                        specialistDoctorUserKeys: normalizeDoctorKeyList(
+                            accessByPatient[String(r.user_key)] ||
+                            specialistAccessMap[String(r.user_key)] ||
+                            specialistAccessMap[String(username)]
+                        ),
+                    };
+                });
+
+                const hasDbPatients = dbUsers.some((u) => u.role === 'patient');
+                if (hasDbPatients) return dbUsers;
+
+                // If DB only returns the current doctor (common with stricter RLS),
+                // merge local cached users so dashboard sections do not go blank.
+                try {
+                    const localRaw = await window.Storage.getItem('users');
+                    let localUsers = JSON.parse(localRaw || '[]');
+                    if (!Array.isArray(localUsers) || localUsers.length === 0) {
+                        localUsers = readLegacyLocalStorageJson('users', []);
+                    }
+                    if (!Array.isArray(localUsers) || localUsers.length === 0) return dbUsers;
+                    const merged = dbUsers.slice();
+                    localUsers
+                        .map((u) => normalizeStoredUser(u, doctorSpecialtiesMap, specialistAccessMap))
+                        .forEach((u) => {
+                            const idx = merged.findIndex((m) =>
+                                (m.user_key && u.user_key && String(m.user_key) === String(u.user_key)) ||
+                                (m.username && u.username && String(m.username) === String(u.username))
+                            );
+                            if (idx === -1) merged.push(u);
+                        });
+                    return merged;
+                } catch (_) {
+                    return dbUsers;
+                }
+            }
+        }
+    } catch (e) {
+        console.warn('DB loadUsers failed, using local fallback:', e);
+    }
+
+    // Local fallback
+    try{
+        const json = await window.Storage.getItem('users');
+        let users = JSON.parse(json || '[]');
+        if (!Array.isArray(users) || users.length === 0) {
+            users = readLegacyLocalStorageJson('users', []);
+        }
+        const specialistAccessMap = await loadSpecialistAccessMap();
+        const doctorSpecialtiesMap = await loadDoctorSpecialtiesMap();
+        return (Array.isArray(users) ? users : []).map((u) => normalizeStoredUser(u, doctorSpecialtiesMap, specialistAccessMap));
+    }catch(e){ return [] } 
+}
+async function saveUsers(u){ 
+    await window.Storage.setItem('users', JSON.stringify(u)); 
+    try { if (typeof localStorage !== 'undefined') localStorage.setItem('users', JSON.stringify(u)); } catch (_) {}
+}
+
+async function loadLogs(){ 
+    try{
+        const json = await window.Storage.getItem('adherenceLogs');
+        const parsed = JSON.parse(json || '{}');
+        if (parsed && Object.keys(parsed).length > 0) return parsed;
+        return readLegacyLocalStorageJson('adherenceLogs', {});
+    }catch(e){ return {} } 
+}
+async function saveLogs(l){ 
+    await window.Storage.setItem('adherenceLogs', JSON.stringify(l)); 
+    try { if (typeof localStorage !== 'undefined') localStorage.setItem('adherenceLogs', JSON.stringify(l)); } catch (_) {}
+}
+
+async function loadMeds(){ 
+    try{
+        const json = await window.Storage.getItem('medications');
+        const parsed = JSON.parse(json || '{}');
+        if (parsed && Object.keys(parsed).length > 0) return parsed;
+        return readLegacyLocalStorageJson('medications', {});
+    }catch(e){ return {} } 
+}
+async function saveMeds(m){ 
+    await window.Storage.setItem('medications', JSON.stringify(m)); 
+    try { if (typeof localStorage !== 'undefined') localStorage.setItem('medications', JSON.stringify(m)); } catch (_) {}
+}
+
+async function syncMedsFromSupabaseForDoctor(){ // ASYNC
+    const sb = await getSupabaseDataClient();
+    if (!sb) return;
+    try {
+        const users = await loadUsers();
+        const assignedPatients = users.filter(u => u.role === 'patient' && u.approved && isAssignedToCurrentDoctor(u) && u.user_key);
+        if (assignedPatients.length === 0) return;
+
+        const medsStore = await loadMeds();
+        await Promise.all(assignedPatients.map(async (p) => {
+            const { data, error } = await sb
+                .from('medications')
+                .select('id,medication_key,drug_name,strength,route,instruction,frequency_text,added_by_role,added_by_user_key,created_at')
+                .eq('user_key', p.user_key)
+                .order('created_at', { ascending: false });
+            if (error) throw error;
+            medsStore[p.username] = (data || []).map((m) => ({
+                id: m.medication_key || `db-${m.id}`,
+                medication_key: m.medication_key || null,
+                name: m.drug_name || '',
+                type: m.route || '',
+                dosage: m.strength || '',
+                schedule: m.frequency_text || '',
+                instructions: m.instruction || '',
+                addedBy: m.added_by_role ? `${m.added_by_role}:${m.added_by_user_key || ''}` : '',
+                createdAt: m.created_at || null
+            }));
+        }));
+        await saveMeds(medsStore);
+    } catch (e) {
+        console.warn('syncMedsFromSupabaseForDoctor failed', e);
+    }
+}
+
+/* -------------------------
+    Global State & Auth Check
+    ------------------------- */
+let current = null; // Current logged-in username
+let currentUserKey = null; // Current logged-in user_key
+let role = null;    // Current logged-in role
+
+// --- Sample Data Definitions ---
+const SAMPLE_PATIENT = 'patient1';
+const SAMPLE_DOCTOR = 'doctor1';
+
+const sampleMeds_patient1 = [
+  { id: "med1", name: "Metformin", type: "pill", dosage: "500 mg", schedule: "am", instructions: "Take with breakfast", assignedBy: "doctor" },
+  { id: "med2", name: "Lisinopril", type: "pill", dosage: "10 mg", schedule: "pm", instructions: "Take before bed", assignedBy: "doctor" },
+  { id: "med3", name: "Insulin", type: "injection", dosage: "5 units", schedule: "both", instructions: "Inject with meals", assignedBy: "doctor" },
+];
+
+// --- Sample Data Generation Function ---
+async function generateAdherenceData(patientId, medsList) {
+    let logs = await loadLogs(); // AWAIT
+    logs[patientId] = [];
+    const today = new Date();
+    
+    // Generate logs for the last 7 days
+    for (let i = 6; i >= 0; i--) { 
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        
+        medsList.forEach(med => {
+            const prob = (med.schedule === "pm") ? 0.7 : 0.8; 
+            
+            // Log for AM dose (if applicable)
+            if ((med.schedule === 'am' || med.schedule === 'both') && Math.random() < prob) {
+                logs[patientId].push({
+                    ts: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 8, 0, 0).toISOString(),
+                    type: "taken", medId: med.id, medName: med.name, schedule: 'am',
+                    note: med.instructions, by: patientId
+                });
+            }
+            
+            // Log for PM dose (if applicable)
+            if ((med.schedule === 'pm' || med.schedule === 'both') && Math.random() < prob) {
+                logs[patientId].push({
+                    ts: new Date(date.getFullYear(), date.getMonth(), date.getDate(), 20, 0, 0).toISOString(),
+                    type: "taken", medId: med.id, medName: med.name, schedule: 'pm',
+                    note: med.instructions, by: patientId
+                });
+            }
+        });
+    }
+    await saveLogs(logs); // AWAIT
+}
+
+/* -------------------------
+    Seed demo 
+    ------------------------- */
+async function seedDemo(){ // ASYNC
+    if (window.supabaseClient) return; // No local demo seeding in DB-backed mode
+    let users = await loadUsers(); // AWAIT
+    let medsStore = await loadMeds(); // AWAIT
+    
+    // 1. Ensure Doctor and Patient accounts exist
+    if(!users.find(u=>u.username===SAMPLE_DOCTOR)){
+        users.push({username:SAMPLE_DOCTOR,password:'docpass',role:'doctor',approved:true,pendingPatients:[]});
+    }
+    if(!users.find(u=>u.username===SAMPLE_PATIENT)){
+        users.push({
+            username:SAMPLE_PATIENT,
+            password:'patpass',
+            role:'patient',
+            approved:true, 
+            preferredDoctor:SAMPLE_DOCTOR,
+            assignedDoctor:SAMPLE_DOCTOR
+        });
+    }
+    await saveUsers(users); // AWAIT
+
+    // 2. Ensure Medications and Logs for patient1 exist
+    if(!medsStore[SAMPLE_PATIENT] || medsStore[SAMPLE_PATIENT].length === 0){
+        medsStore[SAMPLE_PATIENT] = sampleMeds_patient1.map(m => ({ ...m, addedBy: 'doctor:' + SAMPLE_DOCTOR }));
+        await saveMeds(medsStore); // AWAIT
+        
+        await generateAdherenceData(SAMPLE_PATIENT, medsStore[SAMPLE_PATIENT]); // AWAIT
+    }
+}
+
+/* -------------------------
+    Basic async auth guard
+    ------------------------- */
+async function checkAuthAndInit() {
+    const currentJSON = await window.Storage.getItem('currentUser');
+    const roleString = await window.Storage.getItem('currentRole');
+
+    // Parse current user from the stringified JSON stored in the login step
+    try {
+        const parsed = JSON.parse(currentJSON || '{}');
+        current = parsed?.username || null;
+        currentUserKey = parsed?.user_key || null;
+    } catch (e) {
+        current = null;
+        currentUserKey = null;
+    }
+    role = roleString;
+
+    if(!current || role !== 'doctor'){ 
+        alert('Not logged in as doctor'); 
+        window.location.href='doctor-login.html'; 
+        return; 
+    }
+
+    // After successful auth, display username
+    const whoElement = document.getElementById('who');
+    if (whoElement) {
+        whoElement.textContent = 'Logged in as: ' + current;
+    }
+
+    // Wait for Supabase init so loadUsers can use DB instead of local fallback.
+    await waitForSupabaseClient();
+    await refreshUI();
+}
+
+// ----------------------------------------------------
+// Chart objects & Instances
+// ----------------------------------------------------
+let overallChart = null;
+let patientPieChart = null;
+let patientDailyTrendChart = null;
+let patientMedBarChart = null;
+let patientAmPmChart = null;
+
+const chartColors = {
+    taken: '#2d9f6b',
+    missed: '#ef4444',
+    assigned: '#06b6d4'
+};
+
+
+function buildOverallChart(taken, missed){
+    const ctx = document.getElementById('overallChart').getContext('2d');
+    if(overallChart) overallChart.destroy();
+    overallChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Taken','Missed (proxy)'],
+            datasets: [{
+                data: [taken, missed],
+                backgroundColor: [chartColors.taken, chartColors.missed],
+                hoverOffset: 6
+            }]
+        },
+        options: {
+            plugins: { legend: { position: 'bottom', labels: { color: '#333' } } },
+            responsive: true,
+            maintainAspectRatio: true 
+        }
+    });
+}
+
+/**
+ * Builds all 4 patient-specific charts for the given patient.
+ */
+async function buildPatientCharts(username){ // ASYNC
+    const logs = await loadLogs(); // AWAIT
+    const meds = await loadMeds(); // AWAIT
+    
+    const patientLogs = logs[username] || [];
+    const patientMeds = meds[username] || [];
+    
+    // --- Data Processing for Charts (Last 7 Days) ---
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    
+    const dailyData = {};
+    const today = new Date();
+    
+    // 1. Initialize data for the last 7 days (date strings in YYYY-MM-DD format)
+    for (let i = 6; i >= 0; i--) { 
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        const dateStr = d.toISOString().split('T')[0];
+        dailyData[dateStr] = { assigned: 0, taken: 0 };
+    }
+
+    // Calculate assigned doses for the 7-day period
+    patientMeds.forEach(m => {
+        for (const dateStr in dailyData) {
+            dailyData[dateStr].assigned += (m.schedule === 'both' ? 2 : 1);
+        }
+    });
+
+    // Filter and count taken doses for the 7-day period
+    patientLogs.filter(l => new Date(l.ts) >= sevenDaysAgo).forEach(l => {
+        const dateStr = new Date(l.ts).toISOString().split('T')[0];
+        if (dailyData[dateStr]) {
+            dailyData[dateStr].taken++;
+        }
+    });
+
+    const dailyLabels = Object.keys(dailyData).map(d => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+    const dailyTaken = Object.values(dailyData).map(d => d.taken);
+    const dailyAssigned = Object.values(dailyData).map(d => d.assigned);
+    
+    // 2. Taken vs Missed Data (Overall Adherence for the 7-day period)
+    const totalAssigned = dailyAssigned.reduce((a, b) => a + b, 0);
+    const totalTaken = dailyTaken.reduce((a, b) => a + b, 0);
+    const totalMissed = Math.max(0, totalAssigned - totalTaken); 
+    
+    // Update stats display
+    document.getElementById('pd_stats').textContent = `Taken (7d): ${totalTaken} • Missed (est): ${totalMissed} • Total Logs: ${patientLogs.length}`;
+
+
+    // 3. Adherence by Medication (Bar Chart - Last 7 days)
+    const medAdherence = {};
+    patientMeds.forEach(m => {
+        medAdherence[m.name] = { id: m.id, assigned: 7 * (m.schedule === 'both' ? 2 : 1), taken: 0 }; 
+    });
+
+    patientLogs.filter(l => new Date(l.ts) >= sevenDaysAgo).forEach(l => {
+        const med = medAdherence[l.medName];
+        if(med) med.taken++;
+    });
+    
+    const medBarLabels = Object.keys(medAdherence);
+    const medBarData = medBarLabels.map(name => {
+        const m = medAdherence[name];
+        return m.assigned > 0 ? (m.taken / m.assigned * 100) : 0; 
+    });
+    
+    // 4. AM vs PM Adherence (Last 7 days)
+    let amAssigned = 0;
+    let pmAssigned = 0;
+    patientMeds.forEach(m => {
+        if (m.schedule === 'am' || m.schedule === 'both') amAssigned += 7;
+        if (m.schedule === 'pm' || m.schedule === 'both') pmAssigned += 7;
+    });
+
+    const recentLogs = patientLogs.filter(l => new Date(l.ts) >= sevenDaysAgo);
+
+    const amTaken = recentLogs.filter(l => l.schedule === 'am' || (l.schedule === 'both' && new Date(l.ts).getHours() < 12)).length;
+    const pmTaken = recentLogs.filter(l => l.schedule === 'pm' || (l.schedule === 'both' && new Date(l.ts).getHours() >= 12)).length;
+
+    const amAdherence = amAssigned > 0 ? amTaken / amAssigned * 100 : 0;
+    const pmAdherence = pmAssigned > 0 ? pmTaken / pmAssigned * 100 : 0;
+
+
+    // --- Chart Drawing ---
+    
+    // 1. Patient Pie Chart (Taken vs Missed)
+    const ctxPie = document.getElementById('patientPieChart').getContext('2d');
+    if (patientPieChart) patientPieChart.destroy();
+    patientPieChart = new Chart(ctxPie, {
+        type: 'doughnut',
+        data: {
+            labels: ['Taken','Missed (est)'],
+            datasets: [{ data: [totalTaken, totalMissed], backgroundColor: [chartColors.taken, chartColors.missed] }]
+        },
+        options: { cutout: '60%', plugins: { legend: { display: false } }, responsive: true, maintainAspectRatio: true }
+    });
+
+    // 2. Patient Daily Trend Chart (Line)
+    const ctxDaily = document.getElementById('patientDailyTrendChart').getContext('2d');
+    if (patientDailyTrendChart) patientDailyTrendChart.destroy();
+    patientDailyTrendChart = new Chart(ctxDaily, {
+        type: 'line',
+        data: {
+            labels: dailyLabels,
+            datasets: [
+                { label: 'Assigned', data: dailyAssigned, borderColor: chartColors.assigned, fill: false, tension: 0.1 },
+                { label: 'Taken', data: dailyTaken, borderColor: chartColors.taken, fill: false, tension: 0.1 }
+            ]
+        },
+        options: { maintainAspectRatio: true, plugins: { legend: { labels: { color: '#666' } } }, scales: { x: { ticks: { color: '#666' } }, y: { ticks: { color: '#666' } } } }
+    });
+
+    // 3. Adherence by Medication (Bar Chart)
+    const ctxMedBar = document.getElementById('patientMedBarChart').getContext('2d');
+    if (patientMedBarChart) patientMedBarChart.destroy();
+    patientMedBarChart = new Chart(ctxMedBar, {
+        type: 'bar',
+        data: {
+            labels: medBarLabels,
+            datasets: [{
+                label: 'Adherence (%)',
+                data: medBarData,
+                backgroundColor: chartColors.assigned,
+            }]
+        },
+        options: { 
+            maintainAspectRatio: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, max: 100, ticks: { color: '#666' } }, x: { ticks: { color: '#666' } } }
+        }
+    });
+    
+    // 4. AM vs PM Adherence (Bar Chart)
+    const ctxAmPm = document.getElementById('patientAmPmChart').getContext('2d');
+    if (patientAmPmChart) patientAmPmChart.destroy();
+    patientAmPmChart = new Chart(ctxAmPm, {
+        type: 'bar',
+        data: {
+            labels: ['AM', 'PM'],
+            datasets: [{
+                label: 'Adherence (%)',
+                data: [amAdherence, pmAdherence],
+                backgroundColor: [chartColors.taken, chartColors.assigned],
+            }]
+        },
+        options: { 
+            maintainAspectRatio: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, max: 100, ticks: { color: '#666' } }, x: { ticks: { color: '#666' } } }
+        }
+    });
+}
+
+
+/* -------------------------
+    Compute overall adherence & update UI
+    ------------------------- */
+function isAssignedToCurrentDoctor(u){
+    const specialistKeys = normalizeDoctorKeyList(u.specialistDoctorUserKeys);
+    const byAssigned = u.assignedDoctor === current || (currentUserKey && u.assignedDoctorUserKey === currentUserKey);
+    const byPreferred = (u.preferredDoctor && u.preferredDoctor === current) || (currentUserKey && u.preferredDoctorUserKey === currentUserKey);
+    const bySpecialist = !!(currentUserKey && specialistKeys.includes(currentUserKey));
+    return byAssigned || byPreferred || bySpecialist;
+}
+
+async function waitForSupabaseClient(timeoutMs = 8000) {
+    if (!window.supabaseClient && window.supabase && typeof window.supabase.createClient === 'function') {
+        window.supabaseClient = window.supabase.createClient(
+            'https://sxucfwshtvskoqvisbeu.supabase.co',
+            'sb_publishable_asZW_2Wkn-ofTq_LsqUxhw_GvSv0J_K',
+            { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } }
+        );
+    }
+    const started = Date.now();
+    while (!window.supabaseClient && (Date.now() - started) < timeoutMs) {
+        await new Promise((r) => setTimeout(r, 100));
+    }
+    return window.supabaseClient || null;
+}
+
+async function ensureSupabaseServiceClient() {
+    if (window.supabaseService) return window.supabaseService;
+    if (!window.supabase || typeof window.supabase.createClient !== 'function') return null;
+    let serviceKey = window.__SUPABASE_SERVICE_ROLE || '';
+    let supabaseUrl = 'https://sxucfwshtvskoqvisbeu.supabase.co';
+    if (!serviceKey) {
+        const envCandidates = ['/env.json', './env.json', '../env.json', '../../env.json'];
+        for (const envPath of envCandidates) {
+            try {
+                const r = await fetch(envPath, { cache: 'no-store' });
+                if (!r.ok) continue;
+                const j = await r.json();
+                serviceKey = j.supabaseServiceKey || j.SUPABASE_SERVICE_ROLE || '';
+                supabaseUrl = j.supabaseUrl || j.SUPABASE_URL || supabaseUrl;
+                if (serviceKey) break;
+            } catch (_) {}
+        }
+    }
+    if (!serviceKey) return null;
+    window.supabaseService = window.supabase.createClient(supabaseUrl, serviceKey, {
+        auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+    });
+    return window.supabaseService;
+}
+
+async function getSupabaseDataClient() {
+    await waitForSupabaseClient();
+    await ensureSupabaseServiceClient();
+    return window.supabaseService || window.supabaseClient || null;
+}
+
+function isPendingForCurrentDoctor(u){
+    if (u.role !== 'patient') return false;
+    const status = String(u.accountStatus || '').toLowerCase();
+    const isPending = status === 'pending' || (u.legacyApproved === false && !status);
+    if (!isPending) return false;
+    const specialistKeys = normalizeDoctorKeyList(u.specialistDoctorUserKeys);
+
+    // Strict behavior: only patients whose preferred doctor matches current doctor.
+    const matchesCurrentDoctor =
+        (u.preferredDoctor && u.preferredDoctor === current) ||
+        (u.assignedDoctor && u.assignedDoctor === current) ||
+        (currentUserKey && (
+            u.preferredDoctorUserKey === currentUserKey ||
+            u.assignedDoctorUserKey === currentUserKey ||
+            specialistKeys.includes(currentUserKey)
+        ));
+    return matchesCurrentDoctor;
+}
+
+async function computeOverall(){ // ASYNC
+    const users = await loadUsers(); // AWAIT
+    const logs = await loadLogs(); // AWAIT
+
+    const assignedPatients = users.filter(u=>u.role==='patient' && u.approved && isAssignedToCurrentDoctor(u)); 
+    let overallTaken = 0, overallEvents = 0;
+    
+    assignedPatients.forEach(p=>{
+        const evs = logs[p.username] || [];
+        overallTaken += evs.filter(e=>e.type==='taken').length;
+        overallEvents += evs.length;
+    });
+    
+    const overallMissed = overallEvents - overallTaken; 
+    const avgAdh = overallEvents ? Math.round((overallTaken/overallEvents)*100) : '—';
+    
+    document.getElementById('totalPatients').textContent = assignedPatients.length;
+    document.getElementById('totalEvents').textContent = overallEvents;
+    document.getElementById('totalTaken').textContent = overallTaken;
+    document.getElementById('totalMissed').textContent = overallMissed;
+    document.getElementById('avgAdherence').textContent = (avgAdh==='—'? '—' : avgAdh + '%');
+    buildOverallChart(overallTaken, overallMissed);
+}
+
+/* -------------------------
+    Pending approvals
+    ------------------------- */
+async function renderPending(){ // ASYNC
+    const users = await loadUsers(); // AWAIT
+    const pending = users.filter(isPendingForCurrentDoctor);
+    const container = document.getElementById('pendingWrap');
+    if(pending.length===0){ container.innerHTML = '<div class="muted">No pending requests for you</div>'; return; }
+    container.innerHTML = '<table><tr><th>Username</th><th>Action</th></tr>' + pending.map(p=>{
+        return `<tr><td>${p.username}</td><td><button onclick="approve('${p.username}')">Approve & Assign</button></td></tr>`;
+    }).join('') + '</table>';
+}
+
+async function approve(username){ // ASYNC
+    const users = await loadUsers(); const u = users.find(x=>x.username===username); // AWAIT
+    if(!u) return alert('User missing');
+    const sb = await getSupabaseDataClient();
+    if (sb && u.user_key) {
+        const nowIso = new Date().toISOString();
+        const payload = { account_status: 'approved', updated_at: nowIso };
+        if (currentUserKey) payload.assigned_doctor_user_key = currentUserKey;
+        let { error } = await sb.from('users').update(payload).eq('user_key', u.user_key);
+        if (error) {
+            const legacyPayload = { approved: true, updated_at: nowIso };
+            if (current) legacyPayload.assigned_doctor = current;
+            const { error: legacyError } = await sb
+                .from('users')
+                .update(legacyPayload)
+                .eq('user_key', u.user_key);
+            error = legacyError;
+        }
+        if (error) {
+            alert('Failed to approve in database: ' + (error.message || error));
+            return;
+        }
+    }
+    u.approved = true;
+    u.legacyApproved = true;
+    u.accountStatus = 'approved';
+    u.assignedDoctor = current; 
+    if (currentUserKey) u.assignedDoctorUserKey = currentUserKey;
+
+    // Update doctor's pending list (if stored, though not explicitly used here)
+    users.forEach(doc=>{
+        if(doc.role==='doctor' && Array.isArray(doc.pendingPatients)){
+            doc.pendingPatients = doc.pendingPatients.filter(p=>p !== username);
+        }
+    });
+
+    await saveUsers(users); // AWAIT
+    
+    const meds = await loadMeds(); // AWAIT
+    if(!meds[username]) meds[username]=[]; 
+    await saveMeds(meds); // AWAIT
+    
+    await renderPending(); await refreshUI(); // AWAIT calls
+}
+
+/* -------------------------
+    Patient selector + Patient details panel
+    ------------------------- */
+async function getPatientAdherence(username){ // ASYNC
+    const logs = await loadLogs(); // AWAIT
+    const meds = await loadMeds(); // AWAIT
+
+    const arr = logs[username] || [];
+    const patientMeds = meds[username] || [];
+    
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const recentLogs = arr.filter(e => new Date(e.ts) >= sevenDaysAgo);
+    
+    const taken = recentLogs.filter(e=>e.type==='taken').length;
+    
+    let assignedDoses = 0;
+    patientMeds.forEach(m => {
+        assignedDoses += 7 * (m.schedule === 'both' ? 2 : 1);
+    });
+    
+    const missed = Math.max(0, assignedDoses - taken);
+    
+    return { taken, missed, totalEvents: arr.length };
+}
+
+async function populatePatientSelector(){ // ASYNC
+    const users = await loadUsers(); // AWAIT
+    const sel = document.getElementById('patientSelector'); 
+    sel.innerHTML = '<option value="">-- select patient --</option>';
+    users.filter(u=>u.role==='patient' && u.approved && isAssignedToCurrentDoctor(u)).forEach(p=>{
+        const opt = document.createElement('option'); opt.value = p.username; opt.textContent = p.username; sel.appendChild(opt);
+    });
+}
+
+async function fillDoctorPatientSelect(){ // ASYNC
+    const users = await loadUsers(); // AWAIT
+    const sel = document.getElementById('selectPatient'); 
+    sel.innerHTML = '<option value="">-- select patient --</option>';
+    users.filter(u=>u.role==='patient' && u.approved && isAssignedToCurrentDoctor(u)).forEach(p=>{
+        const opt = document.createElement('option');
+        opt.value = p.user_key || p.username;
+        opt.textContent = p.username;
+        opt.dataset.username = p.username;
+        sel.appendChild(opt);
+    });
+}
+
+document.getElementById('viewPatient').addEventListener('click', async ()=>{ // ASYNC
+    const username = document.getElementById('patientSelector').value;
+    if(!username) return alert('Choose a patient');
+    await openPatientPanel(username); // AWAIT
+});
+
+document.getElementById('closePatient').addEventListener('click', ()=>{ 
+    document.getElementById('patientPanel').classList.add('hidden'); 
+});
+
+async function openPatientPanel(username){ // ASYNC
+    const users = await loadUsers(); // AWAIT
+    const patient = users.find(u=>u.username===username && u.role==='patient');
+    if(!patient) return alert('Patient not found');
+    document.getElementById('patientPanel').classList.remove('hidden');
+    document.getElementById('pd_name').textContent = patient.username;
+    document.getElementById('pd_assigned').textContent = 'Assigned doctor: ' + (patient.assignedDoctor||'—');
+    await populateSpecialistDoctorSelector(patient);
+    renderSpecialistAccessText(patient, users);
+    
+    await renderPatientMeds(username); // AWAIT
+    await renderPatientEvents(username); // AWAIT
+    
+    await buildPatientCharts(username); // AWAIT
+}
+
+function renderSpecialistAccessText(patient, users) {
+    const el = document.getElementById('pd_specialists');
+    if (!el) return;
+    const specialistKeys = normalizeDoctorKeyList(patient?.specialistDoctorUserKeys);
+    if (specialistKeys.length === 0) {
+        el.textContent = 'Specialist access: none';
+        return;
+    }
+    const keyToName = {};
+    const keyToSpecialty = {};
+    (users || []).forEach((u) => {
+        if (u.role === 'doctor' && u.user_key) {
+            keyToName[u.user_key] = u.username || u.user_key;
+            keyToSpecialty[u.user_key] = u.doctorSpecialties || '';
+        }
+    });
+    const labels = specialistKeys.map((k) => {
+        const n = keyToName[k] || k;
+        const s = keyToSpecialty[k] || '';
+        return s ? `${n} (${s})` : n;
+    });
+    el.textContent = 'Specialist access: ' + labels.join(', ');
+}
+
+async function populateSpecialistDoctorSelector(patient) {
+    const sel = document.getElementById('specialistDoctorSelector');
+    if (!sel) return;
+    const users = await loadUsers();
+    const specialistKeys = normalizeDoctorKeyList(patient?.specialistDoctorUserKeys);
+    sel.innerHTML = '<option value="">-- select specialist doctor --</option>';
+    users
+        .filter((u) => u.role === 'doctor' && u.user_key && u.user_key !== currentUserKey)
+        .forEach((d) => {
+            const opt = document.createElement('option');
+            opt.value = d.user_key;
+            const specialty = d.doctorSpecialties || '';
+            opt.textContent = specialty ? `${d.username || d.user_key} (${specialty})` : (d.username || d.user_key);
+            if (specialistKeys.includes(d.user_key)) {
+                opt.textContent = `${opt.textContent} (already added)`;
+            }
+            sel.appendChild(opt);
+        });
+}
+
+document.getElementById('grantSpecialistAccess').addEventListener('click', async () => {
+    const patientName = document.getElementById('pd_name')?.textContent || '';
+    const selectedDoctorKey = document.getElementById('specialistDoctorSelector')?.value || '';
+    if (!patientName || patientName === '—') {
+        alert('Open a patient first.');
+        return;
+    }
+    if (!selectedDoctorKey) {
+        alert('Choose a specialist doctor.');
+        return;
+    }
+
+    const users = await loadUsers();
+    const patient = users.find((u) => u.role === 'patient' && u.username === patientName);
+    if (!patient) {
+        alert('Patient not found.');
+        return;
+    }
+
+    const nextKeys = normalizeDoctorKeyList(patient.specialistDoctorUserKeys);
+    if (nextKeys.includes(selectedDoctorKey)) {
+        alert('This specialist already has access.');
+        return;
+    }
+    nextKeys.push(selectedDoctorKey);
+    patient.specialistDoctorUserKeys = normalizeDoctorKeyList(nextKeys);
+    await persistSpecialistAccess(patient, selectedDoctorKey, 'grant');
+    await saveUsers(users);
+    renderSpecialistAccessText(patient, users);
+    await populateSpecialistDoctorSelector(patient);
+    alert('Specialist access granted.');
+});
+
+document.getElementById('revokeSpecialistAccess').addEventListener('click', async () => {
+    const patientName = document.getElementById('pd_name')?.textContent || '';
+    const selectedDoctorKey = document.getElementById('specialistDoctorSelector')?.value || '';
+    if (!patientName || patientName === '—') {
+        alert('Open a patient first.');
+        return;
+    }
+    if (!selectedDoctorKey) {
+        alert('Choose a specialist doctor.');
+        return;
+    }
+
+    const users = await loadUsers();
+    const patient = users.find((u) => u.role === 'patient' && u.username === patientName);
+    if (!patient) {
+        alert('Patient not found.');
+        return;
+    }
+
+    const nextKeys = normalizeDoctorKeyList(patient.specialistDoctorUserKeys);
+    if (!nextKeys.includes(selectedDoctorKey)) {
+        alert('That doctor does not currently have specialist access.');
+        return;
+    }
+    patient.specialistDoctorUserKeys = nextKeys.filter((k) => k !== selectedDoctorKey);
+    await persistSpecialistAccess(patient, selectedDoctorKey, 'revoke');
+    await saveUsers(users);
+    renderSpecialistAccessText(patient, users);
+    await populateSpecialistDoctorSelector(patient);
+    alert('Specialist access revoked.');
+});
+
+async function persistSpecialistAccess(patient, doctorUserKey, action) {
+    const map = await loadSpecialistAccessMap();
+    map[patientAccessMapKey(patient)] = normalizeDoctorKeyList(patient.specialistDoctorUserKeys);
+    await saveSpecialistAccessMap(map);
+
+    if (!window.supabaseClient || !patient?.user_key || !doctorUserKey) return;
+    try {
+        if (action === 'grant') {
+            await window.supabaseClient
+                .from('doctor_patient_access')
+                .upsert(
+                    {
+                        patient_user_key: patient.user_key,
+                        doctor_user_key: doctorUserKey,
+                        access_type: 'specialist',
+                        is_active: true,
+                        granted_by_user_key: currentUserKey || null,
+                        updated_at: new Date().toISOString(),
+                    },
+                    { onConflict: 'patient_user_key,doctor_user_key' }
+                );
+        } else if (action === 'revoke') {
+            await window.supabaseClient
+                .from('doctor_patient_access')
+                .update({ is_active: false, updated_at: new Date().toISOString() })
+                .eq('patient_user_key', patient.user_key)
+                .eq('doctor_user_key', doctorUserKey);
+        }
+    } catch (e) {
+        console.warn('doctor_patient_access write skipped (table may be missing):', e);
+    }
+
+    // Backward-compatible best-effort persistence for installations still using users column.
+    try {
+        await window.supabaseClient
+            .from('users')
+            .update({ specialist_doctor_user_keys: patient.specialistDoctorUserKeys, updated_at: new Date().toISOString() })
+            .eq('user_key', patient.user_key);
+    } catch (e) {
+        console.warn('specialist_doctor_user_keys update skipped (column may be missing):', e);
+    }
+}
+
+/* export patient CSV */
+document.getElementById('exportPatientCSV').addEventListener('click', async ()=>{ // ASYNC
+    const username = document.getElementById('pd_name').textContent;
+    if(!username || username==='—') return alert('Open a patient first');
+    const logs = await loadLogs(); const arr = logs[username] || []; // AWAIT
+    let csv = 'time,patient,event,medName,note\n';
+    arr.forEach(e=>{
+        csv += `"${e.ts}","${username}","${e.type}","${e.medName||''}","${(e.note||'').replace(/"/g,'""')}"\n`;
+    });
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'}); const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = `${username}_adherence.csv`; a.click(); a.remove();
+});
+
+/* -------------------------
+    Render patient meds and events
+    ------------------------- */
+async function renderPatientMeds(username){ // ASYNC
+    const meds = await loadMeds(); // AWAIT
+    const list = meds[username] || [];
+    const wrap = document.getElementById('pd_meds'); 
+    if(list.length===0){ wrap.innerHTML = '<div class="muted">No medications assigned</div>'; return;}
+    let html = '<table><tr><th>Med</th><th>Dosage</th><th>Schedule</th><th>Instr</th></tr>';
+    list.forEach(m => { html += `<tr><td>${m.name}</td><td>${m.dosage||''}</td><td>${m.schedule||''}</td><td>${m.instructions||''}</td></tr>`; });
+    html += '</table>'; wrap.innerHTML = html;
+}
+
+async function renderPatientEvents(username){ // ASYNC
+    const logs = await loadLogs(); // AWAIT
+    const arr = logs[username] || [];
+    const wrap = document.getElementById('pd_events');
+    if(arr.length===0) { wrap.innerHTML = '<div class="muted">No events</div>'; return; }
+    let html = '<table><tr><th>Time</th><th>Med</th><th>Type</th><th>Note</th></tr>';
+    arr.slice().reverse().forEach(e => {
+        html += `<tr><td>${new Date(e.ts).toLocaleString()}</td><td>${e.medName||e.medId||'—'}</td><td>${e.type}</td><td>${e.note||''}</td></tr>`;
+    });
+    html += '</table>'; wrap.innerHTML = html;
+}
+
+/* -------------------------
+    Add medication (doctor)
+    ------------------------- */
+document.getElementById('d_addMedBtn').addEventListener('click', async ()=>{ // ASYNC
+    const patientSel = document.getElementById('selectPatient');
+    const patientIdentifier = patientSel.value;
+    const patient = patientSel.options[patientSel.selectedIndex]?.dataset?.username || patientIdentifier;
+    const name = document.getElementById('d_medName').value.trim();
+    const type = document.getElementById('d_medType').value;
+    const dosage = document.getElementById('d_medDose').value.trim();
+    const schedule = document.getElementById('d_medSchedule').value;
+    const instr = document.getElementById('d_medInstr').value.trim();
+    if(!patientIdentifier){ alert('Select patient'); return; }
+    if(!name){ alert('Enter medication name'); return; }
+
+    // Write to Supabase first so UI success reflects database success.
+    let dbMedicationKey = 'med_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+    if (window.supabaseClient && (!window.siteSync || typeof window.siteSync.createMedicationForPatient !== 'function')) {
+        alert('Medication sync module is not loaded. Hard refresh the page (Ctrl+F5) and try again.');
+        return;
+    }
+    if (window.siteSync && typeof window.siteSync.createMedicationForPatient === 'function'){
+        try{
+            const payload = {
+                drug_name: name,
+                strength: dosage,
+                route: type,
+                instruction: instr,
+                frequency_text: schedule,
+                medication_key: dbMedicationKey,
+                added_by_role: 'doctor',
+                added_by_user_key: currentUserKey || null
+            };
+            const res = await window.siteSync.createMedicationForPatient(patientIdentifier, payload);
+            dbMedicationKey = res?.medication_key || dbMedicationKey;
+            console.log('Supabase med created', res);
+        }catch(e){
+            const msg = (e && e.message) ? e.message : String(e || 'Unknown error');
+            alert('Failed to save medication to database: ' + msg);
+            return;
+        }
+    }
+
+    const meds = await loadMeds(); // AWAIT
+    if(!meds[patient]) meds[patient]=[];
+    const entry = {
+        id: dbMedicationKey,
+        medication_key: dbMedicationKey,
+        name,
+        type,
+        dosage,
+        schedule,
+        instructions: instr,
+        addedBy: 'doctor:' + current,
+        createdAt: new Date().toISOString()
+    };
+    meds[patient].push(entry);
+    await saveMeds(meds); // AWAIT
+    
+    if (document.getElementById('pd_name').textContent === patient) {
+        await renderPatientMeds(patient); // AWAIT
+        await buildPatientCharts(patient); // AWAIT
+    }
+    await renderMedManagement(); // AWAIT
+    await renderSummary(); // AWAIT
+    alert('Medication added for ' + patient);
+});
+
+/* -------------------------
+    Patient summary / med management / logs (reuse earlier functions)
+    ------------------------- */
+async function renderSummary(){ // ASYNC
+    const users = await loadUsers(); // AWAIT
+    const meds = await loadMeds(); // AWAIT
+
+    const patients = users.filter(u=>u.role==='patient' && u.approved && isAssignedToCurrentDoctor(u)); 
+    
+    // 🔑 FIX: 
+    // 1. Create a variable (patientRows) to hold the array of strings.
+    // 2. AWAIT the result of Promise.all(map) to get the array.
+    const patientRows = await Promise.all(patients.map(async p => {
+        const pMeds = meds[p.username] || [];
+        const { taken, missed } = await getPatientAdherence(p.username); // AWAIT
+        
+        // Ensure you await loadLogs here as well
+        const evs = await loadLogs(); 
+        const pLogs = evs[p.username] || [];
+
+        const denom = taken+missed;
+        const pct = denom ? Math.round((taken/denom)*100) : '—';
+        return `<tr><td>${p.username}</td><td>${pMeds.length}</td><td>${pLogs.length}</td><td>${pct}</td></tr>`;
+    }));
+    
+    // 3. Now, call .join('') on the awaited array (patientRows)
+    const html = '<table><tr><th>Patient</th><th>Meds</th><th>Events</th><th>Adherence % (7d est)</th></tr>' + 
+                 patientRows.join('') + 
+                 '</table>';
+                 
+    document.getElementById('patientSummary').innerHTML = html;
+}
+async function renderMedManagement(){ // ASYNC
+    const meds = await loadMeds(); // AWAIT
+    const users = await loadUsers(); // AWAIT
+
+    const approvedPatients = users.filter(u=>u.role==='patient' && u.approved && isAssignedToCurrentDoctor(u));
+    const wrap = document.getElementById('medManagement');
+    if(approvedPatients.length===0){ wrap.innerHTML = '<div class="muted">No approved patients assigned to you</div>'; return; }
+    let html = '';
+    approvedPatients.forEach(p=>{
+        html += `<h4 style="margin-bottom:6px">${p.username}</h4>`;
+        const list = meds[p.username] || [];
+        if(list.length===0){ html += '<div class="muted">No meds</div>'; }
+        else{
+            html += '<table><tr><th>Med</th><th>Schedule</th><th>Instr</th><th>AddedBy</th><th>Actions</th></tr>';
+            list.forEach(m=>{
+                html += `<tr><td>${m.name} ${m.dosage?('— '+m.dosage):''}</td><td>${m.schedule}</td><td>${m.instructions||''}</td><td>${m.addedBy||''}</td><td>
+                         <button onclick="editMed('${p.username}','${m.medication_key || m.id}','${p.user_key || p.username}')">Edit</button>
+                         <button onclick="deleteMedDoctor('${p.username}','${m.medication_key || m.id}','${p.user_key || p.username}')" style="margin-left:6px" class="ghost">Delete</button>
+                         </td></tr>`;
+            });
+            html += '</table>';
+        }
+    });
+    wrap.innerHTML = html;
+}
+
+async function editMed(patientUser, medId, patientIdentifier){ // ASYNC
+    const patientRef = patientIdentifier || patientUser;
+    const meds = await loadMeds(); const list = meds[patientUser] || []; const m = list.find(x=>x.id===medId || x.medication_key===medId); // AWAIT
+    if(!m) return alert('Missing med');
+    const prev = { name: m.name, dosage: m.dosage, schedule: m.schedule, instructions: m.instructions };
+    const name = prompt('Medication name', m.name); if(name===null) return;
+    const dosage = prompt('Dosage', m.dosage||''); if(dosage===null) return;
+    const schedule = prompt('Schedule (am/pm/both/custom)', m.schedule||''); if(schedule===null) return;
+    const instr = prompt('Instructions', m.instructions||''); if(instr===null) return;
+
+    if (!m.medication_key && m.id && String(m.id).startsWith('med_')) m.medication_key = m.id;
+    if (!m.medication_key && window.siteSync && typeof window.siteSync.resolveMedicationKeyForPatient === 'function') {
+        try {
+            const resolvedKey = await window.siteSync.resolveMedicationKeyForPatient(patientRef, {
+                name: m.name, dosage: m.dosage, schedule: m.schedule, instructions: m.instructions
+            });
+            if (resolvedKey) {
+                m.medication_key = resolvedKey;
+                m.id = resolvedKey;
+                await saveMeds(meds);
+            }
+        } catch (e) {
+            console.warn('resolveMedicationKeyForPatient failed', e);
+        }
+    }
+    if (!m.medication_key) {
+        alert('This medication has no database key yet. Re-add it so edit/delete can sync to database.');
+        return;
+    }
+
+    if (window.supabaseClient && (!window.siteSync || typeof window.siteSync.updateMedicationForPatient !== 'function')) {
+        alert('Medication update sync module is missing. Hard refresh the page (Ctrl+F5) and try again.');
+        return;
+    }
+    if (window.siteSync && typeof window.siteSync.updateMedicationForPatient === 'function') {
+        try {
+            await window.siteSync.updateMedicationForPatient(patientRef, m.medication_key, {
+                name, dosage, schedule, instructions: instr, type: m.type, match: prev
+            });
+        } catch (e) {
+            const msg = (e && e.message) ? e.message : String(e || 'Unknown error');
+            alert('Failed to update medication in database: ' + msg);
+            return;
+        }
+    }
+
+    m.name = name; m.dosage = dosage; m.schedule = schedule; m.instructions = instr;
+    await saveMeds(meds); // AWAIT
+    await renderMedManagement(); await renderSummary(); // AWAIT
+    if (document.getElementById('pd_name').textContent === patientUser) {
+        await renderPatientMeds(patientUser); // AWAIT
+        await buildPatientCharts(patientUser); // AWAIT
+    }
+}
+
+async function deleteMedDoctor(patientUser, medId, patientIdentifier){ // ASYNC
+    const patientRef = patientIdentifier || patientUser;
+    if(!confirm('Delete medication?')) return;
+    const meds = await loadMeds(); // AWAIT
+    const list = meds[patientUser] || [];
+    const m = list.find(x=>x.id===medId || x.medication_key===medId);
+    if (!m) return alert('Medication not found');
+
+    if (!m.medication_key && m.id && String(m.id).startsWith('med_')) m.medication_key = m.id;
+    if (!m.medication_key && window.siteSync && typeof window.siteSync.resolveMedicationKeyForPatient === 'function') {
+        try {
+            const resolvedKey = await window.siteSync.resolveMedicationKeyForPatient(patientRef, {
+                name: m.name, dosage: m.dosage, schedule: m.schedule, instructions: m.instructions
+            });
+            if (resolvedKey) {
+                m.medication_key = resolvedKey;
+                m.id = resolvedKey;
+                await saveMeds(meds);
+            }
+        } catch (e) {
+            console.warn('resolveMedicationKeyForPatient failed', e);
+        }
+    }
+    if (!m.medication_key) {
+        alert('This medication has no database key yet. Re-add it so edit/delete can sync to database.');
+        return;
+    }
+
+    if (window.supabaseClient && (!window.siteSync || typeof window.siteSync.deleteMedicationForPatient !== 'function')) {
+        alert('Medication delete sync module is missing. Hard refresh the page (Ctrl+F5) and try again.');
+        return;
+    }
+    if (window.siteSync && typeof window.siteSync.deleteMedicationForPatient === 'function') {
+        try {
+            await window.siteSync.deleteMedicationForPatient(patientRef, m.medication_key);
+        } catch (e) {
+            const msg = (e && e.message) ? e.message : String(e || 'Unknown error');
+            alert('Failed to delete medication from database: ' + msg);
+            return;
+        }
+    }
+
+    meds[patientUser] = list.filter(x => (x.id!==medId && x.medication_key!==medId));
+    await saveMeds(meds); // AWAIT
+    await renderMedManagement(); await renderSummary(); // AWAIT
+    if (document.getElementById('pd_name').textContent === patientUser) {
+        await renderPatientMeds(patientUser); // AWAIT
+        await buildPatientCharts(patientUser); // AWAIT
+    }
+}
+
+/* -------------------------
+    Logs rendering (global)
+    ------------------------- */
+async function renderLogs(){ // ASYNC
+    const logs = await loadLogs(); // AWAIT
+    const users = await loadUsers(); // AWAIT
+    
+    const assignedPatients = users.filter(u => u.role === 'patient' && u.approved && isAssignedToCurrentDoctor(u)).map(u => u.username);
+    const wrap = document.getElementById('logs');
+    
+    if(assignedPatients.length === 0){ wrap.innerHTML = '<div class="muted">No logs from your assigned patients yet</div>'; return; }
+    
+    let allEvents = [];
+
+    assignedPatients.forEach(k => {
+        const arr = logs[k] || [];
+        allEvents.push(...arr.map(e => ({ ...e, patient: k })));
+    });
+    
+    if (allEvents.length === 0) {
+        wrap.innerHTML = '<div class="muted">No events from your assigned patients yet</div>';
+        return;
+    }
+
+    allEvents.sort((a, b) => new Date(b.ts) - new Date(a.ts));
+    
+    let html = '<table><tr><th>Time</th><th>Patient</th><th>Med</th><th>Type</th><th>Note</th></tr>';
+    allEvents.forEach(e => {
+        html += `<tr><td>${new Date(e.ts).toLocaleString()}</td><td>${e.patient}</td><td>${e.medName||e.medId}</td><td>${e.type}</td><td>${e.note||''}</td></tr>`;
+    });
+    html += '</table>';
+    wrap.innerHTML = html;
+}
+
+/* -------------------------
+    Doctor chat (threads + realtime)
+    ------------------------- */
+const docChatState = {
+    patients: [],
+    activePatientKey: null,
+    activeThreadKey: null,
+    channel: null,
+};
+
+function docChatSlugify(v){
+    return String(v || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80);
+}
+function docBuildThreadKey(patientKey, doctorKey, subject){
+    return `pt_${patientKey}__dr_${doctorKey}__${docChatSlugify(subject) || 'general'}`;
+}
+
+function stopDocChatRealtime(){
+    try {
+        if (docChatState.channel && window.supabaseClient) {
+            window.supabaseClient.removeChannel(docChatState.channel);
+        }
+    } catch (_) {}
+    docChatState.channel = null;
+}
+
+function subscribeDocChatRealtime(){
+    stopDocChatRealtime();
+    if (!window.supabaseClient || !docChatState.activeThreadKey) return;
+    docChatState.channel = window.supabaseClient
+        .channel(`doc-chat-${docChatState.activeThreadKey}`)
+        .on('postgres_changes', {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'chat_messages',
+            filter: `thread_key=eq.${docChatState.activeThreadKey}`
+        }, async () => {
+            await renderDocChatMessages();
+        })
+        .subscribe();
+}
+
+async function populateDocChatPatients(){
+    const sel = document.getElementById('docChatPatientSelect');
+    if (!sel) return;
+    const users = await loadUsers();
+    const patients = users.filter(u => u.role === 'patient' && u.approved && isAssignedToCurrentDoctor(u));
+    docChatState.patients = patients;
+    sel.innerHTML = '';
+    if (!patients.length) {
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = '-- no accessible patients --';
+        sel.appendChild(opt);
+        docChatState.activePatientKey = null;
+        return;
+    }
+    patients.forEach((p) => {
+        const opt = document.createElement('option');
+        opt.value = p.user_key || p.username;
+        opt.textContent = p.username;
+        sel.appendChild(opt);
+    });
+    docChatState.activePatientKey = patients[0].user_key || patients[0].username;
+    sel.value = docChatState.activePatientKey;
+}
+
+async function loadDocChatThreads(){
+    const sel = document.getElementById('docChatThreadSelect');
+    if (!sel) return;
+    sel.innerHTML = '';
+    docChatState.activeThreadKey = null;
+    if (!window.supabaseClient || !docChatState.activePatientKey || !currentUserKey) return;
+    try {
+        const { data, error } = await window.supabaseClient
+            .from('chat_threads')
+            .select('thread_key,subject,updated_at')
+            .eq('patient_user_key', docChatState.activePatientKey)
+            .eq('doctor_user_key', currentUserKey)
+            .order('updated_at', { ascending: false });
+        if (error) throw error;
+        const rows = Array.isArray(data) ? data : [];
+        if (!rows.length) {
+            await createDocChatThread('General');
+            return;
+        }
+        rows.forEach((t) => {
+            const opt = document.createElement('option');
+            opt.value = t.thread_key;
+            opt.textContent = t.subject || 'General';
+            sel.appendChild(opt);
+        });
+        docChatState.activeThreadKey = rows[0].thread_key;
+        sel.value = docChatState.activeThreadKey;
+        await renderDocChatMessages();
+        subscribeDocChatRealtime();
+    } catch (e) {
+        console.warn('loadDocChatThreads failed:', e);
+    }
+}
+
+async function createDocChatThread(subjectInput){
+    const subject = String(subjectInput || '').trim();
+    if (!subject || !window.supabaseClient || !docChatState.activePatientKey || !currentUserKey) return;
+    const threadKey = docBuildThreadKey(docChatState.activePatientKey, currentUserKey, subject);
+    try {
+        const { error } = await window.supabaseClient
+            .from('chat_threads')
+            .upsert({
+                thread_key: threadKey,
+                patient_user_key: docChatState.activePatientKey,
+                doctor_user_key: currentUserKey,
+                subject: subject,
+                created_by_user_key: currentUserKey,
+                updated_at: new Date().toISOString()
+            }, { onConflict: 'thread_key' });
+        if (error) throw error;
+        await loadDocChatThreads();
+        const sel = document.getElementById('docChatThreadSelect');
+        if (sel) sel.value = threadKey;
+        docChatState.activeThreadKey = threadKey;
+        await renderDocChatMessages();
+        subscribeDocChatRealtime();
+    } catch (e) {
+        console.warn('createDocChatThread failed:', e);
+    }
+}
+
+async function renderDocChatMessages(){
+    const wrap = document.getElementById('docChatMessages');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    if (!window.supabaseClient || !docChatState.activeThreadKey) return;
+    try {
+        const { data, error } = await window.supabaseClient
+            .from('chat_messages')
+            .select('id,sender_user_key,sender_role,body,created_at')
+            .eq('thread_key', docChatState.activeThreadKey)
+            .order('created_at', { ascending: true });
+        if (error) throw error;
+        (data || []).forEach((m) => {
+            const el = document.createElement('div');
+            const mine = String(m.sender_role || '') === 'doctor' || String(m.sender_user_key || '') === String(currentUserKey || '');
+            el.className = `chat-msg ${mine ? 'doctor' : 'patient'}`;
+            el.innerHTML = `<div>${m.body || ''}</div><div class="muted" style="font-size:0.75rem;margin-top:6px">${new Date(m.created_at).toLocaleString()}</div>`;
+            wrap.appendChild(el);
+        });
+        wrap.scrollTop = wrap.scrollHeight;
+    } catch (e) {
+        wrap.innerHTML = `<div class="muted">Unable to load chat: ${String(e?.message || e || 'unknown error')}</div>`;
+    }
+}
+
+async function sendDocChatMessage(text){
+    const body = String(text || '').trim();
+    if (!body || !window.supabaseClient || !docChatState.activeThreadKey || !currentUserKey) return;
+    try {
+        const { error } = await window.supabaseClient
+            .from('chat_messages')
+            .insert({
+                thread_key: docChatState.activeThreadKey,
+                sender_user_key: currentUserKey,
+                sender_role: 'doctor',
+                body
+            });
+        if (error) throw error;
+        await window.supabaseClient
+            .from('chat_threads')
+            .update({ updated_at: new Date().toISOString() })
+            .eq('thread_key', docChatState.activeThreadKey);
+        await renderDocChatMessages();
+    } catch (e) {
+        console.warn('sendDocChatMessage failed:', e);
+    }
+}
+
+/* -------------------------
+    Resizable Panel Logic
+    ------------------------- */
+function setupResizablePatientPanel() {
+    // Logic remains synchronous as it only handles DOM interaction, not data loading.
+    const grid = document.querySelector('.pd-grid');
+    const splitter = document.getElementById('pd-splitter');
+    let isDragging = false;
+
+    if (!grid || !splitter) return;
+
+    // 1. Mouse Down (Start Drag)
+    splitter.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        document.body.style.cursor = 'col-resize';
+        grid.style.pointerEvents = 'none'; 
+        e.preventDefault(); 
+    });
+
+    // 2. Mouse Move (Dragging)
+    document.addEventListener('mousemove', async (e) => { // ASYNC needed here for chart redraw
+        if (!isDragging) return;
+
+        const gridRect = grid.getBoundingClientRect();
+        let newCol1Width = (e.clientX - gridRect.left) / gridRect.width * 100;
+
+        // Set limits (min 20% / max 80%)
+        newCol1Width = Math.max(20, Math.min(80, newCol1Width));
+        
+        const newCol2Width = 100 - newCol1Width;
+
+        // Apply new widths using CSS variables
+        grid.style.setProperty('--pd-col-1-width', `${newCol1Width}%`);
+        grid.style.setProperty('--pd-col-2-width', `${newCol2Width}%`);
+        
+        // Crucial for Chart.js to redraw
+        const openPatient = document.getElementById('pd_name').textContent;
+        if (openPatient && openPatient !== '—') {
+            await buildPatientCharts(openPatient); // AWAIT
+        }
+    });
+
+    // 3. Mouse Up (End Drag)
+    document.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            document.body.style.cursor = 'default';
+            grid.style.pointerEvents = 'auto';
+        }
+    });
+}
+
+
+/* -------------------------
+    Initialization / Event Handlers
+    ------------------------- */
+async function refreshUI(){ // ASYNC
+    await syncMedsFromSupabaseForDoctor();
+    await computeOverall();
+    await renderPending();
+    await populatePatientSelector();
+    await fillDoctorPatientSelect();
+    await renderSummary();
+    await renderMedManagement();
+    await renderLogs();
+    await populateDocChatPatients();
+    await loadDocChatThreads();
+    await showDoctorDashboardDiagnosticsIfEmpty();
+    setupResizablePatientPanel();
+}
+
+async function showDoctorDashboardDiagnosticsIfEmpty() {
+    const patientSel = document.getElementById('patientSelector');
+    const pendingWrap = document.getElementById('pendingWrap');
+    const hasPatients = !!(patientSel && patientSel.options && patientSel.options.length > 1);
+    const pendingText = String(pendingWrap?.textContent || '');
+    const hasPending = pendingText && !/No pending requests/i.test(pendingText);
+    if (hasPatients || hasPending) return;
+
+    let dbUsersCount = 0;
+    let dbPatientsCount = 0;
+    let dbError = '';
+    try {
+        const sb = await getSupabaseDataClient();
+        if (sb) {
+            let data = null;
+            let error = null;
+            ({ data, error } = await sb.from('users').select('user_key,role'));
+            if (error) ({ data, error } = await sb.from('users').select('user_key'));
+            if (error) dbError = error.message || String(error);
+            else {
+                dbUsersCount = (data || []).length;
+                dbPatientsCount = (data || []).filter((u) => String(u.role || '').toLowerCase() === 'patient').length;
+            }
+        }
+    } catch (e) {
+        dbError = e?.message || String(e);
+    }
+
+    let storageUsersCount = 0;
+    let legacyUsersCount = 0;
+    try {
+        const raw = await window.Storage.getItem('users');
+        const arr = JSON.parse(raw || '[]');
+        storageUsersCount = Array.isArray(arr) ? arr.length : 0;
+    } catch (_) {}
+    try {
+        const rawLegacy = (typeof localStorage !== 'undefined') ? localStorage.getItem('users') : null;
+        const arrLegacy = JSON.parse(rawLegacy || '[]');
+        legacyUsersCount = Array.isArray(arrLegacy) ? arrLegacy.length : 0;
+    } catch (_) {}
+
+    const debugMsg = `Debug: dbUsers=${dbUsersCount}, dbPatients=${dbPatientsCount}, TYMI_users=${storageUsersCount}, legacy_users=${legacyUsersCount}${dbError ? `, dbError=${dbError}` : ''}`;
+    if (pendingWrap) {
+        pendingWrap.innerHTML = `<div class="muted">No pending requests for you</div><div class="muted" style="margin-top:8px;font-size:12px">${debugMsg}</div>`;
+    }
+    const detailNote = document.getElementById('detailNote');
+    if (detailNote) detailNote.textContent = debugMsg;
+    console.warn('[Doctor dashboard diagnostics]', debugMsg);
+}
+
+function switchDoctorTab(tab) {
+    const chatCard = document.getElementById('doctorChatCard');
+    const dashboardCards = Array.from(document.querySelectorAll('.wrap > .card'))
+        .filter((el) => !['doctorTopCard', 'doctorTabNav', 'doctorChatCard'].includes(el.id));
+    const dashboardBtn = document.getElementById('docTabDashboard');
+    const chatBtn = document.getElementById('docTabChat');
+    const isChat = tab === 'chat';
+
+    if (chatCard) chatCard.classList.toggle('hidden', !isChat);
+    dashboardCards.forEach((el) => el.classList.toggle('hidden', isChat));
+    if (dashboardBtn) dashboardBtn.classList.toggle('active', !isChat);
+    if (chatBtn) chatBtn.classList.toggle('active', isChat);
+
+    if (isChat) {
+        populateDocChatPatients().then(loadDocChatThreads);
+    } else {
+        stopDocChatRealtime();
+    }
+}
+
+document.getElementById('refresh').addEventListener('click', refreshUI);
+
+document.getElementById('logout').addEventListener('click', async ()=>{ // ASYNC
+    await window.Storage.removeItem('currentUser'); // AWAIT
+    await window.Storage.removeItem('currentRole'); // AWAIT
+    stopDocChatRealtime();
+    window.location.href='doctor-login.html';
+});
+
+// Final initialization call
+document.addEventListener("DOMContentLoaded", checkAuthAndInit);
+
+document.addEventListener("DOMContentLoaded", () => {
+    const dashboardTabBtn = document.getElementById('docTabDashboard');
+    const chatTabBtn = document.getElementById('docTabChat');
+    const patientSel = document.getElementById('docChatPatientSelect');
+    const threadSel = document.getElementById('docChatThreadSelect');
+    const createBtn = document.getElementById('docChatCreateThread');
+    const subjectInput = document.getElementById('docChatSubjectInput');
+    const sendBtn = document.getElementById('docChatSend');
+    const input = document.getElementById('docChatInput');
+    const refreshBtn = document.getElementById('docChatRefresh');
+
+    if (dashboardTabBtn) {
+        dashboardTabBtn.addEventListener('click', () => switchDoctorTab('dashboard'));
+    }
+    if (chatTabBtn) {
+        chatTabBtn.addEventListener('click', () => switchDoctorTab('chat'));
+    }
+    switchDoctorTab('dashboard');
+
+    if (patientSel) {
+        patientSel.addEventListener('change', async (e) => {
+            docChatState.activePatientKey = e.target.value || null;
+            await loadDocChatThreads();
+        });
+    }
+    if (threadSel) {
+        threadSel.addEventListener('change', async (e) => {
+            docChatState.activeThreadKey = e.target.value || null;
+            await renderDocChatMessages();
+            subscribeDocChatRealtime();
+        });
+    }
+    if (createBtn) {
+        createBtn.addEventListener('click', async () => {
+            const subject = (subjectInput?.value || '').trim();
+            if (!subject) return;
+            await createDocChatThread(subject);
+            if (subjectInput) subjectInput.value = '';
+        });
+    }
+    if (sendBtn && input) {
+        sendBtn.addEventListener('click', async () => {
+            await sendDocChatMessage(input.value);
+            input.value = '';
+        });
+        input.addEventListener('keydown', async (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                await sendDocChatMessage(input.value);
+                input.value = '';
+            }
+        });
+    }
+    if (refreshBtn) refreshBtn.addEventListener('click', async () => { await renderDocChatMessages(); });
+    window.addEventListener('beforeunload', stopDocChatRealtime);
+});
+</script>
+</body>
+</html>
